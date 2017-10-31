@@ -2,6 +2,7 @@ var express = require('express');
 var morgan = require('morgan');
 var compression = require('compression');
 var bodyParser = require('body-parser');
+var cors = require('cors')
 
 module.exports = function() {
     var app = express()
@@ -14,6 +15,7 @@ module.exports = function() {
         extended: true
     }));
     app.use(bodyParser.json());
+    app.use(cors());
     require('../app/routes/index.routes')(app);
     require('../app/routes/user.routes')(app);
     require('../app/routes/package.routes')(app);
