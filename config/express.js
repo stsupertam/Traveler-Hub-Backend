@@ -20,5 +20,6 @@ module.exports = function() {
     require('../app/routes/user.routes')(app);
     require('../app/routes/package.routes')(app);
     require('../app/routes/company.routes')(app);
+    require('../app/routes/chatbot.routes')(app);
     return app;
 }
