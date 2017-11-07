@@ -1,4 +1,4 @@
-const FACEBOOK_ACCESS_TOKEN = 'EAAJztzEqzBYBAK0ugZAPhbTtj7nTOS5ZBZC0UQ9zdbowYiqyu2Y0FJymZA7gQpLPrEmZAZAjCbfdt7CnLSXAJ1EGQTLrGI9CRVPJ8Ud086u9JgPbSZBS2eH9qdnptnbZAtwmW0UodZAhHpS8qQXI3IhQx9mvZCa8wSGDzTj2rT8OuIlwZDZD';
+const FACEBOOK_ACCESS_TOKEN = 'EAAJztzEqzBYBAMrkSZBJSQln37td2EUFkvPX3eroCGefDKKo0vRWTGX5432x9rfwDNGi1kentRFseblbBZBzAvaSAl4xdzUJhljJdkmWdYI7W5SD7bjUkKrYK6A0LXbRTRcZACZAyf41KXTBB4nVmdZBzCwZBQN17CBYo6vEDKqsD0OXbm7lTc'
 const CAT_IMAGE_URL = 'https://botcube.co/public/blog/apiai-tutorial-bot/hosico_cat.jpg';
 
 const request = require('request');

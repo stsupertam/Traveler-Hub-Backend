@@ -2,7 +2,7 @@ const {
   queryWit,
   interactive,
   firstEntity,
-} = require('../shared');
+} = require('../../shared');
 const FACEBOOK_ACCESS_TOKEN = 'EAAJztzEqzBYBAK0ugZAPhbTtj7nTOS5ZBZC0UQ9zdbowYiqyu2Y0FJymZA7gQpLPrEmZAZAjCbfdt7CnLSXAJ1EGQTLrGI9CRVPJ8Ud086u9JgPbSZBS2eH9qdnptnbZAtwmW0UodZAhHpS8qQXI3IhQx9mvZCa8wSGDzTj2rT8OuIlwZDZD';
 const request = require('request');
 

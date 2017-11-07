@@ -1,6 +1,8 @@
 var Package = require('mongoose').model('Package');
+var processMessage = require('../helpers/processMessage');
 
 exports.verification = function(req, res, next) {
+    console.log('Verification Babyyyyy')
     const hubChallenge = req.query['hub.challenge'];
     
     const hubMode = req.query['hub.mode'];
@@ -14,6 +16,7 @@ exports.verification = function(req, res, next) {
 };
 
 exports.messageHook = function(req, res, next) {
+    console.log('Hello MessageHook')
     if (req.body.object === 'page') {
         req.body.entry.forEach(entry => {
             entry.messaging.forEach(event => {
