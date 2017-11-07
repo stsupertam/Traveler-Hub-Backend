@@ -13,6 +13,8 @@ var PackageSchema = new Schema({
     detail: String,
     price: Number,
     image: String,
+    human_price: String,
+    travel_date: String,
     travel_duration: {
         type: Number,
         default: 1

@@ -32,8 +32,10 @@ exports.create = function(req, res, next) {
         { $inc: { package_id: 1 }}, 
         true
     ).then((counter) => {
-        req.body['package_id'] = counter['package_id'];
         var package = new Package(req.body);
+        req.body['package_id'] = counter['package_id'];
+        package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
+        package['human_price'] = numeral(package['price']).format('0,0') + ' บาท'
         return package.save()
     }).then((package) => {
         return res.json(package);
@@ -44,6 +46,7 @@ exports.create = function(req, res, next) {
 
 exports.list = function(req, res, next) {
     Package.find({})
+    .select('-_id -__v -created')
     .then((package) => {
         return res.json(package);
     }).catch((err) => {
@@ -71,22 +74,12 @@ exports.update = function(req, res, next) {
 };
 
 exports.read = function(req, res) {
-    var package = req.package.toObject();
-    package['travel_date'] = th_date_format(package['start_travel_date'], package['travel_duration']);
-    package['price'] = numeral(package['price']).format('0,0') + ' บาท'
-
-    delete package.start_travel_date;
-    delete package.travel_duration;
-    delete package.__v;
-    delete package._id;
-    delete package.created;
-    delete package.number_of_views;
-
-    res.json(package);
+    res.json(req.package);
 };
 
 exports.packageById = function(req, res, next, id) {
     Package.findOne({ package_id: id })
+    .select('-_id -__v -created')
     .then((package) => {
         req.package = package;
         next();
