@@ -7,5 +7,5 @@ module.exports = function(app) {
         .get(company.read)
         .put(company.update)
         .delete(company.delete);
-    app.param('name', company.companyById);
+    app.param('id', company.companyById);
 };
