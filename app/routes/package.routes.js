@@ -3,9 +3,9 @@ module.exports = function(app) {
     app.route('/package')
         .post(package.create)
         .get(package.list);
-    app.route('/package/:name')
+    app.route('/package/:id')
         .get(package.read)
         .put(package.update)
         .delete(package.delete);
-    app.param('name', package.packageByName);
+    app.param('id', package.packageById);
 };

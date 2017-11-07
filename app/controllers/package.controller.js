@@ -48,9 +48,9 @@ exports.read = function(req, res) {
     res.json(req.package);
 };
 
-exports.packageById = function(req, res, next, name) {
+exports.packageById = function(req, res, next, id) {
     Package.findOne({
-        name: name
+        id: id
     }, function(err, package) {
         if (err) {
             return next(err);

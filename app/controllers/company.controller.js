@@ -3,11 +3,15 @@ var Company = require('mongoose').model('Company');
 exports.create = function(req, res, next) {
     Company.count({})
     .then((count) => {
-        req.body['id'] = count + 1;
+        req.body['company_id'] = count + 1;
         var company = new Company(req.body);
-        company.save()
-    }).catch((err) => {
-        return next(err)
+        return company.save()
+    })
+    .then((company) => {
+        return res.json(company);
+    })
+    .catch((err) => {
+        return next(err);
     });
 };
 
@@ -16,7 +20,7 @@ exports.list = function(req, res, next) {
         if (err) {
             return next(err);
         } else {
-            res.json(companys);
+            res.json(company);
         }
 
     });
