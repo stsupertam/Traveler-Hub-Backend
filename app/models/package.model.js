@@ -21,10 +21,6 @@ var PackageSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    end_travel_date: {
-        type: Date,
-        default: Date.now
-    },
     number_of_views: {
         type: Number,
         default: 0
@@ -37,7 +33,7 @@ var PackageSchema = new Schema({
         type: Date,
         default: Date.now
     }
-}, { toJSON: { virtuals: true } });
+});
 
 PackageSchema.virtual('company', {
     ref: 'Company',
