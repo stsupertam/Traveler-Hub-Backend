@@ -14,11 +14,11 @@ exports.create = function(req, res, next) {
 };
 
 exports.list = function(req, res, next) {
-    Package.find({}, function(err, packages) {
+    Package.find({}, function(err, package) {
         if (err) {
             return next(err);
         } else {
-            res.json(packages);
+            res.json(package);
         }
 
     });
@@ -48,7 +48,7 @@ exports.read = function(req, res) {
     res.json(req.package);
 };
 
-exports.packageByname = function(req, res, next, name) {
+exports.packageById = function(req, res, next, name) {
     Package.findOne({
         name: name
     }, function(err, package) {

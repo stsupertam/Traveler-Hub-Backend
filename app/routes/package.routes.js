@@ -7,5 +7,5 @@ module.exports = function(app) {
         .get(package.read)
         .put(package.update)
         .delete(package.delete);
-    app.param('name', package.packageByname);
+    app.param('name', package.packageByName);
 };
