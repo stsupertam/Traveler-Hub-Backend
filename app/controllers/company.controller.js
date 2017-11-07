@@ -7,7 +7,6 @@ exports.create = function(req, res, next) {
         { $inc: { company_id: 1 }}, 
         true
     ).then((counter) => {
-        console.log(counter);
         req.body['company_id'] = counter['company_id'];
         var company = new Company(req.body);
         return company.save()
@@ -50,8 +49,8 @@ exports.read = function(req, res) {
     res.json(req.company);
 };
 
-exports.companyById = function(req, res, next, id) {
-    Company.findOne({ company_id: id })
+exports.companyByName = function(req, res, next, name) {
+    Company.findOne({ company_name: name })
     .then((company) => {
         req.company = company;
         next();

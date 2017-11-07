@@ -8,11 +8,11 @@ var CounterSchema = new Schema({
     },
     company_id: {
         type: Number,
-        default: 0
+        default: 1
     },
     package_id: {
         type: Number,
-        default: 0
+        default: 1
     }
 });
 
