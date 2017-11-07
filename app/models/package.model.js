@@ -2,9 +2,14 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PackageSchema = new Schema({
-    package_id: Number,
+    package_id: {
+        type: Number,
+        unique: true
+    },
+    company_id: Number,
     package_name: String,
-    company_name: String,
+    location: String,
+    province: String,
     detail: String,
     price: Number,
     image: String,
@@ -32,6 +37,13 @@ var PackageSchema = new Schema({
         type: Date,
         default: Date.now
     }
+}, { toJSON: { virtuals: true } });
+
+PackageSchema.virtual('company', {
+    ref: 'Company',
+    localField: 'company_id',
+    foreignField: 'company_id',
+    justOne: true
 });
 
 mongoose.model('Package', PackageSchema)

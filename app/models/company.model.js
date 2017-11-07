@@ -2,12 +2,18 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CompanySchema = new Schema({
-    company_id: {type: Number, unique: true},
-    company_name: {type: String, unique: true},
+    company_id: { 
+        type: Number, 
+        unique: true 
+    },
+    company_name: { 
+        type: String, 
+        unique: true 
+    },
     address: String, 
-    created: {
-        type: Date,
-        default: Date.now
+    created: { 
+        type: Date, 
+        default: Date.now 
     }
 });
 
