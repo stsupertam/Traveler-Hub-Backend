@@ -2,9 +2,13 @@ var Company = require('mongoose').model('Company');
 var Counter = require('mongoose').model('Counter');
 
 exports.create = function(req, res, next) {
-    Company.count({})
-    .then((count) => {
-        req.body['company_id'] = count + 1;
+    Counter.findOneAndUpdate(
+        { active: 1 }, 
+        { $inc: { company_id: 1 }}, 
+        true
+    ).then((counter) => {
+        console.log(counter);
+        req.body['company_id'] = counter['company_id'];
         var company = new Company(req.body);
         return company.save()
     }).then((company) => {
