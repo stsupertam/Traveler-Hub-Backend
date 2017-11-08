@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var Package = require('mongoose').model('Package');
 var Schema = mongoose.Schema;
 
 var CounterSchema = new Schema({

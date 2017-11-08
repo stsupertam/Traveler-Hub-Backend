@@ -3,10 +3,64 @@ const CAT_IMAGE_URL = 'https://botcube.co/public/blog/apiai-tutorial-bot/hosico_
 
 const request = require('request');
 const {handleMessage} = require('./simple_response');
-first_time = false;
-second_question = false;
-third_question = false;
-end_state = false;
+const Package = require('mongoose').model('Package');
+var first_time = false;
+var second_question = false;
+var third_question = false;
+var end_state = false;
+var data_response = {};
+var topDataDb = {};
+
+var topData = {
+    attachment: {
+        type: "template",
+        payload: {
+            template_type: "generic",
+            elements: [{
+                title: "CHILL CHILL กลางสายน้ำ ที่ แพ 500",
+                image_url: "https://www.noomsaotours.co.th/gallery/images/Wat_Bang_Riang__.jpg",
+                buttons: [{
+                    "type": "web_url",
+                    "url": "localhost:3000/detail",
+                    "title": "More Detail"
+                }]
+            }
+           ]
+        }
+    }
+}
+
+var choice = {
+    text: "สวัสดีครับ ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้",
+    quick_replies:[
+      {
+        content_type: "text",
+        title: "เลือกตามความนิยม",
+        payload: "1",
+      },
+      {
+        content_type: "text",
+        title: "ลองถามอะไรดูก็ได้ซิ",
+        payload: "2"
+      }
+    ]
+}
+
+var choice2 = {
+    text: "อยาให้แนะนำที่ไหนเพิ่มอีก",
+    quick_replies:[
+      {
+        content_type: "text",
+        title: "เลือกตามความนิยม",
+        payload: "1",
+      },
+      {
+        content_type: "text",
+        title: "ลองถามอะไรดูก็ได้ซิ",
+        payload: "2"
+      }
+    ]
+}
 module.exports = (event) => {
     const senderId = event.sender.id;
     const message = event.message.text;
@@ -25,13 +79,12 @@ module.exports = (event) => {
                 method: 'POST',
                 json: {
                     recipient: { id: senderId },
-                    message: {
-                        text:'สวัสดี ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้ 1.ตามเทศกาล 2.ตามความต้องการของผู้ใช้' 
-                    }
+                    message: choice
+                        //text:'สวัสดี ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้ 1.ตามเทศกาล 2.ตามความต้องการของผู้ใช้' 
                 }
             });   
         }
-        if(message == 1){
+        if(message == 1 || message == "เลือกตามความนิยม"){
             second_question = true;
             request({
               url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -39,13 +92,11 @@ module.exports = (event) => {
               method: 'POST',
               json: {
                   recipient: { id: senderId },
-                  message: {
-                      text:'ช่วงนี้ มีที่น่าสนใจตามนี้ 1.งานประเพณีแห่ประสาทผึ้ง 2.จุดไฟตูมกา 3.งานประเพณีรับบัว เลือกหมายเลขเพื่อรายละเอียดเพิ่มเติม' 
-                  }
+                  message: topData
                 }
             });        
         }
-        else if(message == 2){
+        else if(message == 2 || message == "ลองถามอะไรดูก็ได้ซิ"){
             third_question = true;
             request({
               url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -113,9 +164,9 @@ module.exports = (event) => {
           method: 'POST',
           json: {
               recipient: { id: senderId },
-              message: {
-                  text:'อยากให้แนะนำเพิ่มอีกไหม 1.ตามเทศกาล 2.ตามความต้องการ'
-              }
+              message: choice2
+                  //text:'อยากให้แนะนำเพิ่มอีกไหม 1.ตามเทศกาล 2.ตามความต้องการ'
+              
             }
         }); 
     }

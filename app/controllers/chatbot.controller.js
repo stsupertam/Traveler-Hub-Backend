@@ -2,7 +2,6 @@ var Package = require('mongoose').model('Package');
 var processMessage = require('../helpers/processMessage');
 
 exports.verification = function(req, res, next) {
-    console.log('Verification Babyyyyy')
     const hubChallenge = req.query['hub.challenge'];
     
     const hubMode = req.query['hub.mode'];
