@@ -35,7 +35,8 @@ exports.create = function(req, res, next) {
         var package = new Package(req.body);
         req.body['package_id'] = counter['package_id'];
         package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
-        package['human_price'] = numeral(package['price']).format('0,0') + ' บาท'
+        package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
+        package['timeline'] = req.body['timeline'];
         return package.save()
     }).then((package) => {
         return res.json(package);

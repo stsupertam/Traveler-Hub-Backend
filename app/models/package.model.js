@@ -1,6 +1,16 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var TimelineSchema = new Schema({
+    day: Number,
+    description: [
+        {
+            time: String,
+            activity: String
+        }
+    ]
+});
+
 var PackageSchema = new Schema({
     package_id: {
         type: Number,
@@ -15,6 +25,7 @@ var PackageSchema = new Schema({
     image: String,
     human_price: String,
     travel_date: String,
+    timeline: [TimelineSchema],
     travel_duration: {
         type: Number,
         default: 1
