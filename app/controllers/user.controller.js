@@ -25,26 +25,31 @@ var split_userInfo = function(req) {
     }
 }
 
+var getType = function(usertype, info_body) {
+    if(usertype === 'c') {
+        var info = new Customer(info_body);
+    } else {
+        var info = new Employee(info_body);
+    }
+    return info;
+}
+
 exports.create = function(req, res, next) {
     var userInfo = split_userInfo(req.body);
     var user_body = userInfo.user;
     var info_body = userInfo.info;
     var user = new User(user_body);
+    var info = getType(req.body['usertype'], info_body);
+    var errors = {};
     user.save()
-    .then(() => {
-        var info = '';
-        if(req.body['usertype'] === 'c') {
-            var info = new Customer(info_body);
-        } else {
-            var info = new Employee(info_body);
-        }
-        return info.save();
-    }).then(() => {
-        return res.json(req.body);
-    }).catch((err) => {
-        console.log(err);
-        return next(err);
-    })
+        .catch((err) => {
+            Object.assign(errors, err['errors']);
+        }).then(() => {
+            return info.save()
+        }).catch((err) => {
+            Object.assign(errors, err['errors']);
+            return res.status(422).json(errors);
+        });
 };
 
 exports.list = function(req, res, next) {
@@ -70,8 +75,7 @@ exports.update = function(req, res, next) {
     User.findOneAndUpdate({ username: req.package.username }, req.body)
     .then((user) => {
         return res.json(user);
-    })
-    .catch((err) => {
+    }).catch((err) => {
         return next(err);
     })
 };

@@ -2,18 +2,36 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CustomerSchema = new Schema({
-    firstname: String,
-    lastname: String,
+    firstname: {
+        type: String,
+        required: [true, 'Firstname field is required']
+    },
+    lastname: {
+        type: String,
+        required: [true, 'Lastname field is required']
+    },
+    age: {
+        type: String,
+        required: [true, 'Age field is required']
+    },
+    gender: {
+        type: String,
+        required: [true, 'Gender field is required']
+    },
+    country: {
+        type: String,
+        required: [true, 'Country field is required']
+    },
+    province: {
+        type: String,
+        required: [true, 'Province field is required']
+    },
     username: {
         type: String,
-        ref: 'User',
-        unique: true
+        unique: true,
+        required: [true, 'Username field is required'],
+        ref: 'User'
     },
-    age: Number,
-    gender: String,
-    address: String,
-    country: String,
-    province: String,
     phonenumber: String,
     creditcard: Number,
     created: {
