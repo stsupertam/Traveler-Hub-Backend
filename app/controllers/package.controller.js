@@ -48,8 +48,8 @@ exports.create = function(req, res, next) {
 exports.list = function(req, res, next) {
     Package.find({})
     .select('-_id -__v -created')
-    .then((package) => {
-        return res.json(package);
+    .then((packages) => {
+        return res.json(packages);
     }).catch((err) => {
         return next(err);
     });
@@ -75,15 +75,14 @@ exports.update = function(req, res, next) {
 };
 
 exports.read = function(req, res) {
-    res.json(req.package);
+    return res.json(req.package);
 };
 
 exports.packageById = function(req, res, next, id) {
     Package.findOne({ package_id: id })
     .select('-_id -__v -created')
     .then((package) => {
-        req.package = package;
-        next();
+        return res.json(package)
     }).catch((err) => {
         return next(err);
     });

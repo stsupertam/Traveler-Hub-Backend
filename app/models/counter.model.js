@@ -7,6 +7,14 @@ var CounterSchema = new Schema({
         type: Number, 
         default: 1
     },
+    customer_id: {
+        type: Number,
+        default: 1
+    },
+    employee_id: {
+        type: Number,
+        default: 1
+    },
     package_id: {
         type: Number,
         default: 1
