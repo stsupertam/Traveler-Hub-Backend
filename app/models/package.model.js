@@ -16,13 +16,17 @@ var PackageSchema = new Schema({
         type: Number,
         unique: true
     },
-    company_id: Number,
+    company_name: {
+        type: String,
+        ref: 'Company'
+    },
     package_name: String,
     location: String,
     province: String,
     detail: String,
     price: Number,
     image: String,
+    rating: Number,
     human_price: String,
     travel_date: String,
     timeline: [TimelineSchema],
@@ -48,11 +52,5 @@ var PackageSchema = new Schema({
     }
 });
 
-PackageSchema.virtual('company', {
-    ref: 'Company',
-    localField: 'company_id',
-    foreignField: 'company_id',
-    justOne: true
-});
 
 mongoose.model('Package', PackageSchema)

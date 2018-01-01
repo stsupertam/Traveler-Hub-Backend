@@ -20,6 +20,7 @@ exports.create = function(req, res, next) {
 exports.list = function(req, res, next) {
     Company.find({})
     .then((company) => {
+        console.log(company)
         return res.json(company);
     }).catch((err) => {
         return next(err);
