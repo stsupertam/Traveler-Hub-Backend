@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 var Schema = mongoose.Schema;
 
 var EmployeeSchema = new Schema({
@@ -44,4 +45,5 @@ var EmployeeSchema = new Schema({
     }
 });
 
+EmployeeSchema.plugin(uniqueValidator);
 mongoose.model('Employee', EmployeeSchema)

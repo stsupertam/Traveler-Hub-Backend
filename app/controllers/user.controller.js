@@ -65,16 +65,6 @@ exports.create = function(req, res, next) {
     }).catch((err) => {
         return next(err);
     })
-
-    //user.save()
-    //.catch((err) => {
-    //    Object.assign(errors, err['errors']);
-    //}).then(() => {
-    //    return info.save()
-    //}).catch((err) => {
-    //    Object.assign(errors, err['errors']);
-    //    return res.status(422).json(errors);
-    //});
 };
 
 exports.list = function(req, res, next) {

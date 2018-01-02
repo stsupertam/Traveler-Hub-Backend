@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
@@ -38,4 +39,5 @@ UserSchema.virtual('employees', {
     foreignField: 'username',
 });
 
+UserSchema.plugin(uniqueValidator);
 mongoose.model('User', UserSchema)

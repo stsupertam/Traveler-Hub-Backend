@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 var Schema = mongoose.Schema;
 
 var CustomerSchema = new Schema({
@@ -40,4 +41,5 @@ var CustomerSchema = new Schema({
     }
 });
 
+CustomerSchema.plugin(uniqueValidator);
 mongoose.model('Customer', CustomerSchema)
