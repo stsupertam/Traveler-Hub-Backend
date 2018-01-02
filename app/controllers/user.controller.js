@@ -41,15 +41,40 @@ exports.create = function(req, res, next) {
     var user = new User(user_body);
     var info = getType(req.body['usertype'], info_body);
     var errors = {};
-    user.save()
-        .catch((err) => {
-            Object.assign(errors, err['errors']);
-        }).then(() => {
-            return info.save()
-        }).catch((err) => {
-            Object.assign(errors, err['errors']);
+    user.validate()
+    .catch((err) => {
+        console.log('user fail validate');
+        Object.assign(errors, err['errors']);
+    }).then(() => {
+        return info.validate()
+    }).catch((err) => {
+        console.log('info fail validate');
+        Object.assign(errors, err['errors']);
+    }).then(() => {
+        if(Object.keys(errors).length === 0) {
+            console.log('user pass validate');
+            console.log('info pass validate');
+            return user.save();
+        } else {
             return res.status(422).json(errors);
-        });
+        }
+    }).then(() => {
+        return info.save();
+    }).then(() => {
+        return res.json(req.body);
+    }).catch((err) => {
+        return next(err);
+    })
+
+    //user.save()
+    //.catch((err) => {
+    //    Object.assign(errors, err['errors']);
+    //}).then(() => {
+    //    return info.save()
+    //}).catch((err) => {
+    //    Object.assign(errors, err['errors']);
+    //    return res.status(422).json(errors);
+    //});
 };
 
 exports.list = function(req, res, next) {
