@@ -3,10 +3,8 @@ var processMessage = require('../helpers/processMessage');
 
 exports.verification = function(req, res, next) {
     const hubChallenge = req.query['hub.challenge'];
-    
     const hubMode = req.query['hub.mode'];
     const verifyTokenMatches = (req.query['hub.verify_token'] === 'gundam');
-    
     if (hubMode && verifyTokenMatches) {
         res.status(200).send(hubChallenge);
     } else {
@@ -23,7 +21,6 @@ exports.messageHook = function(req, res, next) {
                 }
             });
         });
-
         res.status(200).end();
     }
 };

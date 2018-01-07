@@ -12,7 +12,6 @@ var th_month = [
 ]
 
 var th_date_format = function(start_travel_date, travel_duration) {
-
     date = moment(start_travel_date)
     .add(travel_duration - 1, 'days')
     .format('MM/DD/YYYY').split('/');
@@ -27,51 +26,51 @@ var th_date_format = function(start_travel_date, travel_duration) {
 };
 
 exports.create = function(req, res, next) {
-    Counter.findOneAndUpdate(
-        { active: 1 }, 
-        { $inc: { package_id: 1 }}, 
-        true
-    ).then((counter) => {
-        var package = new Package(req.body);
-        req.body['package_id'] = counter['package_id'];
-        package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
-        package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
-        package['timeline'] = req.body['timeline'];
-        return package.save()
-    }).then((package) => {
-        return res.json(package);
-    }).catch((err) => {
-        return next(err);
-    });
+    Counter.findOneAndUpdate({ active: 1 }, { $inc: { package_id: 1 }}, true)
+        .then((counter) => {
+            var package = new Package(req.body);
+            req.body['package_id'] = counter['package_id'];
+            package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
+            package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
+            package['timeline'] = req.body['timeline'];
+            return package.save()
+        })
+        .then((package) => {
+            return res.json(package);
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.list = function(req, res, next) {
-    Package.find({})
-    .select('-_id -__v -created')
-    .then((packages) => {
-        return res.json(packages);
-    }).catch((err) => {
-        return next(err);
-    });
+    Package.find({}).select('-_id -__v -created')
+        .then((packages) => {
+            return res.json(packages);
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.delete = function(req, res, next) {
     req.package.remove()
-    .then(() => {
-        return next();
-    }).catch((err) => {
-        return next(err);
-    });
+        .then(() => {
+            return next();
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.update = function(req, res, next) {
     Package.findOneAndUpdate({ id: req.package.id }, req.body)
-    .then((package) => {
-        return res.json(package);
-    })
-    .catch((err) => {
-        return next(err);
-    })
+        .then((package) => {
+            return res.json(package);
+        })
+        .catch((err) => {
+            return next(err);
+        })
 };
 
 exports.read = function(req, res) {
@@ -79,11 +78,11 @@ exports.read = function(req, res) {
 };
 
 exports.packageById = function(req, res, next, id) {
-    Package.findOne({ package_id: id })
-    .select('-_id -__v -created')
-    .then((package) => {
-        return res.json(package)
-    }).catch((err) => {
-        return next(err);
-    });
+    Package.findOne({ package_id: id }).select('-_id -__v -created')
+        .then((package) => {
+            return res.json(package)
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };

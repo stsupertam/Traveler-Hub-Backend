@@ -42,57 +42,59 @@ exports.create = function(req, res, next) {
     var info = getType(req.body['usertype'], info_body);
     var errors = {};
     user.validate()
-    .catch((err) => {
-        console.log('user fail validate');
-        Object.assign(errors, err['errors']);
-    }).then(() => {
-        return info.validate()
-    }).catch((err) => {
-        console.log('info fail validate');
-        Object.assign(errors, err['errors']);
-    }).then(() => {
-        if(Object.keys(errors).length === 0) {
-            console.log('user pass validate');
-            console.log('info pass validate');
-            return user.save();
-        } else {
-            return res.status(422).json(errors);
-        }
-    }).then(() => {
-        return info.save();
-    }).then(() => {
-        return res.json(req.body);
-    }).catch((err) => {
-        return next(err);
-    })
+        .catch((err) => {
+            console.log('user fail validate');
+            Object.assign(errors, err['errors']);
+        })
+        .then(() => {
+            return info.validate()
+        })
+        .catch((err) => {
+            console.log('info fail validate');
+            Object.assign(errors, err['errors']);
+        })
+        .then(() => {
+            if(Object.keys(errors).length === 0) {
+                user.save();
+                info.save();
+                return res.json(req.body);
+            } else {
+                return res.status(422).json(errors);
+            }
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.list = function(req, res, next) {
-    User.find({})
-    .select('-_id -__v -created')
-    .then((users) => {
-        return res.json(users);
-    }).catch((err) => {
-        return next(err);
-    });
+    User.find({}).select('-_id -__v -created')
+        .then((users) => {
+            return res.json(users);
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.delete = function(req, res, next) {
     req.user.remove()
-    .then(() => {
-        return next();
-    }).catch((err) => {
-        return next(err);
-    });
+        .then(() => {
+            return next();
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
 
 exports.update = function(req, res, next) {
     User.findOneAndUpdate({ username: req.package.username }, req.body)
-    .then((user) => {
-        return res.json(user);
-    }).catch((err) => {
-        return next(err);
-    })
+        .then((user) => {
+            return res.json(user);
+        })
+        .catch((err) => {
+            return next(err);
+        })
 };
 
 
@@ -101,11 +103,11 @@ exports.read = function(req, res) {
 };
 
 exports.userByUsername = function(req, res, next, username) {
-    User.findone({ username: username })
-    .select('-_id -__v -created')
-    .then((user) => {
-        return res.json(user)
-    }).catch((err) => {
-        return next(err);
-    });
+    User.findone({ username: username }).select('-_id -__v -created')
+        .then((user) => {
+            return res.json(user)
+        })
+        .catch((err) => {
+            return next(err);
+        });
 };
