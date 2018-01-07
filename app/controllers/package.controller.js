@@ -26,17 +26,27 @@ var th_date_format = function(start_travel_date, travel_duration) {
 };
 
 exports.create = function(req, res, next) {
+    var errors = {};
+    var package = new Package(req.body);
     Counter.findOneAndUpdate({ active: 1 }, { $inc: { package_id: 1 }}, true)
         .then((counter) => {
-            var package = new Package(req.body);
             req.body['package_id'] = counter['package_id'];
             package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
             package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
             package['timeline'] = req.body['timeline'];
-            return package.save()
+            return package.validate();
         })
-        .then((package) => {
-            return res.json(package);
+        .catch((err) => {
+            console.log('package fail validate');
+            Object.assign(errors, err['errors']);
+        })
+        .then(() => {
+            if(Object.keys(errors).length === 0) {
+                package.save();
+                return res.json(package);
+            } else {
+                return res.status(422).json(errors);
+            }
         })
         .catch((err) => {
             return next(err);

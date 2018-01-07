@@ -15,11 +15,11 @@ var CompanySchema = new Schema({
     }
 }, { toJSON: { virtuals: true } });
 
-//CompanySchema.virtual('packages', {
-//    ref: 'Package',
-//    localField: 'company_name',
-//    foreignField: 'company_name',
-//});
+CompanySchema.virtual('packages', {
+    ref: 'Package',
+    localField: 'company_name',
+    foreignField: 'company_name',
+});
 
 CompanySchema.plugin(uniqueValidator);
 mongoose.model('Company', CompanySchema)

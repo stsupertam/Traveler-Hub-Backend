@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 var Schema = mongoose.Schema;
 
 var TimelineSchema = new Schema({
@@ -14,10 +15,12 @@ var TimelineSchema = new Schema({
 var PackageSchema = new Schema({
     package_id: {
         type: Number,
-        unique: true
+        unique: true,
+        required: [true, 'Package_id field is required']
     },
     company_name: {
         type: String,
+        required: [true, 'Company_name field is required'],
         ref: 'Company'
     },
     package_name: String,
@@ -52,5 +55,5 @@ var PackageSchema = new Schema({
     }
 });
 
-
+PackageSchema.plugin(uniqueValidator);
 mongoose.model('Package', PackageSchema)
