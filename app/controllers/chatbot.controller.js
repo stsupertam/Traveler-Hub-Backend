@@ -1,5 +1,5 @@
-var Package = require('mongoose').model('Package');
-var processMessage = require('../messages/processMessage');
+const Package = require('mongoose').model('Package');
+const processMessage = require('../messager/processMessage');
 
 exports.verification = function(req, res, next) {
     const hubChallenge = req.query['hub.challenge'];

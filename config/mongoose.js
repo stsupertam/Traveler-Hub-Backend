@@ -1,5 +1,5 @@
-var config = require('./config');
-var mongoose = require('mongoose');
+const config = require('./config');
+const mongoose = require('mongoose');
 
 module.exports = function() {
     mongoose.set('debug', config.debug);

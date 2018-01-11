@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
-var Package = require('mongoose').model('Package');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Package = require('mongoose').model('Package');
+const Schema = mongoose.Schema;
 
 var CounterSchema = new Schema({
     active: {

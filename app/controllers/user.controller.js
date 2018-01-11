@@ -1,8 +1,8 @@
-var User = require('mongoose').model('User');
-var Customer = require('mongoose').model('Customer');
-var Employee = require('mongoose').model('Employee');
+const User = require('mongoose').model('User');
+const Customer = require('mongoose').model('Customer');
+const Employee = require('mongoose').model('Employee');
 
-var split_userInfo = function(req) {
+function split_userInfo(req) {
     var user = {
         username: req.username,
         email: req.email,
@@ -25,7 +25,7 @@ var split_userInfo = function(req) {
     }
 }
 
-var getType = function(usertype, info_body) {
+function getType(usertype, info_body) {
     if(usertype === 'c') {
         var info = new Customer(info_body);
     } else {

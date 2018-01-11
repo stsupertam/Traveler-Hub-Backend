@@ -1,12 +1,12 @@
 const {
-  queryWit,
-  interactive,
-  firstEntity,
-} = require('../../shared');
-const FACEBOOK_ACCESS_TOKEN = 'EAAJztzEqzBYBAK0ugZAPhbTtj7nTOS5ZBZC0UQ9zdbowYiqyu2Y0FJymZA7gQpLPrEmZAZAjCbfdt7CnLSXAJ1EGQTLrGI9CRVPJ8Ud086u9JgPbSZBS2eH9qdnptnbZAtwmW0UodZAhHpS8qQXI3IhQx9mvZCa8wSGDzTj2rT8OuIlwZDZD';
+    queryWit,
+    interactive,
+    firstEntity,
+  } = require('../../shared');
+const FACEBOOK_ACCESS_TOKEN = require('../../config/chatbot');
 const request = require('request');
 
-function handleMessage(question,senderId) {
+function handleMessage(question, senderId) {
     answer = "";
     return queryWit(question).then(({entities}) => {
         const intent = firstEntity(entities, 'intent');

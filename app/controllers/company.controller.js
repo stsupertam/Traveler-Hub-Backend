@@ -1,4 +1,4 @@
-var Company = require('mongoose').model('Company');
+const Company = require('mongoose').model('Company');
 
 exports.create = function(req, res, next) {
     var errors = {};

@@ -1,7 +1,7 @@
-var moment = require('moment');
-var numeral = require('numeral');
-var Package = require('mongoose').model('Package');
-var Counter = require('mongoose').model('Counter');
+const moment = require('moment');
+const numeral = require('numeral');
+const Package = require('mongoose').model('Package');
+const Counter = require('mongoose').model('Counter');
 
 
 var th_month = [
