@@ -1,47 +1,35 @@
-const request = require('request');
+const handleResponse = require('./handleResponse');
 const StateMachine = require('javascript-state-machine');
-const {FACEBOOK_ACCESS_TOKEN} = require('../../config/chatbot');
 
 var fsm = new StateMachine({
-    init: 'solid',
+    init: 'greet',
     transitions: [
-        { name: 'melt',     from: 'solid',  to: 'liquid' },
-        { name: 'freeze',   from: 'liquid', to: 'solid'  },
-        { name: 'vaporize', from: 'liquid', to: 'gas'    },
-        { name: 'condense', from: 'gas',    to: 'liquid' }
+        { name: 'to_choice',   from: 'greet',                                                 to: 'choice'   },
+        { name: 'to_search',   from: 'choice',                                                to: 'search'   },
+        { name: 'to_latest',   from: 'choice',                                                to: 'latest'   },
+        { name: 'to_popular',  from: 'choice',                                                to: 'popular'  },
+        { name: 'to_question', from: 'choice',                                                to: 'question' },
+        { name: 'to_finish',   from: [ 'choice', 'search', 'latest', 'popular', 'question' ], to: 'end'      },
     ],
     methods: {
-        onMelt:     function() { console.log('I melted')    },
-        onFreeze:   function() { console.log('I froze')     },
-        onVaporize: function() { console.log('I vaporized') },
-        onCondense: function() { console.log('I condensed') }
+        onToChoice:   function(message, senderId) { handleResponse.greet(message, senderId) },
+        onToSearch:   function() { console.log('Search');   },
+        onToLatest:   function() { console.log('Latest');   },
+        onToPopular:  function() { console.log('Popular');  },
+        onToQuestion: function() { console.log('Question'); },
+        onToFinish:   function() { console.log('Finish');   }
     }
 });
 
 module.exports = (event) => {
     var senderId = event.sender.id;
     var message = event.message.text;
+    console.log(senderId)
 
-    if(message === 'state') {
+    if(message == 'state') {
         console.log(fsm.state);
-    } else if(message === 'melt' && fsm.state === 'solid') {
-        fsm.melt();
-    } else if(message === 'freeze' && fsm.state === 'liquid') {
-        fsm.freeze();
-    } else if(message === 'vaporize' && fsm.state === 'liquid') {
-        fsm.vaporize();
-    } else if(message === 'condense' && fsm.state === 'gas') {
-        fsm.condense();
     }
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: { access_token: FACEBOOK_ACCESS_TOKEN },
-        method: 'POST',
-        json: {
-            recipient: { id: senderId },
-            message: {
-                text: message
-            }
-        }
-    });
+    else if(fsm.state === 'greet') {
+        fsm.onToChoice(message, senderId);
+    }
 };
