@@ -15,7 +15,7 @@ exports.verification = function(req, res, next) {
 exports.messageHook = function(req, res, next) {
     if (req.body.object === 'page') {
         req.body.entry.forEach(entry => {
-            entry.messaging.forEach(event => {
+            entry.messaging.forEach((event) => {
                 if (event.message && event.message.text) {
                     processMessage(event);
                 }

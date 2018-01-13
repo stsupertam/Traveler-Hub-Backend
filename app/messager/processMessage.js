@@ -14,23 +14,35 @@ var fsm = new StateMachine({
     ],
     methods: {
         onToChoice:   function(lifecycle, message, senderId) { return handleResponse.choice(message, senderId)   },
-        onToSearch:   function(lifecycle, message, senderId) { return handleResponse.search(message, senderId)   },
-        onToLatest:   function(lifecycle, message, senderId) { return handleResponse.latest(message, senderId)   },
-        onToPopular:  function(lifecycle, message, senderId) { return handleResponse.popular(message, senderId)  },
+        onToSearch:   function(lifecycle, message, senderId) { return handleResponse.database(message, senderId) },
+        onToLatest:   function(lifecycle, message, senderId) { return handleResponse.database(message, senderId) },
+        onToPopular:  function(lifecycle, message, senderId) { return handleResponse.database(message, senderId) },
         onToQuestion: function(lifecycle, message, senderId) { return handleResponse.question(message, senderId) },
-        onToFinish:   function(lifecycle, message, senderId) { return handleResponse.finish(message, senderId)   },
+        onToFinish:   function(lifecycle, message, senderId) { return handleResponse.choice(message, senderId)   },
     }
 });
 
-module.exports = (event) => {
+module.exports = (event, payload) => {
     var senderId = event.sender.id;
     var message = event.message.text;
+    var state = fsm.state;
+    console.log(payload)
 
-    if(message == 'state') {
-        console.log(fsm.state);
-    } else if(message === 'reset') {
-        fsm.reset();
-    } else if(fsm.state === 'greet') {
-        fsm.toChoice(message, senderId);
+
+    if(message === 'reset') { fsm.reset(); }
+    if(message === 'state') { console.log(state); }
+
+    if(state === 'greet') { 
+        fsm.toChoice(message, senderId, 'start'); 
+    } else if(state === 'choice') {
+        if(message === 'ค้นหาตามชื่อแพ็กเกจ') {
+            fsm.toSearch(message, senderId, 'search')
+        } else if(message === 'แพ็กเกจยอดนิยม') { 
+            fsm.topopular(message, senderId, 'popular')
+        } else if(message === 'แพ็กเกจล่าสุด') { 
+            fsm.toLatest(message, senderId, 'latest')
+        } else if(message === 'แนะนำตามใจคุณ') { 
+            fsm.toQuestion(message, senderId, 'question')
+        }
     }
 };

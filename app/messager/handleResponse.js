@@ -16,8 +16,8 @@ function facebook_request(message, senderId) {
     return req;
 }
 
-exports.choice = function(message, senderId) {
+exports.choice = function(message, senderId, responseType = 'None') {
     console.log(`Message : ${message}`);
     console.log(`SenderID : ${senderId}`);
-    return request(facebook_request(choice.select('start'), senderId)).catch((err) => { console.log(err) });
+    return request(facebook_request(choice.select(responseType), senderId)).catch((err) => { console.log(err) });
 };

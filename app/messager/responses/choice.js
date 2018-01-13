@@ -25,7 +25,7 @@ exports.select = function(choice) {
           },
           {
             content_type: 'text',
-            title: 'แนะนำตามรายละเอียดแพ็กเกจที่ระบุ',
+            title: 'แนะนำตามใจคุณ',
             payload: 'question'
           }
         ]
