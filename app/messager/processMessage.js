@@ -10,26 +10,28 @@ var fsm = new StateMachine({
         { name: 'to_popular',  from: 'choice',                                                to: 'popular'  },
         { name: 'to_question', from: 'choice',                                                to: 'question' },
         { name: 'to_finish',   from: [ 'choice', 'search', 'latest', 'popular', 'question' ], to: 'end'      },
+        { name: 'reset',       from: [ 'choice', 'search', 'latest', 'popular', 'question' ], to: 'greet'    },
     ],
     methods: {
-        onToChoice:   function(message, senderId) { handleResponse.greet(message, senderId) },
-        onToSearch:   function() { console.log('Search');   },
-        onToLatest:   function() { console.log('Latest');   },
-        onToPopular:  function() { console.log('Popular');  },
-        onToQuestion: function() { console.log('Question'); },
-        onToFinish:   function() { console.log('Finish');   }
+        onLeaveGreet: function(lifecycle, message, senderId) { return handleResponse.greet(message, senderId)  },
+        onToChoice:   function(lifecycle, message, senderId) { return handleResponse.choice(message, senderId) },
+        onToSearch:   function()                             { console.log('Search');                          },
+        onToLatest:   function()                             { console.log('Latest');                          },
+        onToPopular:  function()                             { console.log('Popular');                         },
+        onToQuestion: function()                             { console.log('Question');                        },
+        onToFinish:   function()                             { console.log('Finish');                          }
     }
 });
 
 module.exports = (event) => {
     var senderId = event.sender.id;
     var message = event.message.text;
-    console.log(senderId)
 
     if(message == 'state') {
         console.log(fsm.state);
-    }
-    else if(fsm.state === 'greet') {
-        fsm.onToChoice(message, senderId);
+    } else if(message === 'reset') {
+        fsm.reset();
+    } else if(fsm.state === 'greet') {
+        fsm.toChoice(message, senderId);
     }
 };
