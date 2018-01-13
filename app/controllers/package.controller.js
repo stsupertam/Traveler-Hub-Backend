@@ -116,6 +116,13 @@ exports.popular = function(req, res, next) {
         });
 };
 
-exports.search = function(req, res, next, id) {
-
+exports.search = function(req, res, next) {
+    console.log(req.query['name'])
+    Package.find({ $text: { $search: req.query['name'] }})
+        .then((package) => {
+            return res.json(package)
+        })
+        .catch((err) => {
+            return next(err);
+        });
 }

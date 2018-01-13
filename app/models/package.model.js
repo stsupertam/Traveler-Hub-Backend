@@ -56,4 +56,5 @@ var PackageSchema = new Schema({
 });
 
 PackageSchema.plugin(uniqueValidator);
+PackageSchema.index({ package_name: 'text' });
 mongoose.model('Package', PackageSchema)
