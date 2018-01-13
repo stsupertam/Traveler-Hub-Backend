@@ -3,7 +3,6 @@ const numeral = require('numeral');
 const Package = require('mongoose').model('Package');
 const Counter = require('mongoose').model('Counter');
 
-
 var th_month = [
     'ม.ค.', 'ก.พ.', 'มี.ค.', 
     'เม.ย', 'พ.ค.', 'มิ.ย.', 
@@ -80,7 +79,7 @@ exports.update = function(req, res, next) {
         })
         .catch((err) => {
             return next(err);
-        })
+        });
 };
 
 exports.read = function(req, res) {
@@ -96,3 +95,27 @@ exports.packageById = function(req, res, next, id) {
             return next(err);
         });
 };
+
+exports.latest = function(req, res, next) {
+    Package.find({}).sort('-created').limit(5).select('_id -__v -created')
+        .then((package) => {
+            return res.json(package)
+        })
+        .catch((err) => {
+            return next(err);
+        });
+};
+
+exports.popular = function(req, res, next) {
+    Package.find({}).sort('-number_of_views').limit(5).select('_id -__v -created')
+        .then((package) => {
+            return res.json(package)
+        })
+        .catch((err) => {
+            return next(err);
+        });
+};
+
+exports.search = function(req, res, next, id) {
+
+}
