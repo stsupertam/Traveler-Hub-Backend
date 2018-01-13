@@ -13,13 +13,12 @@ var fsm = new StateMachine({
         { name: 'reset',       from: [ 'choice', 'search', 'latest', 'popular', 'question' ], to: 'greet'    },
     ],
     methods: {
-        onLeaveGreet: function(lifecycle, message, senderId) { return handleResponse.greet(message, senderId)  },
-        onToChoice:   function(lifecycle, message, senderId) { return handleResponse.choice(message, senderId) },
-        onToSearch:   function()                             { console.log('Search');                          },
-        onToLatest:   function()                             { console.log('Latest');                          },
-        onToPopular:  function()                             { console.log('Popular');                         },
-        onToQuestion: function()                             { console.log('Question');                        },
-        onToFinish:   function()                             { console.log('Finish');                          }
+        onToChoice:   function(lifecycle, message, senderId) { return handleResponse.choice(message, senderId)   },
+        onToSearch:   function(lifecycle, message, senderId) { return handleResponse.search(message, senderId)   },
+        onToLatest:   function(lifecycle, message, senderId) { return handleResponse.latest(message, senderId)   },
+        onToPopular:  function(lifecycle, message, senderId) { return handleResponse.popular(message, senderId)  },
+        onToQuestion: function(lifecycle, message, senderId) { return handleResponse.question(message, senderId) },
+        onToFinish:   function(lifecycle, message, senderId) { return handleResponse.finish(message, senderId)   },
     }
 });
 

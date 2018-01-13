@@ -1,4 +1,6 @@
 const request = require('request-promise-native');
+const choice = require('./responses/choice');
+const query = require('./responses/database');
 const {FACEBOOK_ACCESS_TOKEN} = require('../../config/chatbot');
 
 function facebook_request(message, senderId) {
@@ -8,22 +10,14 @@ function facebook_request(message, senderId) {
         method: 'POST',
         json: {
             recipient: { id: senderId },
-            message: {
-                text: message 
-            }
+            message: message
         }
     }
     return req;
 }
 
-exports.greet = function(message, senderId) {
-    console.log(`Message : ${message}`);
-    console.log(`SenderID : ${senderId}`);
-    return request(facebook_request('greet', senderId)).catch((err) => { console.log(err) });
-};
-
 exports.choice = function(message, senderId) {
     console.log(`Message : ${message}`);
     console.log(`SenderID : ${senderId}`);
-    return request(facebook_request('choice', senderId)).catch((err) => { console.log(err) });
+    return request(facebook_request(choice.select('start'), senderId)).catch((err) => { console.log(err) });
 };
