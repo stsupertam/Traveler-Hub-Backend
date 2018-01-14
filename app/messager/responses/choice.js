@@ -32,19 +32,40 @@ exports.select = function(choice) {
         payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี';
     } else if(choice == 'end'){
         payload = {
-        text: 'อยากสอบถามเพิ่มเติมอีกไหม',
-        quick_replies:[
-          {
-            content_type: 'text',
-            title: 'ค้นหาเพิ่มเติม',
-            payload: 'search',
-          },
-          {
-            content_type: 'text',
-            title: 'หยุดการค้นหา',
-            payload: 'popular',
-          },
-        ]
+          text: 'อยากสอบถามเพิ่มเติมอีกไหม',
+          quick_replies:[
+            {
+              content_type: 'text',
+              title: 'ค้นหาเพิ่มเติม',
+              payload: 'search',
+            },
+            {
+              content_type: 'text',
+              title: 'หยุดการค้นหา',
+              payload: 'stop',
+            },
+          ]
+        }
+    } else if(choice == 'search'){
+        payload = {
+          text: 'อยากสอบถามเพิ่มเติมอีกไหม',
+          quick_replies:[
+            {
+              content_type: 'text',
+              title: 'ค้นหาเพิ่มเติม',
+              payload: 'search',
+            },
+            {
+              content_type: 'text',
+              title: 'สอบถามอย่างอื่น',
+              payload: 'another',
+            },
+            {
+              content_type: 'text',
+              title: 'หยุดการค้นหา',
+              payload: 'stop',
+            },
+          ]
         }
     }
 

@@ -47,6 +47,9 @@ exports.popular = function() {
 exports.search = function(query) {
     return Package.find({ $text: { $search: query }}).sort('-number_of_views').limit(5).select('-_id -__v -created')
             .then((packages) => {
+                if(packages.length === 0) {
+                    return {text: 'หาแพ็กเกจที่ต้องการไม่เจอ'}
+                }
                 return getItem(packages);
             });
 }

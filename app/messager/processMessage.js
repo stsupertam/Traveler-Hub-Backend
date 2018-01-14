@@ -8,9 +8,10 @@ var fsm = new StateMachine({
         { name: 'to_latest',   from: 'choice',             to: 'latest'   },
         { name: 'to_popular',  from: 'choice',             to: 'popular'  },
         { name: 'to_question', from: 'choice',             to: 'question' },
-        { name: 'to_search',   from: ['choice', 'search'], to: 'search'   },
+        { name: 'to_search',   from: ['choice', 'query'],  to: 'search'   },
+        { name: 'to_query',    from: ['search', 'query'],  to: 'query'    },
         { name: 'to_choice',   
-          from: [ 'greet', 'search', 'latest', 'popular', 'question' ], 
+          from: [ 'greet', 'search', 'query', 'latest', 'popular', 'question' ], 
           to: 'choice'   
         },
     ],
@@ -20,6 +21,9 @@ var fsm = new StateMachine({
         },
         onToSearch: function(lifecycle, message, senderId, responseType) { 
             return handleResponse.search(message, senderId, responseType);
+        },
+        onToQuery: function(lifecycle, message, senderId, responseType) { 
+            return handleResponse.query(message, senderId, responseType);
         },
         onToLatest: function(lifecycle, message, senderId, responseType) { 
             return handleResponse.latest(message, senderId, responseType);
@@ -59,7 +63,18 @@ module.exports = (event) => {
             } else if(message === 'แนะนำตามใจคุณ') { 
                 fsm.toQuestion(message, senderId, 'question')
             }
-        } 
+        } else if(state === 'search') {
+            fsm.toQuery(message, senderId, 'search')
+        } else if(state === 'query') {
+            if(message === 'หยุดการค้นหา') {
+                fsm.reset();
+            } else if(message === 'สอบถามอย่างอื่น') {
+                fsm.toChoice(message, senderId, 'ls');
+            } else if(message !== 'ค้นหาเพิ่มเติม') {
+                fsm.reset();
+            }
+
+        }
             //if(message === 'ค้นหาเพิ่มเติม') {
             //    fsm.toSearch(message, senderId, 'search');
             //} else if(message === 'สอบถามอย่างอื่น') {
