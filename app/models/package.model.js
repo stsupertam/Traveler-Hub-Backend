@@ -25,6 +25,7 @@ var PackageSchema = new Schema({
     },
     package_name: String,
     location: String,
+    logo: String,
     province: String,
     detail: String,
     price: Number,

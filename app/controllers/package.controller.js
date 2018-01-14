@@ -97,7 +97,7 @@ exports.packageById = function(req, res, next, id) {
 };
 
 exports.latest = function(req, res, next) {
-    Package.find({}).sort('-created').limit(5).select('_id -__v -created')
+    Package.find({}).sort('-created').limit(5).select('-_id -__v -created')
         .then((package) => {
             return res.json(package)
         })
@@ -107,7 +107,7 @@ exports.latest = function(req, res, next) {
 };
 
 exports.popular = function(req, res, next) {
-    Package.find({}).sort('-number_of_views').limit(5).select('_id -__v -created')
+    Package.find({}).sort('-number_of_views').limit(5).select('-_id -__v -created')
         .then((package) => {
             return res.json(package)
         })
