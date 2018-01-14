@@ -71,7 +71,7 @@ module.exports = (event) => {
             } else if(message === 'สอบถามอย่างอื่น') {
                 fsm.toChoice(message, senderId, 'ls');
             } else if(message !== 'ค้นหาเพิ่มเติม') {
-                fsm.reset();
+                fsm.toQuery(message, senderId, 'search')
             }
 
         }
