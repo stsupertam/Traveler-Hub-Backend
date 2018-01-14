@@ -17,7 +17,28 @@ function facebook_request(message, senderId) {
 }
 
 exports.choice = function(message, senderId, responseType = 'None') {
+    console.log(`ResponseType : ${responseType}`);
     console.log(`Message : ${message}`);
     console.log(`SenderID : ${senderId}`);
-    return request(facebook_request(choice.select(responseType), senderId)).catch((err) => { console.log(err) });
+    return request(facebook_request(choice.select(responseType), senderId))
+            .catch((err) => {console.log(err['error'])});
 };
+
+exports.database = function(message, senderId, responseType = 'None') {
+    console.log(`ResponseType : ${responseType}`);
+    console.log(`Message : ${message}`);
+    console.log(`SenderID : ${senderId}`);
+    var message = {
+        text: responseType 
+    }
+
+    return request(facebook_request(message, senderId))
+            .catch((err) => {console.log(err['error'])});
+};
+
+//exports.question = function(message, senderId, responseType = 'None') {
+//    console.log(`ResponseType : ${responseType}`);
+//    console.log(`Message : ${message}`);
+//    console.log(`SenderID : ${senderId}`);
+//    return request(facebook_request('ลองถาม เช่น อยากไปเที่ยวที่ เชียงใหม่ ช่วงวันที่ 1 - 10 ม.ค.', senderId)).catch((err) => { console.log(err) });
+//};
