@@ -13,7 +13,6 @@ exports.verification = function(req, res, next) {
 };
 
 exports.messageHook = function(req, res, next) {
-    console.log('Hello eiei ')
     if (req.body.object === 'page') {
         req.body.entry.forEach(entry => {
             entry.messaging.forEach((event) => {

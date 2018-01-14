@@ -24,18 +24,34 @@ exports.choice = function(message, senderId, responseType = 'None') {
             .catch((err) => {console.log(err['error'])});
 };
 
-exports.database = function(message, senderId, responseType = 'None') {
+exports.search = function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`);
     console.log(`Message : ${message}`);
     console.log(`SenderID : ${senderId}`);
-    var message = {
-        text: responseType 
-    }
-
-    return request(facebook_request(message, senderId))
+    return query.search(message)
+            .then((message) => { return request(facebook_request(message, senderId)) })
             .catch((err) => {console.log(err['error'])});
 };
 
+exports.latest = function(message, senderId, responseType = 'None') {
+    console.log(`ResponseType : ${responseType}`);
+    console.log(`Message : ${message}`);
+    console.log(`SenderID : ${senderId}`);
+    return query.latest()
+            .then((message) => { return request(facebook_request(message, senderId)) })
+            .then(() => { return request(facebook_request(choice.select('end'), senderId)) })
+            .catch((err) => {console.log(err['error'])});
+};
+
+exports.popular = function(message, senderId, responseType = 'None') {
+    console.log(`ResponseType : ${responseType}`);
+    console.log(`Message : ${message}`);
+    console.log(`SenderID : ${senderId}`);
+    return query.popular()
+            .then((message) => { return request(facebook_request(message, senderId)) })
+            .then(() => { return request(facebook_request(choice.select('end'), senderId)) })
+            .catch((err) => {console.log(err['error'])});
+};
 //exports.question = function(message, senderId, responseType = 'None') {
 //    console.log(`ResponseType : ${responseType}`);
 //    console.log(`Message : ${message}`);

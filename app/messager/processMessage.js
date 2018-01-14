@@ -19,19 +19,16 @@ var fsm = new StateMachine({
             return handleResponse.choice(message, senderId, responseType);
         },
         onToSearch: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.database(message, senderId, responseType);
+            return handleResponse.search(message, senderId, responseType);
         },
         onToLatest: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.database(message, senderId, responseType);
+            return handleResponse.latest(message, senderId, responseType);
         },
         onToPopular: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.database(message, senderId, responseType);
+            return handleResponse.popular(message, senderId, responseType);
         },
         onToQuestion: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.database(message, senderId, responseType);
-        },
-        onToFinish: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.database(message, senderId, responseType);
+            return handleResponse.question(message, senderId, responseType);
         },
     }
 });
@@ -46,26 +43,29 @@ module.exports = (event) => {
     else {
         if(state === 'greet') { 
             fsm.toChoice(message, senderId, 'start'); 
-        } 
-        else if(state === 'choice') {
-           if(message === 'ค้นหาตามชื่อแพ็กเกจ') {
-               fsm.toSearch(message, senderId, 'search')
-           } else if(message === 'แพ็กเกจยอดนิยม') { 
-               fsm.toPopular(message, senderId, 'popular')
-           } else if(message === 'แพ็กเกจล่าสุด') { 
-               fsm.toLatest(message, senderId, 'latest')
-           } else if(message === 'แนะนำตามใจคุณ') { 
-               fsm.toQuestion(message, senderId, 'question')
-           }
-        } 
-        else {
+        } else if(state === 'latest' || state === 'popular') {
             if(message === 'ค้นหาเพิ่มเติม') {
-                fsm.toSearch(message, senderId, 'search');
-            } else if(message === 'สอบถามอย่างอื่น') {
-                fsm.toChoice(message, senderId, 'finish');
+                fsm.toChoice(message, senderId, 'ls'); 
             } else {
                 fsm.reset();
             }
+        } else if(state === 'choice') {
+            if(message === 'ค้นหาตามชื่อแพ็กเกจ') {
+                fsm.toSearch(message, senderId, 'search')
+            } else if(message === 'แพ็กเกจยอดนิยม') { 
+                fsm.toPopular(message, senderId, 'popular')
+            } else if(message === 'แพ็กเกจล่าสุด') { 
+                fsm.toLatest(message, senderId, 'latest')
+            } else if(message === 'แนะนำตามใจคุณ') { 
+                fsm.toQuestion(message, senderId, 'question')
+            }
         } 
+            //if(message === 'ค้นหาเพิ่มเติม') {
+            //    fsm.toSearch(message, senderId, 'search');
+            //} else if(message === 'สอบถามอย่างอื่น') {
+            //    fsm.toChoice(message, senderId, 'finish');
+            //} else if(message === 'ไม่' || message === 'ขอบคุณ'){
+            //    fsm.reset();
+            //}
     }
 };
