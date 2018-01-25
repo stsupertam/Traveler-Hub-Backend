@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 
 var TimelineSchema = new Schema({
     day: Number,
+    detail: String,
     description: [
         {
             time: String,
