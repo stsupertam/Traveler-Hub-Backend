@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/stsupertam/Traveler-Hub-Backend#readme",
   "dependencies": {
+    "bcrypt": "^1.0.3",
+    "bcrypt-promise": "^2.0.0",
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",
     "cors": "^2.8.4",

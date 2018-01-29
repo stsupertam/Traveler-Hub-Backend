@@ -57,7 +57,7 @@ exports.create = function(req, res, next) {
             if(Object.keys(errors).length === 0) {
                 user.save();
                 info.save();
-                return res.json(req.body);
+                return res.json({message: 'Register Successfully'});
             } else {
                 return res.status(422).json(errors);
             }
