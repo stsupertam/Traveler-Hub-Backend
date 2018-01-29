@@ -1,8 +1,8 @@
-var bcrypt = require('bcrypt-promise');
-var mongoose = require('mongoose');
-var uniqueValidator = require('mongoose-unique-validator');
-var Schema = mongoose.Schema;
-var SALT_WORK_FACTOR = 10;
+const bcrypt = require('bcrypt-promise');
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
+const Schema = mongoose.Schema;
+const SALT_WORK_FACTOR = 10;
 
 var UserSchema = new Schema({
     username: {

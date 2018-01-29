@@ -1,6 +1,8 @@
 const User = require('mongoose').model('User');
 const Customer = require('mongoose').model('Customer');
 const Employee = require('mongoose').model('Employee');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
 
 function split_userInfo(req) {
     var user = {
@@ -103,11 +105,30 @@ exports.read = function(req, res) {
 };
 
 exports.userByUsername = function(req, res, next, username) {
-    User.findone({ username: username }).select('-_id -__v -created')
+    User.findOne({ username: username }).select('-_id -__v -created')
         .then((user) => {
             return res.json(user)
         })
         .catch((err) => {
             return next(err);
         });
+};
+
+exports.login = function(req, res, next) {
+    passport.authenticate('local', {session: false}, (err, user, info) => {
+        if (err || !user) {
+            return res.status(400).json({
+                message: 'Something is not right',
+                user   : user
+            });
+        }
+        req.login(user, {session: false}, (err) => {
+            if (err) {
+                res.send(err);
+            }
+            // generate a signed json web token with the contents of user object and return it in the response
+            const token = jwt.sign(user, 'your_jwt_secret');
+            return res.json({user, token});
+        });
+    })(req, res, next);
 };

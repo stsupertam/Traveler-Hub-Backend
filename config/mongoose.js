@@ -18,7 +18,6 @@ module.exports = function() {
     Counter.count({})
     .then((count) => {
         if (count === 0) {
-            console.log('Hello');
             var counter = new Counter();
             counter.save();
         }
