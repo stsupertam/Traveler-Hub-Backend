@@ -12,8 +12,7 @@ module.exports = function() {
             secretOrKey   : 'your_jwt_secret'
         },
         function (jwtPayload, done) {
-            //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-            return UserModel.findOneById(jwtPayload.id)
+            return User.findOne({ username: jwtPayload.username})
                 .then(user => {
                     return done(null, user);
                 })

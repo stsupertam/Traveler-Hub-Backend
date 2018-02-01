@@ -8,7 +8,7 @@ module.exports = function(app) {
         .post(user.create)
         .get(user.list);
     app.route('/user/:username')
-        .get(user.read, passport.authenticate('jwt', {session: false}))
+        .get(passport.authenticate('jwt', {session: false}), user.read)
         .put(user.update)
         .delete(user.delete);
     app.param('username', user.userByUsername);

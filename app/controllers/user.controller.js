@@ -107,7 +107,8 @@ exports.read = function(req, res) {
 exports.userByUsername = function(req, res, next, username) {
     User.findOne({ username: username }).select('-_id -__v -created')
         .then((user) => {
-            return res.json(user)
+            req.user = user;
+            next()
         })
         .catch((err) => {
             return next(err);
@@ -131,4 +132,9 @@ exports.login = function(req, res, next) {
             return res.json({user, token});
         });
     })(req, res, next);
+};
+
+exports.eiei = function(req, res, next) {
+    console.log('eieil');
+    next();
 };
