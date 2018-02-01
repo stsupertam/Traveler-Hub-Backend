@@ -13,10 +13,10 @@ module.exports = function() {
         },
         function (jwtPayload, done) {
             return User.findOne({ username: jwtPayload.username})
-                .then(user => {
+                .then((user) => {
                     return done(null, user);
                 })
-                .catch(err => {
+                .catch((err) => {
                     return done(err);
                 });
         }

@@ -119,7 +119,7 @@ exports.login = function(req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: 'Something is not right',
+                message: info,
                 user   : user
             });
         }
@@ -132,9 +132,4 @@ exports.login = function(req, res, next) {
             return res.json({user, token});
         });
     })(req, res, next);
-};
-
-exports.eiei = function(req, res, next) {
-    console.log('eieil');
-    next();
 };
