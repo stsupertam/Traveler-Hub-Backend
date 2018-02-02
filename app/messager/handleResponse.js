@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const choice = require('./responses/choice');
 const query = require('./responses/database');
-const {FACEBOOK_ACCESS_TOKEN} = require('../../config/chatbot');
+const { FACEBOOK_ACCESS_TOKEN } = require('../../config/chatbot');
 
 function facebook_request(message, senderId) {
     req = {

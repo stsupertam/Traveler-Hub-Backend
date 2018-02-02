@@ -2,8 +2,6 @@ const passport = require('passport');
 
 module.exports = function(app) {
     var user = require('../controllers/user.controller');
-    app.route('/login')
-        .post(user.login);
     app.route('/user')
         .post(user.create)
         .get(user.list);

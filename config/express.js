@@ -19,10 +19,10 @@ module.exports = function() {
     app.use(passport.session());
     app.use(bodyParser.json());
     app.use(cors());
-    require('../app/routes/index.routes')(app);
-    require('../app/routes/user.routes')(app);
-    require('../app/routes/package.routes')(app);
-    require('../app/routes/company.routes')(app);
-    require('../app/routes/chatbot.routes')(app);
+    require('../app/routes/user.route')(app);
+    require('../app/routes/package.route')(app);
+    require('../app/routes/company.route')(app);
+    require('../app/routes/chatbot.route')(app);
+    require('../app/routes/auth.route')(app);
     return app;
 }

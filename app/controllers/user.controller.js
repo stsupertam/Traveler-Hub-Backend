@@ -1,8 +1,6 @@
 const User = require('mongoose').model('User');
 const Customer = require('mongoose').model('Customer');
 const Employee = require('mongoose').model('Employee');
-const jwt = require('jsonwebtoken');
-const passport = require('passport');
 
 function split_userInfo(req) {
     var user = {
@@ -59,7 +57,8 @@ exports.create = function(req, res, next) {
             if(Object.keys(errors).length === 0) {
                 user.save();
                 info.save();
-                return res.json({message: 'Register Successfully'});
+                const token = jwt.sign(user, JWT_SECRET);
+                return res.json({message: 'Register Successfully', token: token});
             } else {
                 return res.status(422).json(errors);
             }
@@ -90,12 +89,12 @@ exports.delete = function(req, res, next) {
 };
 
 exports.update = function(req, res, next) {
-    User.findOneAndUpdate({ username: req.package.username }, req.body)
+    User.findOneAndUpdate({ username: req.user.username }, req.body, { runValidators: true })
         .then((user) => {
             return res.json(user);
         })
         .catch((err) => {
-            return next(err);
+            return res.json(err)
         })
 };
 
@@ -113,23 +112,4 @@ exports.userByUsername = function(req, res, next, username) {
         .catch((err) => {
             return next(err);
         });
-};
-
-exports.login = function(req, res, next) {
-    passport.authenticate('local', {session: false}, (err, user, info) => {
-        if (err || !user) {
-            return res.status(400).json({
-                message: info,
-                user   : user
-            });
-        }
-        req.login(user, {session: false}, (err) => {
-            if (err) {
-                res.send(err);
-            }
-            // generate a signed json web token with the contents of user object and return it in the response
-            const token = jwt.sign(user, 'your_jwt_secret');
-            return res.json({user, token});
-        });
-    })(req, res, next);
 };
