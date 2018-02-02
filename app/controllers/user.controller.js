@@ -1,6 +1,8 @@
 const User = require('mongoose').model('User');
 const Customer = require('mongoose').model('Customer');
 const Employee = require('mongoose').model('Employee');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../../config/config')
 
 function split_userInfo(req) {
     var user = {
