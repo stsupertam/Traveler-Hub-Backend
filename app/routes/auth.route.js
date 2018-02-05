@@ -2,8 +2,8 @@ const passport = require('passport');
 
 module.exports = function(app) {
     var auth = require('../controllers/auth.controller');
-    app.route('/auth/login')
+    app.route('/login')
         .post(auth.login);
-    app.route('/auth/user')
-        .get(auth.getUser);
+    app.route('/auth')
+        .get(auth.verifySignature);
 };

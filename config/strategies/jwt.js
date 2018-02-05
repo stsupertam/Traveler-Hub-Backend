@@ -13,7 +13,7 @@ module.exports = function() {
             secretOrKey   : JWT_SECRET 
         },
         function (jwtPayload, done) {
-            return User.findOne({ username: jwtPayload.username})
+            return User.findOne({ email: jwtPayload.email }).select('-password')
                 .then((user) => {
                     return done(null, user);
                 })

@@ -5,11 +5,6 @@ const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
 var UserSchema = new Schema({
-    username: {
-        type: String, 
-        unique: true, 
-        required: [true, 'Username field is required']
-    },
     email: {
         type: String, 
         unique: true, 
@@ -20,10 +15,13 @@ var UserSchema = new Schema({
         type: String,
         required: [true, 'Password field is required']
     },
-    usertype: {
-        type: String,
-        required: [true, 'Usertype field is required']
-    },
+    usertype: String,
+    firstname: String,
+    lastname: String,
+    age: Number,
+    gender: String,
+    country: String,
+    province: String,
     created: {
         type: Date,
         default: Date.now
@@ -51,18 +49,6 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
             return cb(err);
         })
 };
-
-UserSchema.virtual('customers', {
-    ref: 'Customer',
-    localField: 'username',
-    foreignField: 'username',
-});
-
-UserSchema.virtual('employees', {
-    ref: 'Employee',
-    localField: 'username',
-    foreignField: 'username',
-});
 
 UserSchema.plugin(uniqueValidator);
 mongoose.model('User', UserSchema)

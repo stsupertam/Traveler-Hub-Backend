@@ -6,17 +6,19 @@ const LocalStrategy = require('passport-local').Strategy;
 module.exports = function() {
     var User = mongoose.model('User')
     passport.use(new LocalStrategy({
-            usernameField: 'username',
+            usernameField: 'email',
             passwordField: 'password'
         }, 
-        function (username, password, done) {
-            return User.findOne({ username })
+        function (email, password, done) {
+            return User.findOne({ email: email })
                 .then((user) => {
                     if (!user || !bcrypt.compareSync(password, user.password)) {
-                        return done(null, false, {message: 'Incorrect username or password.'});
+                        return done(null, false, { message: 'Incorrect email or password.' });
                     }
-                    return done(null, user.toJSON(), {message: 'Logged In Successfully'});
-                }).catch(err => done(err));
+                    user = user.toJSON();
+                    delete user['password']
+                    return done(null, user, { message: 'Logged In Successfully' });
+                }).catch((err) => done(err));
         }
     ));
 }

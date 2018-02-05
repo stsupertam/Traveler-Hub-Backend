@@ -8,8 +8,6 @@ module.exports = function() {
 
     require('../app/models/user.model');
     require('../app/models/package.model');
-    require('../app/models/customer.model');
-    require('../app/models/employee.model');
     require('../app/models/company.model');
     require('../app/models/counter.model');
 
