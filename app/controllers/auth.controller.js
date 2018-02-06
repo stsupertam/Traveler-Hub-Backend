@@ -4,7 +4,6 @@ const { JWT_SECRET } = require('../../config/config')
 
 exports.login = function(req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
-        console.log(req['body'])
         if (err || !user) {
             return res.status(400).json({
                 message: info,
@@ -18,6 +17,20 @@ exports.login = function(req, res, next) {
             const token = jwt.sign(user, JWT_SECRET);
             return res.json({ user, token });
         });
+    })(req, res, next);
+};
+
+exports.facebook = function(req, res, next) {
+    passport.authenticate('facebook', {session: false}, (err, user, info) => {
+        console.log(err)
+        if (err || !user) {
+            return res.status(400).json({
+                message: info,
+                user   : user
+            });
+        }
+        var token = user['token'];
+        return res.json({ user, token })
     })(req, res, next);
 };
 

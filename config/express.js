@@ -15,6 +15,7 @@ module.exports = function() {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
+    app.set('view engine','ejs'); 
     app.use(passport.initialize())
     app.use(passport.session());
     app.use(bodyParser.json());
@@ -24,5 +25,6 @@ module.exports = function() {
     require('../app/routes/company.route')(app);
     require('../app/routes/chatbot.route')(app);
     require('../app/routes/auth.route')(app);
+    require('../app/routes/index.route')(app);
     return app;
 }

@@ -15,6 +15,8 @@ var UserSchema = new Schema({
         type: String,
         required: [true, 'Password field is required']
     },
+    facebookID: Number,
+    facebookToken: String,
     usertype: String,
     firstname: String,
     lastname: String,

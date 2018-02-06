@@ -1,9 +1,9 @@
-const passportJWT = require("passport-jwt");
-const JWTStrategy   = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
+const passportJWT = require('passport-jwt');
 const mongoose = require('mongoose')
 const passport = require('passport')
-const { JWT_SECRET } = require('../../config/config')
+const { JWT_SECRET } = require('../config')
+const JWTStrategy   = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
 
 
 module.exports = function() {

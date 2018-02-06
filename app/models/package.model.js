@@ -14,15 +14,10 @@ var TimelineSchema = new Schema({
 });
 
 var PackageSchema = new Schema({
-    package_id: {
-        type: Number,
-        unique: true,
-        required: [true, 'Package_id field is required']
-    },
-    company_name: {
+    vendor: {
         type: String,
-        required: [true, 'Company_name field is required'],
-        ref: 'Company'
+        required: [true, 'Vendor field is required'],
+        ref: 'Vendor'
     },
     package_name: String,
     location: String,

@@ -6,4 +6,9 @@ module.exports = function(app) {
         .post(auth.login);
     app.route('/auth')
         .get(auth.verifySignature);
+    app.route('/auth/facebook')
+        .get(passport.authenticate('facebook', { scope: ['public_profile', 'email']}));
+    app.route('/auth/facebook/callback')
+        .get(auth.facebook);
+
 };
