@@ -14,9 +14,11 @@ module.exports = function() {
         clientID: FACEBOOK_APP_ID,
         clientSecret: FACEBOOK_APP_SECRET,
         callbackURL: 'http://localhost:5000/auth/facebook/callback',
-        profileFields: ['id', 'email', 'name']
+        profileFields: ['id', 'email', 'name'],
+        passReqToCallback: true
     },
-    function(token, refreshToken, profile, done) {
+    function(req, token, refreshToken, profile, done) {
+        var url = req.headers.referer;
         return User.findOne({ facebookID: profile.id })
             .then((user) => {
                 if(user) {
@@ -32,8 +34,7 @@ module.exports = function() {
                     user['token'] = jwt.sign(user.toJSON(), JWT_SECRET)
                     user.save();
                 }
-                console.log(user)
-                return done(null, user);
+                return done(null, user, { url: url });
             }).catch((err) => {
                 console.log(err)
                 return done(null, err)

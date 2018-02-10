@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const url = require('url');
 const { JWT_SECRET } = require('../../config/config')
 
 exports.login = function(req, res, next) {
@@ -22,7 +23,6 @@ exports.login = function(req, res, next) {
 
 exports.facebook = function(req, res, next) {
     passport.authenticate('facebook', {session: false}, (err, user, info) => {
-        console.log(err)
         if (err || !user) {
             return res.status(400).json({
                 message: info,
@@ -30,7 +30,15 @@ exports.facebook = function(req, res, next) {
             });
         }
         var token = user['token'];
-        return res.json({ user, token })
+        return res.redirect(url.format({
+            pathname: info['url'],
+            query: {
+              email: user['email'],
+              firstname: user['firstname'],
+              lastname: user['lastname'],
+              token: token
+            }
+        }));
     })(req, res, next);
 };
 

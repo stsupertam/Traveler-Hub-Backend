@@ -4,6 +4,10 @@ const compression = require('compression');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const passport = require('passport')
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
+
 
 module.exports = function() {
     var app = express()
@@ -16,9 +20,12 @@ module.exports = function() {
         extended: true
     }));
     app.set('view engine','ejs'); 
+    app.use(bodyParser.json());
     app.use(passport.initialize())
     app.use(passport.session());
-    app.use(bodyParser.json());
+    app.use(cookieParser('secret'));
+    app.use(session({cookie: { maxAge: 60000 }}));
+    app.use(flash());
     app.use(cors());
     require('../app/routes/user.route')(app);
     require('../app/routes/package.route')(app);
