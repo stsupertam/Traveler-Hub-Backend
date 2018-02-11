@@ -53,7 +53,14 @@ exports.create = function(req, res, next) {
 };
 
 exports.list = function(req, res, next) {
-    Package.find({}).select('-_id -__v -created')
+    var pageOptions = {
+        page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
+        limit: Number(req.query.limit) || 50
+    };
+    Package.find({})
+        .select('-_id -__v -created')
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
         .then((packages) => {
             return res.json(packages);
         })
