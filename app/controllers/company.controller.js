@@ -48,8 +48,6 @@ exports.update = function(req, res, next) {
             return res.json(company);
         })
         .catch((err) => {
-                return res.status(422).json(errors);
-            return res.status(404).json('Company doesn\'t exist');
             return next(err);
         });
 };
@@ -60,6 +58,7 @@ exports.read = function(req, res) {
 
 exports.companyByName = function(req, res, next, name) {
     Company.findOne({ company_name: name })
+        .populate('packages', 'package_name')
         .then((company) => {
             req.company = company;
             next();

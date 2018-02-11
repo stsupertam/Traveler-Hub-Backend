@@ -18,7 +18,7 @@ var CompanySchema = new Schema({
 CompanySchema.virtual('packages', {
     ref: 'Package',
     localField: 'company_name',
-    foreignField: 'company_name',
+    foreignField: 'company',
 });
 
 CompanySchema.plugin(uniqueValidator);

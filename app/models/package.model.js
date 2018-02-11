@@ -14,10 +14,10 @@ var TimelineSchema = new Schema({
 });
 
 var PackageSchema = new Schema({
-    vendor: {
+    company: {
         type: String,
-        required: [true, 'Vendor field is required'],
-        ref: 'Vendor'
+        required: [true, 'Company field is required'],
+        ref: 'Company'
     },
     package_name: String,
     location: String,
@@ -35,6 +35,10 @@ var PackageSchema = new Schema({
         default: 1
     },
     start_travel_date: {
+        type: Date,
+        default: Date.now
+    },
+    end_travel_date: {
         type: Date,
         default: Date.now
     },

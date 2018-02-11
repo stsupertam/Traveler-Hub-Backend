@@ -12,8 +12,8 @@ var th_month = [
 
 var th_date_format = function(start_travel_date, travel_duration) {
     date = moment(start_travel_date)
-    .add(travel_duration - 1, 'days')
-    .format('MM/DD/YYYY').split('/');
+        .add(travel_duration - 1, 'days')
+        .format('MM/DD/YYYY').split('/');
 
     start_date = moment(start_travel_date).format('DD');
     end_date = date[1];
@@ -24,6 +24,20 @@ var th_date_format = function(start_travel_date, travel_duration) {
     return travel_date;
 };
 
+var getQuery = function(req) {
+    queryCond = {};
+    if(req.query.name) {
+        //Package.find({ $text: { $search: req.query.name }})
+        queryCond.name = { $text: { $search: req.query.name }};
+    }
+    //if(query.city){
+    //   queryCond.city=query.city;
+    //}
+    //if(query.type){
+    //   queryCond.type=query.type;
+    //}
+    return queryCond;
+}
 exports.create = function(req, res, next) {
     var errors = {};
     var package = new Package(req.body);
@@ -124,11 +138,35 @@ exports.popular = function(req, res, next) {
 };
 
 exports.search = function(req, res, next) {
-    Package.find({ $text: { $search: req.query['name'] }})
-        .then((package) => {
-            return res.json(package)
-        })
-        .catch((err) => {
-            return next(err);
-        });
+    var pageOptions = {
+        page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
+        limit: Number(req.query.limit) || 50
+    };
+    var package = Package.find();
+    var query = req.query;
+
+    if (query.name) { 
+        package.find({ $text: { $search: query.name }})
+    }
+    if (query.minPrice || query.maxPrice) {
+        if (query.minPrice && query.maxPrice) {
+            package.where('price').gte(query.minPrice).lte(query.maxPrice);
+        } else if (query.minPrice) { 
+            package.where('price').gte(query.minPrice);
+        } else if (query.maxPrice) { 
+            package.where('price').lte(query.maxPrice);
+        }
+    }
+    if (query.startDate || query.endDate) {
+        if (query.startDate && query.endDate) {}
+        else if (query.startDate) {}
+        else if (query.endDate) {}
+    }
+    package.skip(pageOptions.page * pageOptions.limit);
+    package.limit(pageOptions.limit);
+    package.exec().then((result) => {
+        return res.json(result)
+    });
+
 }
+
