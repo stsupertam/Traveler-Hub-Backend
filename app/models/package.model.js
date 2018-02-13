@@ -19,7 +19,11 @@ var PackageSchema = new Schema({
         required: [true, 'Company field is required'],
         ref: 'Company'
     },
-    package_name: String,
+    package_name: {
+        type: String,
+        text: true
+    },
+    url: String,
     location: String,
     logo: String,
     province: String,
@@ -29,18 +33,22 @@ var PackageSchema = new Schema({
     rating: Number,
     human_price: String,
     travel_date: String,
+    region: String,
     timeline: [TimelineSchema],
+    provinces: [String],
+    tags: [String],
+    text: [String],
     travel_duration: {
         type: Number,
         default: 1
     },
     start_travel_date: {
         type: Date,
-        default: Date.now
+        default: null
     },
     end_travel_date: {
         type: Date,
-        default: Date.now
+        default: null
     },
     number_of_views: {
         type: Number,

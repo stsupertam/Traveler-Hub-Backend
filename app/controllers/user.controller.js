@@ -8,10 +8,10 @@ exports.create = function(req, res, next) {
         .then(() => {
             const token = jwt.sign(user.email, JWT_SECRET)
             user.save();
-            return res.json({ message: 'Register Successfully', token: token })
+            return res.json({ message: 'Register Successfully', token: token });
         }).catch((err) => {
             return res.status(422).json(err['errors']);
-        })
+        });
 };
 
 exports.list = function(req, res, next) {

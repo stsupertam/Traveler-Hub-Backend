@@ -1,11 +1,10 @@
 const moment = require('moment');
 const numeral = require('numeral');
 const Package = require('mongoose').model('Package');
-const Counter = require('mongoose').model('Counter');
 
 var th_month = [
     'ม.ค.', 'ก.พ.', 'มี.ค.', 
-    'เม.ย', 'พ.ค.', 'มิ.ย.', 
+    'เม.ย.', 'พ.ค.', 'มิ.ย.', 
     'ก.ค.', 'ส.ค.', 'ก.ย.', 
     'ต.ค.', 'พ.ย.', 'ธ.ค.'
 ]
@@ -24,52 +23,25 @@ var th_date_format = function(start_travel_date, travel_duration) {
     return travel_date;
 };
 
-var getQuery = function(req) {
-    queryCond = {};
-    if(req.query.name) {
-        //Package.find({ $text: { $search: req.query.name }})
-        queryCond.name = { $text: { $search: req.query.name }};
-    }
-    //if(query.city){
-    //   queryCond.city=query.city;
-    //}
-    //if(query.type){
-    //   queryCond.type=query.type;
-    //}
-    return queryCond;
-}
 exports.create = function(req, res, next) {
     var errors = {};
     var package = new Package(req.body);
-    Counter.findOneAndUpdate({ active: 1 }, { $inc: { package_id: 1 }}, true)
-        .then((counter) => {
-            req.body['package_id'] = counter['package_id'];
-            package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
-            package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
-            package['timeline'] = req.body['timeline'];
-            return package.validate();
-        })
-        .catch((err) => {
-            console.log('package fail validate');
-            Object.assign(errors, err['errors']);
-        })
+    package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration']);
+    package['human_price'] = numeral(package['price']).format('0,0') + ' บาท';
+    package['timeline'] = req.body['timeline'];
+    package.validate()
         .then(() => {
-            if(Object.keys(errors).length === 0) {
-                package.save();
-                return res.json(package);
-            } else {
-                return res.status(422).json(errors);
-            }
-        })
-        .catch((err) => {
-            return next(err);
+            package.save();
+            return res.json({ message: 'Create Package Successfully' });
+        }).catch((err) => {
+            return res.status(422).json(err['errors']);
         });
 };
 
 exports.list = function(req, res, next) {
     var pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
-        limit: Number(req.query.limit) || 50
+        limit: Number(req.query.limit) || 1000
     };
     Package.find({})
         .select('-_id -__v -created')
@@ -140,7 +112,7 @@ exports.popular = function(req, res, next) {
 exports.search = function(req, res, next) {
     var pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
-        limit: Number(req.query.limit) || 50
+        limit: Number(req.query.limit) || 1000
     };
     var package = Package.find();
     var query = req.query;
@@ -157,11 +129,26 @@ exports.search = function(req, res, next) {
             package.where('price').lte(query.maxPrice);
         }
     }
-    if (query.startDate || query.endDate) {
-        if (query.startDate && query.endDate) {}
-        else if (query.startDate) {}
-        else if (query.endDate) {}
+    if (query.Arrival || query.Departure) {
+        start = new Date(query.Arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''));
+        end = new Date(query.Departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''));
+        console.log(start)
+        console.log(end)
+        if (query.Arrival && query.Departure) {
+            package.where('start_travel_date').gte(start);
+            package.where('end_travel_date').lte(end);
+        }
+        else if (query.Arrival) {
+            package.where('start_travel_date').gte(start);
+        }
+        else if (query.Departure) {
+            package.where('end_travel_date').lte(end);
+        }
     }
+    if (query.company) {
+        package.where('company').equals(query.company);
+    }
+    package.select('-timeline -tags -url');
     package.skip(pageOptions.page * pageOptions.limit);
     package.limit(pageOptions.limit);
     package.exec().then((result) => {
