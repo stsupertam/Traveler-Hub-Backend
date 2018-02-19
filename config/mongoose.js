@@ -9,6 +9,7 @@ module.exports = function() {
     require('../app/models/user.model');
     require('../app/models/package.model');
     require('../app/models/company.model');
+    require('./oplog')();
 
     return db;
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosastic = require('mongoosastic');
 const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
@@ -16,6 +17,7 @@ var TimelineSchema = new Schema({
 var PackageSchema = new Schema({
     company: {
         type: String,
+        es_indexed: true,
         required: [true, 'Company field is required'],
         ref: 'Company'
     },
@@ -24,38 +26,58 @@ var PackageSchema = new Schema({
         text: true
     },
     url: String,
-    location: String,
     logo: String,
-    province: String,
     detail: String,
-    price: Number,
+    price: {
+        type: Number,
+        es_indexed: true
+    },
     image: String,
-    rating: Number,
+    rating: {
+        type: Number,
+        es_indexed: true
+    },
     human_price: String,
     travel_date: String,
-    region: String,
+    region: {
+        type: String,
+        es_indexed: true
+    },
     timeline: [TimelineSchema],
-    provinces: [String],
-    tags: [String],
-    text: [String],
+    provinces: {
+        type: [String],
+        es_indexed: true
+    },
+    tags: {
+        type: [String],
+        es_indexed: true
+    },
+    text: {
+        type: [String],
+        es_indexed: true
+    },
     travel_duration: {
         type: Number,
         default: 1
     },
     start_travel_date: {
         type: Date,
+        es_indexed: true,
         default: null
     },
     end_travel_date: {
         type: Date,
+        es_indexed: true,
         default: null
     },
     number_of_views: {
         type: Number,
+        es_indexed: true,
         default: 0
     },
     quantity: {
         type: Number,
+        es_indexed: true,
         default: 0
     },
     created: {
@@ -65,5 +87,19 @@ var PackageSchema = new Schema({
 });
 
 PackageSchema.plugin(uniqueValidator);
-PackageSchema.index({ package_name: 'text' });
+PackageSchema.plugin(mongoosastic)
+
 mongoose.model('Package', PackageSchema)
+var Package = mongoose.model('Package', PackageSchema)
+var stream = Package.synchronize()
+var count = 0;
+
+stream.on('data', function(err, doc){
+    count++;
+});
+stream.on('close', function(){
+    console.log('indexed ' + count + ' documents!');
+});
+stream.on('error', function(err){
+    console.log(err);
+});
