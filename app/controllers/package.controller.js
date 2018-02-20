@@ -43,16 +43,36 @@ exports.list = function(req, res, next) {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
         limit: Number(req.query.limit) || 1000
     };
-    Package.find({})
-        .select('-_id -__v -created')
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
+
+    var total = ''
+    Package.count({})
+        .then((count) => {
+            total = count;
+            return Package.find({})
+                .select('-_id -__v -created')
+                .skip(pageOptions.page * pageOptions.limit)
+                .limit(pageOptions.limit)
+        })
         .then((packages) => {
-            return res.json(packages);
+            var response = {
+                'total': total,
+                'packages': packages
+            }
+            return res.json(response);
         })
         .catch((err) => {
             return next(err);
         });
+    //Package.find({})
+    //    .select('-_id -__v -created')
+    //    .skip(pageOptions.page * pageOptions.limit)
+    //    .limit(pageOptions.limit)
+    //    .then((packages) => {
+    //        return res.json(packages);
+    //    })
+    //    .catch((err) => {
+    //        return next(err);
+    //    });
 };
 
 exports.delete = function(req, res, next) {
@@ -115,6 +135,8 @@ exports.search = function(req, res, next) {
         limit: Number(req.query.limit) || 1000
     };
     var package = Package.find();
+    var total = ''
+
     var query = req.query;
 
     if (query.name) { 
@@ -151,9 +173,39 @@ exports.search = function(req, res, next) {
     package.select('-timeline -tags -url');
     package.skip(pageOptions.page * pageOptions.limit);
     package.limit(pageOptions.limit);
-    package.exec().then((result) => {
-        return res.json(result)
+    Package.count({}).exec().then((result) => { 
+        total = result;
+        console.log(total)
+    }).then(() => {
+        return package.exec();
+    }).then((result) => {
+        var response = {
+            'total': total,
+            'packages': result
+        }
+        return res.json(response)
+    })
+    .catch((err) => {
+        return next(err);
     });
+}
 
+exports.elasticsearch = function(req, res, next) {
+    var pageOptions = {
+        page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
+        limit: Number(req.query.limit) || 1000
+    };
+    var query = req.query;
+    Package.search({
+        query: {
+            fuzzy: {
+                text: {
+                    value: "ดำำน้",
+                    fuzziness: 5
+
+                }
+            }
+        }
+    })
 }
 

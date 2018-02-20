@@ -21,10 +21,7 @@ var PackageSchema = new Schema({
         required: [true, 'Company field is required'],
         ref: 'Company'
     },
-    package_name: {
-        type: String,
-        text: true
-    },
+    package_name: String,
     url: String,
     logo: String,
     detail: String,

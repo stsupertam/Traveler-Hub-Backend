@@ -8,7 +8,9 @@ module.exports = function(app) {
     app.route('/package/popular')
         .get(package.popular);
     app.route('/package/search')
-        .get(package.search)
+        .get(package.search);
+    app.route('/package/elasticsearch')
+        .get(package.search);
     app.route('/package/:id')
         .get(package.read)
         .put(package.update)
