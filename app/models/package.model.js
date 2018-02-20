@@ -84,7 +84,7 @@ var PackageSchema = new Schema({
 });
 
 PackageSchema.plugin(uniqueValidator);
-PackageSchema.plugin(mongoosastic)
+PackageSchema.plugin(mongoosastic, {hydrate:true, hydrateOptions: {select: '-text'}})
 
 mongoose.model('Package', PackageSchema)
 var Package = mongoose.model('Package', PackageSchema)

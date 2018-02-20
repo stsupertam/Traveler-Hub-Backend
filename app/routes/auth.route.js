@@ -8,9 +8,4 @@ module.exports = function(app) {
         .get(auth.verifySignature);
     app.route('/auth/facebook')
         .post(auth.facebook);
-    //app.route('/auth/facebook')
-    //    .get(passport.authenticate('facebook', { scope: ['public_profile', 'email']}));
-    //app.route('/auth/facebook/callback')
-    //    .get(auth.facebook);
-
 };
