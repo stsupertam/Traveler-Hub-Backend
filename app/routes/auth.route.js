@@ -7,8 +7,10 @@ module.exports = function(app) {
     app.route('/auth')
         .get(auth.verifySignature);
     app.route('/auth/facebook')
-        .get(passport.authenticate('facebook', { scope: ['public_profile', 'email']}));
-    app.route('/auth/facebook/callback')
-        .get(auth.facebook);
+        .post(auth.facebook);
+    //app.route('/auth/facebook')
+    //    .get(passport.authenticate('facebook', { scope: ['public_profile', 'email']}));
+    //app.route('/auth/facebook/callback')
+    //    .get(auth.facebook);
 
 };
