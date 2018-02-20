@@ -36,8 +36,11 @@ exports.facebook = function(req, res, next) {
                 user['password'] = randomstring.generate(16);
                 user.validate().then(() => {
                     user.save();
+                    user = user.toJSON();
                     delete user['password'];
                     return res.json({ user, token });
+                }).catch((err) => {
+                    return res.status(422).json(err['errors']);
                 })
             }
         }).catch((err) => {
