@@ -49,7 +49,7 @@ exports.list = function(req, res, next) {
         .then((count) => {
             total = count;
             return Package.find({})
-                .select('-_id -__v -created')
+                .select('-__v -created')
                 .skip(pageOptions.page * pageOptions.limit)
                 .limit(pageOptions.limit)
         })
@@ -128,80 +128,126 @@ exports.search = function(req, res, next) {
     var raw_query = {
         from: pageOptions.page * pageOptions.limit,
         size: pageOptions.limit,
-        _source: ['package_name', 'start_travel_date', 'end_travel_date']
     }
     var elastic_query = { 
         bool : {
-            must : {},
-            filter : {}
+            must : [],
+            filter : []
         },
     };
-
     if (query.name) { 
-        //package.find({ $text: { $search: query.name }})
-        console.log(elastic_query)
-        if(!elastic_query['bool']['must']['match']) elastic_query['bool']['must']['match'] = {};
-        elastic_query['bool']['must']['match']['text'] = {
-            query: query.name,
-            fuzziness: 1
-        } 
+        var text = {
+            match: {
+                text: {
+                    query: query.name
+                }
+            }
+        };
+        elastic_query['bool']['must'].push(text);
     }
     if (query.minPrice || query.maxPrice) {
-        if(!elastic_query['bool']['filter']['range']) elastic_query['bool']['filter']['range'] = {};
         if (query.minPrice && query.maxPrice) {
-            elastic_query['bool']['filter']['range']['price'] = {}; 
-            elastic_query['bool']['filter']['range']['price']['gte'] = query.minPrice; 
-            elastic_query['bool']['filter']['range']['price']['lte'] = query.maxPrice; 
+            var price = {
+                range:{
+                    price: {
+                        gte: query.minPrice,
+                        lte: query.maxPrice
+                    }
+                }
+            };
+            elastic_query['bool']['filter'].push(price); 
         } else if (query.minPrice) { 
-            elastic_query['bool']['filter']['range']['price'] = {}; 
-            elastic_query['bool']['filter']['range']['price']['gte'] = query.minPrice; 
+            var price = {
+                range: {
+                    price: {
+                        gte: query.minPrice
+                    }
+                }
+            };
+            elastic_query['bool']['filter'].push(price);
         } else if (query.maxPrice) { 
-            elastic_query['bool']['filter']['range']['price'] = {}; 
-            elastic_query['bool']['filter']['range']['price']['lte'] = query.maxPrice; 
+            var price = {
+                range: {
+                    price: {
+                        lte: query.maxPrice
+                    }
+                }
+            };
+            elastic_query['bool']['filter'].push(price); 
         }
     }
     if (query.Arrival || query.Departure) {
-        if(!elastic_query['bool']['filter']['range']) elastic_query['bool']['filter']['range'] = {};
         start = new Date(query.Arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''));
         end = new Date(query.Departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''));
         if (query.Arrival && query.Departure) {
-            elastic_query['bool']['filter']['range']['start_travel_date'] = {}; 
-            elastic_query['bool']['filter']['range']['end_travel_date'] = {}; 
-            elastic_query['bool']['filter']['range']['start_travel_date']['gte'] = start; 
-            elastic_query['bool']['filter']['range']['end_travel_date']['lte'] = end; 
+            var date = {
+                range: {
+                    start_travel_date: {
+                        gte: start
+                    }            
+                },
+                range: {
+                    end_travel_date: {
+                        lte: end
+                    }            
+                }
+            };
+            elastic_query['bool']['filter'].push(date);
         }
         else if (query.Arrival) {
-            elastic_query['bool']['filter']['range']['start_travel_date'] = {}; 
-            elastic_query['bool']['filter']['range']['start_travel_date']['gte'] = start; 
+            var date = {
+                range: {
+                    start_travel_date: {
+                        gte: start
+                    }
+                }
+            };
+            elastic_query['bool']['filter'].push(date);
         }
         else if (query.Departure) {
-            elastic_query['bool']['filter']['range']['end_travel_date'] = {}; 
-            elastic_query['bool']['filter']['range']['end_travel_date']['lte'] = end; 
+            var date = {
+                range: {
+                    end_travel_date: {
+                        lte: end
+                    }
+                }
+            };
+            elastic_query['bool']['filter'].push(date); 
         }
     }
     if (query.company) {
-        if(!elastic_query['bool']['must']['match']) elastic_query['bool']['must']['match'] = {};
-        elastic_query['bool']['must']['match']['company'] = {
-            query: query.company,
-            fuzziness: 1
-        } 
+        var company = {
+            match: {
+                company: {
+                    query: query.company
+                }
+            }
+        };
+        elastic_query['bool']['must'].push(company);
     }
     if (query.region) {
-        if(!elastic_query['bool']['must']['match']) elastic_query['bool']['must']['match'] = {};
-        elastic_query['bool']['must']['match']['region'] = {
-            query: query.region,
-            fuzziness: 1
-        } 
+        var region = {
+            match: {
+                region: {
+                    query: query.region
+                }
+            }
+        };
+        elastic_query['bool']['must'].push(region);
     }
     if (query.province) {
-        if(!elastic_query['bool']['must']['match']) elastic_query['bool']['must']['match'] = {};
-        elastic_query['bool']['must']['match']['province'] = {
-            query: query.province,
-            fuzziness: 1
-        } 
+        var province = {
+            match: {
+                province: {
+                    query: query.province
+                }
+            }
+        };
+        elastic_query['bool']['must'].push(province);
     }
 
     raw_query['query'] = elastic_query;
+    console.log(JSON.stringify(elastic_query))
     Package.esSearch(raw_query, function (err, packages) {
         if (err) return next(err)
         var results = packages.hits.hits;
