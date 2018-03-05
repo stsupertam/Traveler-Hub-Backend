@@ -1,17 +1,18 @@
 module.exports = function(app) {
-    var package = require('../controllers/package.controller');
+    var package = require('../controllers/package.controller')
+    var middleware = require('../middlewares/updateView.middleware')
     app.route('/package')
         .post(package.create)
-        .get(package.list);
+        .get(package.list)
     app.route('/package/latest')
-        .get(package.latest);
+        .get(package.latest)
     app.route('/package/popular')
-        .get(package.popular);
+        .get(package.popular)
     app.route('/package/search')
-        .get(package.search);
+        .get(package.search)
     app.route('/package/:id')
-        .get(package.read)
+        .get(middleware.updateView, package.read)
         .put(package.update)
-        .delete(package.delete);
-    app.param('id', package.packageById);
-};
+        .delete(package.delete)
+    app.param('id', package.packageById)
+}

@@ -1,11 +1,11 @@
-const readline = require('readline');
-const fetch = require('node-fetch');
+const readline = require('readline')
+const fetch = require('node-fetch')
 
 // ------------------------------------------------------------
 // Config
 
-const NEW_ACCESS_TOKEN = 'V7GMUT4QB6BYLZ2F266GSNUIVG43WLBS'; // TODO: fill this in
-const FIREBASE_CONFIG = {}; // TODO: fill this in
+const NEW_ACCESS_TOKEN = 'V7GMUT4QB6BYLZ2F266GSNUIVG43WLBS' // TODO: fill this in
+const FIREBASE_CONFIG = {} // TODO: fill this in
 
 // ------------------------------------------------------------
 // Wit API Calls
@@ -19,7 +19,7 @@ function queryWit(text, n = 1) {
         'Content-Type': 'application/json',
       },
     }
-  ).then(res => res.json());
+  ).then(res => res.json())
 }
 
 function validateSamples(samples) {
@@ -41,30 +41,30 @@ function interactive(handler) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-  });
+  })
 
-  rl.setPrompt('> ');
+  rl.setPrompt('> ')
   const prompt = () => {
-    rl.prompt();
-    rl.write(null, {ctrl: true, name: 'e'});
-  };
+    rl.prompt()
+    rl.write(null, {ctrl: true, name: 'e'})
+  }
   rl
     .on('line', line => {
-      line = line.trim();
+      line = line.trim()
       if (!line) {
-        prompt();
-        return;
+        prompt()
+        return
       }
       if (line === 'q') {
-        rl.close();
-        return;
+        rl.close()
+        return
       }
-      handler(line, rl).then(prompt);
+      handler(line, rl).then(prompt)
     })
     .on('close', () => {
-      console.log('good bye! :)');
-    });
-  prompt();
+      console.log('good bye! :)')
+    })
+  prompt()
 }
 
 function firstEntity(entities, name) {
@@ -72,7 +72,7 @@ function firstEntity(entities, name) {
     entities[name] &&
     Array.isArray(entities[name]) &&
     entities[name] &&
-    entities[name][0];
+    entities[name][0]
 }
 
 module.exports = {
@@ -82,4 +82,4 @@ module.exports = {
   firstEntity,
   NEW_ACCESS_TOKEN,
   FIREBASE_CONFIG,
-};
+}

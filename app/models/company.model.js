@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
+const Schema = mongoose.Schema
 
 var CompanySchema = new Schema({
     company_name: { 
@@ -13,13 +13,13 @@ var CompanySchema = new Schema({
         type: Date, 
         default: Date.now 
     }
-}, { toJSON: { virtuals: true } });
+}, { toJSON: { virtuals: true } })
 
 CompanySchema.virtual('packages', {
     ref: 'Package',
     localField: 'company_name',
     foreignField: 'company',
-});
+})
 
-CompanySchema.plugin(uniqueValidator);
+CompanySchema.plugin(uniqueValidator)
 mongoose.model('Company', CompanySchema)

@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const mongoosastic = require('mongoosastic');
-const uniqueValidator = require('mongoose-unique-validator');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const mongoosastic = require('mongoosastic')
+const uniqueValidator = require('mongoose-unique-validator')
+const Schema = mongoose.Schema
 
 var TimelineSchema = new Schema({
     day: Number,
@@ -12,7 +12,7 @@ var TimelineSchema = new Schema({
             activity: String
         }
     ]
-});
+})
 
 var PackageSchema = new Schema({
     company: {
@@ -81,22 +81,22 @@ var PackageSchema = new Schema({
         type: Date,
         default: Date.now
     }
-});
+})
 
-PackageSchema.plugin(uniqueValidator);
+PackageSchema.plugin(uniqueValidator)
 PackageSchema.plugin(mongoosastic, {hydrate:true, hydrateOptions: { select: '-text' }}) 
 
 mongoose.model('Package', PackageSchema)
 var Package = mongoose.model('Package', PackageSchema)
 var stream = Package.synchronize()
-var count = 0;
+var count = 0
 
 stream.on('data', function(err, doc){
-    count++;
-});
+    count++
+})
 stream.on('close', function(){
-    console.log('indexed ' + count + ' documents!');
-});
+    console.log('indexed ' + count + ' documents!')
+})
 stream.on('error', function(err){
-    console.log(err);
-});
+    console.log(err)
+})

@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt-promise');
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-const Schema = mongoose.Schema;
-const SALT_WORK_FACTOR = 10;
+const bcrypt = require('bcrypt-promise')
+const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
+const Schema = mongoose.Schema
+const SALT_WORK_FACTOR = 10
 
 var UserSchema = new Schema({
     email: {
@@ -28,29 +28,38 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     }
-}, { strict: true });
+}, { 
+    strict: true,
+    toJSON: { virtuals: true} 
+})
+
+UserSchema.virtual('users', {
+    ref: 'History',
+    localField: 'email',
+    foreignField: 'email',
+})
 
 UserSchema.pre('save', function(next) {
-    var user = this;
-    if (!user.isModified('password')) return next();
+    var user = this
+    if (!user.isModified('password')) return next()
     bcrypt.genSalt(SALT_WORK_FACTOR)
         .then((salt) => {
-            return bcrypt.hash(user.password, salt);
+            return bcrypt.hash(user.password, salt)
         }).then((hash) => {
-            user.password = hash;
-            next();
+            user.password = hash
+            next()
         }).catch((err) => {
-            return next(err);
-        });
-});
+            return next(err)
+        })
+})
 
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {
     bcrypt.compare(candidatePassword, this.password)
         .then((isMatch) => cb(null, isMatch))
         .catch((err) => {
-            return cb(err);
+            return cb(err)
         })
-};
+}
 
-UserSchema.plugin(uniqueValidator);
+UserSchema.plugin(uniqueValidator)
 mongoose.model('User', UserSchema)

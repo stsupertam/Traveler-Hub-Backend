@@ -29,7 +29,7 @@ exports.select = function(choice) {
     if(choice === 'start') {
         payload['text'] = 'สวัสดีครับ ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้'
     } else if(choice === 'ls') {
-        payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี';
+        payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี'
     } else if(choice == 'end'){
         payload = {
           text: 'อยากสอบถามเพิ่มเติมอีกไหม',
@@ -70,5 +70,5 @@ exports.select = function(choice) {
     }
 
 
-    return payload;
+    return payload
 }

@@ -1,5 +1,5 @@
-const handleResponse = require('./handleResponse');
-const StateMachine = require('javascript-state-machine');
+const handleResponse = require('./handleResponse')
+const StateMachine = require('javascript-state-machine')
 
 var fsm = new StateMachine({
     init: 'greet',
@@ -17,41 +17,41 @@ var fsm = new StateMachine({
     ],
     methods: {
         onToChoice: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.choice(message, senderId, responseType);
+            return handleResponse.choice(message, senderId, responseType)
         },
         onToSearch: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.search(message, senderId, responseType);
+            return handleResponse.search(message, senderId, responseType)
         },
         onToQuery: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.query(message, senderId, responseType);
+            return handleResponse.query(message, senderId, responseType)
         },
         onToLatest: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.latest(message, senderId, responseType);
+            return handleResponse.latest(message, senderId, responseType)
         },
         onToPopular: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.popular(message, senderId, responseType);
+            return handleResponse.popular(message, senderId, responseType)
         },
         onToQuestion: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.question(message, senderId, responseType);
+            return handleResponse.question(message, senderId, responseType)
         },
     }
-});
+})
 
 module.exports = (event) => {
-    var senderId = event.sender.id;
-    var message = event.message.text;
-    var state = fsm.state;
+    var senderId = event.sender.id
+    var message = event.message.text
+    var state = fsm.state
 
-    if(message === 'reset') { fsm.reset(); }
-    if(message === 'state') { console.log(state); }
+    if(message === 'reset') { fsm.reset() }
+    if(message === 'state') { console.log(state) }
     else {
         if(state === 'greet') { 
-            fsm.toChoice(message, senderId, 'start'); 
+            fsm.toChoice(message, senderId, 'start') 
         } else if(state === 'latest' || state === 'popular') {
             if(message === 'ค้นหาเพิ่มเติม') {
-                fsm.toChoice(message, senderId, 'ls'); 
+                fsm.toChoice(message, senderId, 'ls') 
             } else {
-                fsm.reset();
+                fsm.reset()
             }
         } else if(state === 'choice') {
             if(message === 'ค้นหาตามชื่อแพ็กเกจ') {
@@ -67,20 +67,20 @@ module.exports = (event) => {
             fsm.toQuery(message, senderId, 'search')
         } else if(state === 'query') {
             if(message === 'หยุดการค้นหา') {
-                fsm.reset();
+                fsm.reset()
             } else if(message === 'สอบถามอย่างอื่น') {
-                fsm.toChoice(message, senderId, 'ls');
+                fsm.toChoice(message, senderId, 'ls')
             } else if(message !== 'ค้นหาเพิ่มเติม') {
                 fsm.toQuery(message, senderId, 'search')
             }
 
         }
             //if(message === 'ค้นหาเพิ่มเติม') {
-            //    fsm.toSearch(message, senderId, 'search');
+            //    fsm.toSearch(message, senderId, 'search')
             //} else if(message === 'สอบถามอย่างอื่น') {
-            //    fsm.toChoice(message, senderId, 'finish');
+            //    fsm.toChoice(message, senderId, 'finish')
             //} else if(message === 'ไม่' || message === 'ขอบคุณ'){
-            //    fsm.reset();
+            //    fsm.reset()
             //}
     }
-};
+}

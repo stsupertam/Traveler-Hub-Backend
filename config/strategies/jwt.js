@@ -1,9 +1,9 @@
-const passportJWT = require('passport-jwt');
+const passportJWT = require('passport-jwt')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const { JWT_SECRET } = require('../config')
-const JWTStrategy   = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
+const JWTStrategy   = passportJWT.Strategy
+const ExtractJWT = passportJWT.ExtractJwt
 
 
 module.exports = function() {
@@ -15,11 +15,11 @@ module.exports = function() {
         function (jwtPayload, done) {
             return User.findOne({ email: jwtPayload.email }).select('-password')
                 .then((user) => {
-                    return done(null, user);
+                    return done(null, user)
                 })
                 .catch((err) => {
-                    return done(err);
-                });
+                    return done(err)
+                })
         }
-    ));
+    ))
 }

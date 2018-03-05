@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
 var CompanySchema = new Schema({
     company_id: { 
@@ -15,6 +15,6 @@ var CompanySchema = new Schema({
         type: Date, 
         default: Date.now 
     }
-});
+})
 
 mongoose.model('Company', CompanySchema)
