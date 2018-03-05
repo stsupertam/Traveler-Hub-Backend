@@ -85,8 +85,14 @@ exports.update = function(req, res, next) {
         })
 }
 
-exports.read = function(req, res) {
-    return res.json(req.package)
+exports.read = function(req, res, next) {
+    Package.findOneAndUpdate({ _id: req.package._id}, { $inc: { number_of_views: 1 }})
+        .then((package) => {
+            return res.json(req.package)
+        })
+        .catch((err) => {
+            return next(err)
+        })
 }
 
 exports.packageById = function(req, res, next, id) {

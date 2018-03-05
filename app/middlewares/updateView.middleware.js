@@ -30,7 +30,8 @@ exports.updateView = function(req, res, next) {
                                 return next(err)
                             })
                     }
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     return next(err)
                 })
         }
