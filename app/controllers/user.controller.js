@@ -8,7 +8,7 @@ exports.create = function(req, res, next) {
     var user = new User(req['body'])
     user.validate()
         .then(() => {
-            const token = jwt.sign(user.email, JWT_SECRET)
+            const token = jwt.sign(user, JWT_SECRET)
             user.save()
             return res.json({ message: 'Register Successfully', token: token })
         }).catch((err) => {
