@@ -1,4 +1,6 @@
 const User = require('mongoose').model('User')
+const Rating = require('mongoose').model('Rating')
+const Package = require('mongoose').model('Package')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../../config/config')
 
@@ -45,14 +47,14 @@ exports.update = function(req, res, next) {
 }
 
 exports.read = function(req, res) {
-    res.json(req.user)
+    return res.json(req.user)
 }
 
 exports.userByEmail = function(req, res, next, email) {
     User.findOne({ email: email }).select('-_id -__v -created')
         .then((user) => {
             req.user = user
-            next()
+            return next()
         })
         .catch((err) => {
             return next(err)

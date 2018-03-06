@@ -25,6 +25,7 @@ module.exports = function() {
     require('../app/routes/company.route')(app)
     require('../app/routes/chatbot.route')(app)
     require('../app/routes/auth.route')(app)
+    require('../app/routes/rating.route')(app)
     require('../app/routes/index.route')(app)
     return app
 }

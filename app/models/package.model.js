@@ -81,10 +81,16 @@ var PackageSchema = new Schema({
         type: Date,
         default: Date.now
     }
-})
+}, { toJSON: { virtuals: true } })
 
 PackageSchema.plugin(uniqueValidator)
 PackageSchema.plugin(mongoosastic, {hydrate:true, hydrateOptions: { select: '-text' }}) 
+
+PackageSchema.virtual('ratings', {
+    ref: 'Rating',
+    localField: '_id',
+    foreignField: 'packageId',
+})
 
 mongoose.model('Package', PackageSchema)
 var Package = mongoose.model('Package', PackageSchema)

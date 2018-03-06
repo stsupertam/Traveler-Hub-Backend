@@ -56,7 +56,8 @@ exports.verifySignature = function(req, res, next) {
                 user   : user
             })
         }
-        return res.json(user)
+        req.user = user
+        return next()
     })(req, res, next)
 }
 

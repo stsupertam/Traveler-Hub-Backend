@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 var RatingSchema = new Schema({
-    email: String,
-    packageId: Schema.ObjectId,
+    email: { type: String, ref: 'User' },
+    packageId: { type: Schema.ObjectId, ref: 'Package' },
     rating: Number
 })
 

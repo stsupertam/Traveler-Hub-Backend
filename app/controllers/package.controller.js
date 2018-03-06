@@ -41,13 +41,13 @@ exports.create = function(req, res, next) {
 exports.list = function(req, res, next) {
     var pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
-        limit: Number(req.query.limit) || 1000
+        limit: Number(req.query.limit) || 16
     }
-
-    var total = ''
+    totalPage = 0
     Package.count({})
         .then((count) => {
-            total = count
+            var total = count
+            totalPage  = Math.ceil(total / pageOptions.limit)
             return Package.find({})
                 .select('-__v -created')
                 .skip(pageOptions.page * pageOptions.limit)
@@ -55,7 +55,8 @@ exports.list = function(req, res, next) {
         })
         .then((packages) => {
             var response = {
-                'total': total,
+                'totalPage': totalPage,
+                'currentPage': Number(req.query.page),
                 'packages': packages
             }
             return res.json(response)
@@ -258,8 +259,10 @@ exports.search = function(req, res, next) {
         if (err) return next(err)
         var results = packages.hits.hits
         var total = results.length
+        var totalPage = Math.ceil(total / req.query.limit)
         var response = {
-            'total': total,
+            'totalPage': total,
+            'currentPage': Number(req.query.page),
             'packages': results
         }
         return res.json(response)

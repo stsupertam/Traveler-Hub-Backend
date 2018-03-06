@@ -33,7 +33,7 @@ var UserSchema = new Schema({
     toJSON: { virtuals: true} 
 })
 
-UserSchema.virtual('users', {
+UserSchema.virtual('histories', {
     ref: 'History',
     localField: 'email',
     foreignField: 'email',
