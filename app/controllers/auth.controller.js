@@ -39,11 +39,13 @@ exports.facebook = function(req, res, next) {
                     user = user.toJSON()
                     delete user['password']
                     return res.json({ user, token })
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     return res.status(422).json(err['errors'])
                 })
             }
-        }).catch((err) => {
+        })
+        .catch((err) => {
             return next(err)
         })
 }
@@ -55,6 +57,10 @@ exports.verifySignature = function(req, res, next) {
                 message: info,
                 user   : user
             })
+        }
+        if(req.url === '/auth') {
+            console.log('Hello world')
+            return res.json(user)
         }
         req.user = user
         return next()

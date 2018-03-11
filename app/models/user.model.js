@@ -15,6 +15,7 @@ var UserSchema = new Schema({
         type: String,
         required: [true, 'Password field is required']
     },
+    profileImage: String,
     facebookID: Number,
     facebookToken: String,
     usertype: String,
@@ -45,19 +46,21 @@ UserSchema.pre('save', function(next) {
     bcrypt.genSalt(SALT_WORK_FACTOR)
         .then((salt) => {
             return bcrypt.hash(user.password, salt)
-        }).then((hash) => {
+        })
+        .then((hash) => {
             user.password = hash
             next()
-        }).catch((err) => {
+        })
+        .catch((err) => {
             return next(err)
         })
 })
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+UserSchema.methods.comparePassword = function(candidatePassword, callback) {
     bcrypt.compare(candidatePassword, this.password)
-        .then((isMatch) => cb(null, isMatch))
+        .then((isMatch) => callback(null, isMatch))
         .catch((err) => {
-            return cb(err)
+            return callback(err)
         })
 }
 

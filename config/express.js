@@ -13,10 +13,12 @@ module.exports = function() {
         app.use(compression)
     }
     app.use(bodyParser.urlencoded({
-        extended: true
+        limit: '50mb',
+        extended: true,
+        parameterLimit:50000
     }))
     app.set('view engine','ejs') 
-    app.use(bodyParser.json())
+    app.use(bodyParser.json({ limit: '50mb' }))
     app.use(passport.initialize())
     app.use(passport.session())
     app.use(cors())
@@ -26,6 +28,8 @@ module.exports = function() {
     require('../app/routes/chatbot.route')(app)
     require('../app/routes/auth.route')(app)
     require('../app/routes/rating.route')(app)
+    require('../app/routes/image.route')(app)
+    require('../app/routes/dictionary.route')(app)
     require('../app/routes/index.route')(app)
     return app
 }

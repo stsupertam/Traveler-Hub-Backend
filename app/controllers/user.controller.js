@@ -5,13 +5,17 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../../config/config')
 
 exports.create = function(req, res, next) {
-    var user = new User(req['body'])
+    var user = new User(req.body)
     user.validate()
         .then(() => {
-            const token = jwt.sign(user, JWT_SECRET)
+            delete req.body.password
+            const token = jwt.sign(req.body, JWT_SECRET)
             user.save()
             return res.json({ message: 'Register Successfully', token: token })
-        }).catch((err) => {
+        })
+        .catch((err) => {
+            console.log(req.body)
+            console.log(err)
             return res.status(422).json(err['errors'])
         })
 }

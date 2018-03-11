@@ -3,9 +3,9 @@ const numeral = require('numeral')
 const Package = require('mongoose').model('Package')
 
 var th_month = [
-    'ม.ค.', 'ก.พ.', 'มี.ค.', 
-    'เม.ย.', 'พ.ค.', 'มิ.ย.', 
-    'ก.ค.', 'ส.ค.', 'ก.ย.', 
+    'ม.ค.', 'ก.พ.', 'มี.ค.',
+    'เม.ย.', 'พ.ค.', 'มิ.ย.',
+    'ก.ค.', 'ส.ค.', 'ก.ย.',
     'ต.ค.', 'พ.ย.', 'ธ.ค.'
 ]
 
@@ -33,7 +33,8 @@ exports.create = function(req, res, next) {
         .then(() => {
             package.save()
             return res.json({ message: 'Create Package Successfully' })
-        }).catch((err) => {
+        })
+        .catch((err) => {
             return res.status(422).json(err['errors'])
         })
 }
@@ -130,7 +131,7 @@ exports.popular = function(req, res, next) {
 exports.search = function(req, res, next) {
     var pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
-        limit: Number(req.query.limit) || 1000
+        limit: Number(req.query.limit) || 9
     }
     var query = req.query
     var raw_query = {
@@ -253,7 +254,16 @@ exports.search = function(req, res, next) {
         }
         elastic_query['bool']['must'].push(province)
     }
-
+    if (query.keyword) {
+        var keyword = {
+            match: {
+                travel_types: {
+                    query: query.keyword
+                }
+            }
+        }
+        elastic_query['bool']['must'].push(keyword)
+    }
     raw_query['query'] = elastic_query
     Package.esSearch(raw_query, function (err, packages) {
         if (err) return next(err)
@@ -268,4 +278,3 @@ exports.search = function(req, res, next) {
         return res.json(response)
     })
 }
-

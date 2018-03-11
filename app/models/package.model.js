@@ -40,6 +40,7 @@ var PackageSchema = new Schema({
         type: String,
         es_indexed: true
     },
+    travel_types: [String],
     timeline: [TimelineSchema],
     provinces: {
         type: [String],
@@ -85,12 +86,6 @@ var PackageSchema = new Schema({
 
 PackageSchema.plugin(uniqueValidator)
 PackageSchema.plugin(mongoosastic, {hydrate:true, hydrateOptions: { select: '-text' }}) 
-
-PackageSchema.virtual('ratings', {
-    ref: 'Rating',
-    localField: '_id',
-    foreignField: 'packageId',
-})
 
 mongoose.model('Package', PackageSchema)
 var Package = mongoose.model('Package', PackageSchema)

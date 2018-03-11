@@ -18,7 +18,8 @@ module.exports = function() {
                     user = user.toJSON()
                     delete user['password']
                     return done(null, user, { message: 'Logged In Successfully' })
-                }).catch((err) => done(err))
+                })
+                .catch((err) => done(err))
         }
     ))
 }

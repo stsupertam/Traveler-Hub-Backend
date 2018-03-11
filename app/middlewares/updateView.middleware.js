@@ -2,7 +2,6 @@ const User = require('mongoose').model('User')
 const Package = require('mongoose').model('Package')
 const History = require('mongoose').model('History')
 const passport = require('passport')
-const _ = require('lodash')
 
 exports.updateView = function(req, res, next) {
     console.log('In updateView')
@@ -13,7 +12,7 @@ exports.updateView = function(req, res, next) {
         } else {
             console.log(user.email)
             console.log(req.package._id)
-            History.findOne({ email: user.email})
+            History.findOne({ email: user.email })
                 .then((history) => {
                     if(!history) {
                         history = new History({ email: user.email, packageId: req.package._id })
