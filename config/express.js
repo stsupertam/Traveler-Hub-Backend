@@ -18,10 +18,13 @@ module.exports = function() {
         parameterLimit:50000
     }))
     app.set('view engine','ejs') 
+    app.use(express.static('public'));
     app.use(bodyParser.json({ limit: '50mb' }))
+    app.use(express.static(__dirname + 'public'));
     app.use(passport.initialize())
     app.use(passport.session())
     app.use(cors())
+    app.use('/resources',express.static(__dirname + '/images'));
     require('../app/routes/user.route')(app)
     require('../app/routes/package.route')(app)
     require('../app/routes/company.route')(app)
