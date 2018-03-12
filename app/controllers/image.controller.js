@@ -1,6 +1,7 @@
 const multer  = require('multer');
 const _  = require('lodash');
 const Image = require('mongoose').model('Image')
+const User = require('mongoose').model('User')
 const Dictionary = require('mongoose').model('Dictionary')
 
 var storage =   multer.diskStorage({
@@ -15,9 +16,39 @@ var storage =   multer.diskStorage({
     }
   });
 var upload = multer({ storage : storage }).array('dictionary', 5);
+
+exports.facebookProfileUpload = function(req, res, next) {
+    User.findOne({ email: req.body.email })
+        .populate('profileImage', 'path -_id')    
+        .select('-password')
+        .then((user) => {
+            if(user) {
+                req.user = user
+                return next()
+            } else {
+                var pattern = '\d.*.jpg'
+                var filename = req.body.profileImage.split('/').slice(-1)[0].match('.*.jpg')[0]
+                var image = [{
+                    'path': req.body.profileImage,
+                    'filename': filename
+                }]
+                Image.insertMany(image)
+                    .then((images) => {
+                        var imageId = _.map(images, '_id')
+                        req.body.profileImage = imageId
+                        return next()
+                    })
+                    .catch((err) => {
+                        return next(err)
+                    })
+            }
+        })
+        .catch((err) => {
+            return next(err)
+        })
+}
+
 exports.dictionaryImage = function(req, res, next) {
-    console.log('Hello')
-    console.log(req.query)
     upload(req, res, (err) => {
         if(err) {
             console.log(err)
@@ -26,7 +57,6 @@ exports.dictionaryImage = function(req, res, next) {
         Image.insertMany(req.files)
             .then((images) => {
                 var imageId = _.map(images, '_id')
-                console.log(imageId)
                 if(req.query.name === 'dictionay') {
                     return Dictionary.findOneAndUpdate({ 'regions.region': req.query.item }, 
                         { $push: { 'regions.$.images': { '$each': imageId }}
@@ -45,11 +75,4 @@ exports.dictionaryImage = function(req, res, next) {
                 console.log(err)
             })
     })
-    //upload(req, res)
-    //    .then(() => {
-    //        res.end('File is uploaded')
-    //    })
-    //    .catch((err) => {
-    //        return res.end('Error uploading file.')
-    //    })
 }

@@ -15,7 +15,10 @@ var UserSchema = new Schema({
         type: String,
         required: [true, 'Password field is required']
     },
-    profileImage: String,
+    profileImage: { 
+        type: Schema.ObjectId, 
+        ref: 'Image' 
+    },
     facebookID: Number,
     facebookToken: String,
     usertype: String,

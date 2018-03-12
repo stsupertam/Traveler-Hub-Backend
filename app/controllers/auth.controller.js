@@ -25,29 +25,34 @@ exports.login = function(req, res, next) {
 
 exports.facebook = function(req, res, next) {
     var token = ''
-    User.findOne({ email: req.body.email }).select('-password')
-        .then((user) => {
-            if(user) {
-                token = jwt.sign(user.toJSON(), JWT_SECRET)
+    var user = req.user
+    if(user) {
+        token = jwt.sign(user.toJSON(), JWT_SECRET)
+        return res.json({ user, token })
+    } else {
+        user = new User(req.body)
+        token = jwt.sign(user.toJSON(), JWT_SECRET)
+        user['password'] = randomstring.generate(16)
+        user.validate()
+            .then(() => {
+                return user.save()
+                //user = user.toJSON()
+                //delete user['password']
+                //return res.json({ user, token })
+            })
+            .then(() => {
+                return user.populate('profileImage', 'path -_id').execPopulate()
+            })
+            .then((user) => {
+                user = user.toJSON()
+                delete user['password']
                 return res.json({ user, token })
-            } else {
-                var user = new User(req.body)
-                token = jwt.sign(user.toJSON(), JWT_SECRET)
-                user['password'] = randomstring.generate(16)
-                user.validate().then(() => {
-                    user.save()
-                    user = user.toJSON()
-                    delete user['password']
-                    return res.json({ user, token })
-                })
-                .catch((err) => {
-                    return res.status(422).json(err['errors'])
-                })
-            }
-        })
-        .catch((err) => {
-            return next(err)
-        })
+            })
+            .catch((err) => {
+                console.log(err)
+                return res.status(422).json(err['errors'])
+            })
+    }
 }
 
 exports.verifySignature = function(req, res, next) {
@@ -59,7 +64,6 @@ exports.verifySignature = function(req, res, next) {
             })
         }
         if(req.url === '/auth') {
-            console.log('Hello world')
             return res.json(user)
         }
         req.user = user

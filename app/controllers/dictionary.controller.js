@@ -23,7 +23,7 @@ exports.update = function(req, res, next, id) {
 
 exports.getDictionary = function(req, res, next) {
     Dictionary.findOne({})
-        .populate('regions.images travel_types.images')
+        .populate('regions.images travel_types.images', 'path -_id')
         .then((dictionary) => {
             return res.json(dictionary)
         })
