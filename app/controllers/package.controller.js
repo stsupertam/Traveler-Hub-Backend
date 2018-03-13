@@ -130,7 +130,7 @@ exports.popular = function(req, res, next) {
 
 exports.search = function(req, res, next) {
     var pageOptions = {
-        page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 1,
+        page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
         limit: Number(req.query.limit) || 9
     }
     var query = req.query
@@ -254,28 +254,44 @@ exports.search = function(req, res, next) {
         }
         elastic_query['bool']['must'].push(province)
     }
-    if (query.keyword) {
-        var keyword = {
+    if (query.specialTag) {
+        var specialTag = {
             match: {
-                travel_types: {
-                    query: query.keyword
+                tags: {
+                    query: query.specialTag
                 }
             }
         }
-        elastic_query['bool']['must'].push(keyword)
+        elastic_query['bool']['must'].push(specialTag)
+    }
+    if (query.travelType) {
+        var keyword = {
+            match: {
+                travel_types: {
+                    query: query.travelType
+                }
+            }
+        }
+        elastic_query['bool']['must'].push(travelType)
     }
     raw_query['query'] = elastic_query
-    console.log(raw_query)
-    Package.esSearch(raw_query, function (err, packages) {
-        if (err) return next(err)
-        var results = packages.hits.hits
-        var total = results.length
-        var totalPage = Math.ceil(total / pageOptions.limit)
-        var response = {
-            'totalPage': totalPage,
-            'currentPage': pageOptions.page + 1,
-            'packages': results
-        }
-        return res.json(response)
-    })
+    Package.count({})
+        .then((count) => {
+            var total = count
+            totalPage  = Math.ceil(total / pageOptions.limit)
+            Package.esSearch(raw_query, function (err, packages) {
+                if (err) return next(err)
+                var results = packages.hits.hits
+                var response = {
+                    'totalPage': totalPage,
+                    'currentPage': pageOptions.page + 1,
+                    'packages': results
+                }
+                return res.json(response)
+            })
+
+        })
+        .catch((err) => {
+            return next(err)
+        })
 }
