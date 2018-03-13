@@ -22,6 +22,7 @@ exports.create = function(req, res, next) {
 
 exports.list = function(req, res, next) {
     User.find({}).select('-_id -__v -created')
+        .populate('profileImage', 'path -_id')
         .then((users) => {
             return res.json(users)
         })
@@ -42,6 +43,7 @@ exports.delete = function(req, res, next) {
 
 exports.update = function(req, res, next) {
     User.findOneAndUpdate({ email: req.user.email }, req.body, { runValidators: true })
+        .populate('profileImage', 'path -_id')
         .then((user) => {
             return res.json(user)
         })
@@ -56,6 +58,7 @@ exports.read = function(req, res) {
 
 exports.userByEmail = function(req, res, next, email) {
     User.findOne({ email: email }).select('-_id -__v -created')
+        .populate('profileImage', 'path -_id')
         .then((user) => {
             req.user = user
             return next()

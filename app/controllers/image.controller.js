@@ -15,7 +15,32 @@ var storage =   multer.diskStorage({
         callback(null, file.fieldname + '-' + Date.now() + ext);
     }
   });
-var upload = multer({ storage : storage }).array('dictionary', 5);
+var upload = multer({ storage : storage }).array('image', 5);
+
+exports.userProfileUpload = function(req, res, next) {
+    upload(req, res, (err) => {
+        if(err) {
+            console.log(err)
+            return res.end('Error uploading file.');
+        }
+        Image.insertMany(req.files)
+            .then((image) => {
+                var imageId = image[0]._id
+                console.log(imageId)
+                return User.findOneAndUpdate({ email: req.query.email }, 
+                    { profileImage: imageId })
+            })
+            .then((user) => {
+                return user.populate('profileImage', 'path -_id').execPopulate()
+            })
+            .then((user) => {
+                return res.json(user)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    })
+}
 
 exports.facebookProfileUpload = function(req, res, next) {
     User.findOne({ email: req.body.email })
