@@ -82,7 +82,7 @@ exports.dictionaryImage = function(req, res, next) {
         Image.insertMany(req.files)
             .then((images) => {
                 var imageId = _.map(images, '_id')
-                if(req.query.name === 'dictionay') {
+                if(req.query.name === 'region') {
                     return Dictionary.findOneAndUpdate({ 'regions.region': req.query.item }, 
                         { $push: { 'regions.$.images': { '$each': imageId }}
                     })
