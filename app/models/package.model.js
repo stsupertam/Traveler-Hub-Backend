@@ -40,7 +40,10 @@ var PackageSchema = new Schema({
         type: String,
         es_indexed: true
     },
-    travel_types: [String],
+    travel_types: {
+        type: [String],
+        es_indexed: true
+    },
     timeline: [TimelineSchema],
     provinces: {
         type: [String],

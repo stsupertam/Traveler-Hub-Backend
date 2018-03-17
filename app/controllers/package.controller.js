@@ -247,7 +247,7 @@ exports.search = function(req, res, next) {
     if (query.province) {
         var province = {
             match: {
-                province: {
+                provinces: {
                     query: query.province
                 }
             }
@@ -265,7 +265,7 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(specialTag)
     }
     if (query.travelType) {
-        var keyword = {
+        var travelType = {
             match: {
                 travel_types: {
                     query: query.travelType
@@ -275,23 +275,19 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(travelType)
     }
     raw_query['query'] = elastic_query
-    Package.count({})
-        .then((count) => {
-            var total = count
-            totalPage  = Math.ceil(total / pageOptions.limit)
-            Package.esSearch(raw_query, function (err, packages) {
-                if (err) return next(err)
-                var results = packages.hits.hits
-                var response = {
-                    'totalPage': totalPage,
-                    'currentPage': pageOptions.page + 1,
-                    'packages': results
-                }
-                return res.json(response)
-            })
+    Package.esSearch(raw_query, function (err, packages) {
+        if (err) return next(err)
+        console.log(packages)
+        var results = packages.hits.hits
+        var total = packages.hits.total
+        var totalPage  = Math.ceil(total / pageOptions.limit)
+        var response = {
+            'totalPage': totalPage,
+            'currentPage': pageOptions.page + 1,
+            'payload': raw_query,
+            'packages': results
+        }
+        return res.json(response)
+    })
 
-        })
-        .catch((err) => {
-            return next(err)
-        })
 }
