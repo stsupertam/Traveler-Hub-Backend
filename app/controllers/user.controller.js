@@ -1,5 +1,5 @@
 const User = require('mongoose').model('User')
-const Rating = require('mongoose').model('Rating')
+const Favorite = require('mongoose').model('Favorite')
 const Package = require('mongoose').model('Package')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../../config/config')

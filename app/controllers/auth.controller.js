@@ -56,6 +56,7 @@ exports.facebook = function(req, res, next) {
 }
 
 exports.verifySignature = function(req, res, next) {
+    console.log('GHello')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({

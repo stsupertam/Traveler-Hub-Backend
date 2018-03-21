@@ -30,7 +30,7 @@ var PackageSchema = new Schema({
         es_indexed: true
     },
     image: String,
-    rating: {
+    favorite: {
         type: Number,
         es_indexed: true
     },

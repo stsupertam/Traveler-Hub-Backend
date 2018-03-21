@@ -10,7 +10,7 @@ module.exports = function() {
     require('../app/models/package.model')
     require('../app/models/company.model')
     require('../app/models/history.model')
-    require('../app/models/rating.model')
+    require('../app/models/favorite.model')
     require('../app/models/dictionary.model')
     require('../app/models/image.model')
     require('./oplog')()

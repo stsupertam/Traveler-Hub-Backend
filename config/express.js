@@ -29,7 +29,7 @@ module.exports = function() {
     require('../app/routes/company.route')(app)
     require('../app/routes/chatbot.route')(app)
     require('../app/routes/auth.route')(app)
-    require('../app/routes/rating.route')(app)
+    require('../app/routes/favorite.route')(app)
     require('../app/routes/image.route')(app)
     require('../app/routes/dictionary.route')(app)
     require('../app/routes/history.route')(app)

@@ -1,8 +1,8 @@
 const passport = require('passport')
 
 module.exports = function(app) {
-    var rating = require('../controllers/rating.controller')
+    var favorite = require('../controllers/favorite.controller')
     var auth = require('../controllers/auth.controller')
     app.route('/rate')
-        .put(auth.verifySignature, rating.ratePackage)
+        .put(auth.verifySignature, favorite.ratePackage)
 }
