@@ -4,20 +4,22 @@ const Image = require('mongoose').model('Image')
 const User = require('mongoose').model('User')
 const Dictionary = require('mongoose').model('Dictionary')
 
-var storage =   multer.diskStorage({
+let storage =   multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, './images');
     },
     filename: function (req, file, callback) {
-        var ext = ''; // set default extension (if any)
+        let ext = ''; // set default extension (if any)
         if (file.originalname.split(".").length>1) // checking if there is an extension or not.
             ext = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length)
         callback(null, file.fieldname + '-' + Date.now() + ext);
     }
   });
-var upload = multer({ storage : storage }).array('image', 5);
+let upload = multer({ storage : storage }).array('image', 5);
 
 exports.userProfileUpload = function(req, res, next) {
+    console.log('Hello')
+    console.log(req.user)
     upload(req, res, (err) => {
         if(err) {
             console.log(err)
@@ -25,10 +27,10 @@ exports.userProfileUpload = function(req, res, next) {
         }
         Image.insertMany(req.files)
             .then((image) => {
-                var imageId = image[0]._id
+                let imageId = image[0]._id
                 console.log(imageId)
-                return User.findOneAndUpdate({ email: req.query.email }, 
-                    { profileImage: imageId })
+                return User.findOneAndUpdate({ email: req.user.email }, 
+                    { profileImage: imageId }, {new:true})
             })
             .then((user) => {
                 return user.populate('profileImage', 'path -_id').execPopulate()
@@ -51,15 +53,15 @@ exports.facebookProfileUpload = function(req, res, next) {
                 req.user = user
                 return next()
             } else {
-                var pattern = '\d.*.jpg'
-                var filename = req.body.profileImage.split('/').slice(-1)[0].match('.*.jpg')[0]
-                var image = [{
+                let pattern = '\d.*.jpg'
+                let filename = req.body.profileImage.split('/').slice(-1)[0].match('.*.jpg')[0]
+                let image = [{
                     'path': req.body.profileImage,
                     'filename': filename
                 }]
                 Image.insertMany(image)
                     .then((images) => {
-                        var imageId = _.map(images, '_id')
+                        let imageId = _.map(images, '_id')
                         req.body.profileImage = imageId
                         return next()
                     })
@@ -81,7 +83,7 @@ exports.dictionaryImage = function(req, res, next) {
         }
         Image.insertMany(req.files)
             .then((images) => {
-                var imageId = _.map(images, '_id')
+                let imageId = _.map(images, '_id')
                 if(req.query.name === 'region') {
                     return Dictionary.findOneAndUpdate({ 'regions.region': req.query.item }, 
                         { $push: { 'regions.$.images': { '$each': imageId }}

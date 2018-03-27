@@ -1,5 +1,8 @@
 module.exports = function(app) {
-    var history = require('../controllers/history.controller')
-    app.route('/history')
-        .put(history.updateHistory)
+    let history = require('../controllers/history.controller')
+    app.route('/history/:email')
+        .get(history.read)
+    app.route('/history/statistic/:company')
+        .get(history.companyStatistic)
+    app.param('email', history.historyByEmail)
 }

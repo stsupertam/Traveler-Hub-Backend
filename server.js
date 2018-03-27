@@ -3,10 +3,10 @@ const mongoose = require('./config/mongoose')
 const express = require('./config/express')
 const passport = require('./config/passport')
 
-var port = 5000
-var db = mongoose()
-var app = express()
-var auth = passport()
+let port = 5000
+let db = mongoose()
+let app = express()
+let auth = passport()
 app.listen(port)
 
 module.exports = app

@@ -1,8 +1,8 @@
 const passport = require('passport')
 
 module.exports = function(app) {
-    var auth = require('../controllers/auth.controller')
-    var image = require('../controllers/image.controller')
+    let auth = require('../controllers/auth.controller')
+    let image = require('../controllers/image.controller')
     app.route('/login')
         .post(auth.login)
     app.route('/auth')

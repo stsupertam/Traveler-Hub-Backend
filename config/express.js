@@ -7,7 +7,7 @@ const cors = require('cors')
 const passport = require('passport')
 
 module.exports = function() {
-    var app = express()
+    let app = express()
     if (process.env.NODE_ENV === 'development') {
         app.use(morgan('dev'))
     } else {

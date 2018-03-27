@@ -2,14 +2,14 @@ const moment = require('moment')
 const numeral = require('numeral')
 const Package = require('mongoose').model('Package')
 
-var th_month = [
+let th_month = [
     'ม.ค.', 'ก.พ.', 'มี.ค.',
     'เม.ย.', 'พ.ค.', 'มิ.ย.',
     'ก.ค.', 'ส.ค.', 'ก.ย.',
     'ต.ค.', 'พ.ย.', 'ธ.ค.'
 ]
 
-var th_date_format = function(start_travel_date, travel_duration) {
+let th_date_format = function(start_travel_date, travel_duration) {
     date = moment(start_travel_date)
         .add(travel_duration - 1, 'days')
         .format('MM/DD/YYYY').split('/')
@@ -24,8 +24,8 @@ var th_date_format = function(start_travel_date, travel_duration) {
 }
 
 exports.create = function(req, res, next) {
-    var errors = {}
-    var package = new Package(req.body)
+    let errors = {}
+    let package = new Package(req.body)
     package['travel_date'] = th_date_format(req.body['start_travel_date'], req.body['travel_duration'])
     package['human_price'] = numeral(package['price']).format('0,0') + ' บาท'
     package['timeline'] = req.body['timeline']
@@ -40,14 +40,14 @@ exports.create = function(req, res, next) {
 }
 
 exports.list = function(req, res, next) {
-    var pageOptions = {
+    let pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
         limit: Number(req.query.limit) || 16
     }
     totalPage = 0
     Package.count({})
         .then((count) => {
-            var total = count
+            let total = count
             totalPage  = Math.ceil(total / pageOptions.limit)
             return Package.find({})
                 .select('-__v -created')
@@ -55,7 +55,7 @@ exports.list = function(req, res, next) {
                 .limit(pageOptions.limit)
         })
         .then((packages) => {
-            var response = {
+            let response = {
                 'totalPage': totalPage,
                 'currentPage': pageOptions.page + 1,
                 'packages': packages
@@ -129,23 +129,23 @@ exports.popular = function(req, res, next) {
 }
 
 exports.search = function(req, res, next) {
-    var pageOptions = {
+    let pageOptions = {
         page: (((Number(req.query.page) - 1) < 0) ? 0 : req.query.page - 1) || 0,
         limit: Number(req.query.limit) || 9
     }
-    var query = req.query
-    var raw_query = {
+    let query = req.query
+    let raw_query = {
         from: pageOptions.page * pageOptions.limit,
         size: pageOptions.limit,
     }
-    var elastic_query = { 
+    let elastic_query = { 
         bool : {
             must : [],
             filter : []
         },
     }
     if (query.name) { 
-        var text = {
+        let text = {
             match: {
                 text: {
                     query: query.name
@@ -156,7 +156,7 @@ exports.search = function(req, res, next) {
     }
     if (query.minPrice || query.maxPrice) {
         if (query.minPrice && query.maxPrice) {
-            var price = {
+            let price = {
                 range:{
                     price: {
                         gte: query.minPrice,
@@ -166,7 +166,7 @@ exports.search = function(req, res, next) {
             }
             elastic_query['bool']['filter'].push(price) 
         } else if (query.minPrice) { 
-            var price = {
+            let price = {
                 range: {
                     price: {
                         gte: query.minPrice
@@ -175,7 +175,7 @@ exports.search = function(req, res, next) {
             }
             elastic_query['bool']['filter'].push(price)
         } else if (query.maxPrice) { 
-            var price = {
+            let price = {
                 range: {
                     price: {
                         lte: query.maxPrice
@@ -189,7 +189,7 @@ exports.search = function(req, res, next) {
         start = new Date(query.Arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         end = new Date(query.Departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         if (query.Arrival && query.Departure) {
-            var date = {
+            let date = {
                 range: {
                     start_travel_date: {
                         gte: start
@@ -204,7 +204,7 @@ exports.search = function(req, res, next) {
             elastic_query['bool']['filter'].push(date)
         }
         else if (query.Arrival) {
-            var date = {
+            let date = {
                 range: {
                     start_travel_date: {
                         gte: start
@@ -214,7 +214,7 @@ exports.search = function(req, res, next) {
             elastic_query['bool']['filter'].push(date)
         }
         else if (query.Departure) {
-            var date = {
+            let date = {
                 range: {
                     end_travel_date: {
                         lte: end
@@ -225,7 +225,7 @@ exports.search = function(req, res, next) {
         }
     }
     if (query.company) {
-        var company = {
+        let company = {
             match: {
                 company: {
                     query: query.company
@@ -235,7 +235,7 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(company)
     }
     if (query.region) {
-        var region = {
+        let region = {
             match: {
                 region: {
                     query: query.region
@@ -245,7 +245,7 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(region)
     }
     if (query.province) {
-        var province = {
+        let province = {
             match: {
                 provinces: {
                     query: query.province
@@ -255,7 +255,7 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(province)
     }
     if (query.specialTag) {
-        var specialTag = {
+        let specialTag = {
             match: {
                 tags: {
                     query: query.specialTag
@@ -265,7 +265,7 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(specialTag)
     }
     if (query.travelType) {
-        var travelType = {
+        let travelType = {
             match: {
                 travel_types: {
                     query: query.travelType
@@ -278,10 +278,10 @@ exports.search = function(req, res, next) {
     Package.esSearch(raw_query, function (err, packages) {
         if (err) return next(err)
         console.log(packages)
-        var results = packages.hits.hits
-        var total = packages.hits.total
-        var totalPage  = Math.ceil(total / pageOptions.limit)
-        var response = {
+        let results = packages.hits.hits
+        let total = packages.hits.total
+        let totalPage  = Math.ceil(total / pageOptions.limit)
+        let response = {
             'totalPage': totalPage,
             'currentPage': pageOptions.page + 1,
             'payload': raw_query,

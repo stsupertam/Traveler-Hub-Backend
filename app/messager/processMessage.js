@@ -1,7 +1,7 @@
 const handleResponse = require('./handleResponse')
 const StateMachine = require('javascript-state-machine')
 
-var fsm = new StateMachine({
+let fsm = new StateMachine({
     init: 'greet',
     transitions: [
         { name: 'reset',       from: '*',                  to: 'greet'    },
@@ -38,9 +38,9 @@ var fsm = new StateMachine({
 })
 
 module.exports = (event) => {
-    var senderId = event.sender.id
-    var message = event.message.text
-    var state = fsm.state
+    let senderId = event.sender.id
+    let message = event.message.text
+    let state = fsm.state
 
     if(message === 'reset') { fsm.reset() }
     if(message === 'state') { console.log(state) }

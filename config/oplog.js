@@ -4,8 +4,8 @@ const oplog = MongoOplog(config.mongoLocalUri)
 const Package = require('mongoose').model('Package')
 
 function reindex(model){
-  var stream = model.synchronize()
-  var count = 0
+  let stream = model.synchronize()
+  let count = 0
 
   stream.on('data', function(err, doc){
       count++

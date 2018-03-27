@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-var DictionarySchema = new Schema({
+let DictionarySchema = new Schema({
     name: {
         type: String,
         unique: true

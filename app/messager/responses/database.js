@@ -3,7 +3,7 @@ const _ = require('lodash')
 const rootUrl = 'localhost:3000/package/' 
 
 function getItem(packages) {
-    var data = {
+    let data = {
         attachment: {
             type: "template",
             payload: {
@@ -12,7 +12,7 @@ function getItem(packages) {
             }
         }
     }
-    var button = [{
+    let button = [{
         'type': 'web_url',
         'url': '',
         'title': 'More Detail'

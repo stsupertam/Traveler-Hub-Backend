@@ -1,4 +1,4 @@
-var payload = { 
+let payload = { 
     attachment: {
         type: 'template',
         payload: {

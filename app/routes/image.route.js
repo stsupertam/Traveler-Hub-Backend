@@ -1,7 +1,8 @@
 module.exports = function(app) {
-    var image = require('../controllers/image.controller')
+    let image = require('../controllers/image.controller')
+    let auth = require('../controllers/auth.controller')
     app.route('/upload/dictionary')
         .post(image.dictionaryImage)
     app.route('/upload/profile')
-        .post(image.userProfileUpload)
+        .post(auth.verifySignature, image.userProfileUpload)
 }

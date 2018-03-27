@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-var ImageSchema = new Schema({
+let ImageSchema = new Schema({
     filename: String,
     path: String,
     mimetype: String,

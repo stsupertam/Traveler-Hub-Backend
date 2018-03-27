@@ -1,8 +1,8 @@
 const Company = require('mongoose').model('Company')
 
 exports.create = function(req, res, next) {
-    var errors = {}
-    var company = new Company(req.body)
+    let errors = {}
+    let company = new Company(req.body)
     company.validate()
         .catch((err) => {
             console.log('company fail validate')

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../../config/config')
 
 exports.create = function(req, res, next) {
-    var user = new User(req.body)
+    let user = new User(req.body)
     user.validate()
         .then(() => {
             delete req.body.password

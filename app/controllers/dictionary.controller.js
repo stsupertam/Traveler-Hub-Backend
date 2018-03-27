@@ -1,7 +1,7 @@
 const Dictionary = require('mongoose').model('Dictionary')
 
 exports.create = function(req, res, next) {
-    var dictionary = new Dictionary(req.body)
+    let dictionary = new Dictionary(req.body)
     dictionary.save()
         .then(() => {
             return res.json({ message: 'Create dictionary successfully'})

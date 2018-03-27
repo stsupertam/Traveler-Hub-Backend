@@ -1,6 +1,6 @@
 exports.select = function(choice) {
-    var message = ''
-    var payload = {
+    let message = ''
+    let payload = {
         text: message,
         quick_replies:[
           {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-var CompanySchema = new Schema({
+let CompanySchema = new Schema({
     company_id: { 
         type: Number, 
         unique: true 

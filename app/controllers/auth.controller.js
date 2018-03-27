@@ -24,8 +24,8 @@ exports.login = function(req, res, next) {
 }
 
 exports.facebook = function(req, res, next) {
-    var token = ''
-    var user = req.user
+    let token = ''
+    let user = req.user
     if(user) {
         token = jwt.sign(user.toJSON(), JWT_SECRET)
         return res.json({ user, token })
@@ -36,9 +36,6 @@ exports.facebook = function(req, res, next) {
         user.validate()
             .then(() => {
                 return user.save()
-                //user = user.toJSON()
-                //delete user['password']
-                //return res.json({ user, token })
             })
             .then(() => {
                 return user.populate('profileImage', 'path -_id').execPopulate()
@@ -56,7 +53,6 @@ exports.facebook = function(req, res, next) {
 }
 
 exports.verifySignature = function(req, res, next) {
-    console.log('GHello')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({

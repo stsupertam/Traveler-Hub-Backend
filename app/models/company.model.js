@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 const Schema = mongoose.Schema
 
-var CompanySchema = new Schema({
+let CompanySchema = new Schema({
     company_name: { 
         type: String, 
         unique: true ,

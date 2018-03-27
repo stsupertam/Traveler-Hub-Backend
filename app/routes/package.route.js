@@ -1,6 +1,6 @@
 module.exports = function(app) {
-    var package = require('../controllers/package.controller')
-    var middleware = require('../middlewares/updateView.middleware')
+    let package = require('../controllers/package.controller')
+    let middleware = require('../middlewares/updateHistory.middleware')
     app.route('/package')
         .post(package.create)
         .get(package.list)
@@ -11,7 +11,7 @@ module.exports = function(app) {
     app.route('/package/search')
         .get(package.search)
     app.route('/package/:id')
-        .get(middleware.updateView, package.read)
+        .get(middleware.updateHistory, package.read)
         .put(package.update)
         .delete(package.delete)
     app.param('id', package.packageById)

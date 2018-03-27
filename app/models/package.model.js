@@ -3,7 +3,7 @@ const mongoosastic = require('mongoosastic')
 const uniqueValidator = require('mongoose-unique-validator')
 const Schema = mongoose.Schema
 
-var TimelineSchema = new Schema({
+let TimelineSchema = new Schema({
     day: Number,
     detail: String,
     description: [
@@ -14,7 +14,7 @@ var TimelineSchema = new Schema({
     ]
 })
 
-var PackageSchema = new Schema({
+let PackageSchema = new Schema({
     company: {
         type: String,
         es_indexed: true,
@@ -91,9 +91,9 @@ PackageSchema.plugin(uniqueValidator)
 PackageSchema.plugin(mongoosastic, {hydrate:true, hydrateOptions: { select: '-text' }}) 
 
 mongoose.model('Package', PackageSchema)
-var Package = mongoose.model('Package', PackageSchema)
-var stream = Package.synchronize()
-var count = 0
+let Package = mongoose.model('Package', PackageSchema)
+let stream = Package.synchronize()
+let count = 0
 
 stream.on('data', function(err, doc){
     count++

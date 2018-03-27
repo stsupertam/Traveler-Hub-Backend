@@ -1,5 +1,5 @@
 module.exports = function(app) {
-    var company = require('../controllers/company.controller')
+    let company = require('../controllers/company.controller')
     app.route('/company')
         .post(company.create)
         .get(company.list)

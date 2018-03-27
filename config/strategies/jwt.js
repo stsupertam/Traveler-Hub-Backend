@@ -7,7 +7,7 @@ const ExtractJWT = passportJWT.ExtractJwt
 
 
 module.exports = function() {
-    var User = mongoose.model('User')
+    let User = mongoose.model('User')
     passport.use(new JWTStrategy({
             jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
             secretOrKey   : JWT_SECRET 

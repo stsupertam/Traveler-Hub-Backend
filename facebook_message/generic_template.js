@@ -1,4 +1,4 @@
-var topData = {
+let topData = {
     attachment: {
         type: "template",
         payload: {

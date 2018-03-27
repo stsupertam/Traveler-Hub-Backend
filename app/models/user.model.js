@@ -4,7 +4,7 @@ const uniqueValidator = require('mongoose-unique-validator')
 const Schema = mongoose.Schema
 const SALT_WORK_FACTOR = 10
 
-var UserSchema = new Schema({
+let UserSchema = new Schema({
     email: {
         type: String, 
         unique: true, 
@@ -24,7 +24,7 @@ var UserSchema = new Schema({
     usertype: String,
     firstname: String,
     lastname: String,
-    age: Number,
+    age: Date,
     gender: String,
     country: String,
     province: String,
@@ -32,19 +32,10 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     }
-}, { 
-    strict: true,
-    toJSON: { virtuals: true} 
-})
-
-UserSchema.virtual('histories', {
-    ref: 'History',
-    localField: 'email',
-    foreignField: 'email',
-})
+}) 
 
 UserSchema.pre('save', function(next) {
-    var user = this
+    let user = this
     if (!user.isModified('password')) return next()
     bcrypt.genSalt(SALT_WORK_FACTOR)
         .then((salt) => {
