@@ -5,7 +5,7 @@ const Package = require('mongoose').model('Package')
 const _ = require('lodash')
 
 exports.likeDislike = function(req, res, next) {
-    Favorite.findOne({ email: req.user.email, packageId: mongoose.Types.ObjectId() })
+    Favorite.findOne({ email: req.user.email, packageId: mongoose.Types.ObjectId(req.body.packageId) })
         .then((favorite) => {
             if(!favorite) {
                 let favorite = new Favorite(
@@ -25,9 +25,18 @@ exports.likeDislike = function(req, res, next) {
 }
 
 exports.display = function(req, res, next) {
+    Favorite.find({ email: req.user.email, packageId: mongoose.Types.ObjectId(req.body.packageId) })
+        .then((favorite) => {
+            return res.json(favorite)
+        })
+        .catch((err) => {
+            return next(err)
+        })
+}
+
+exports.favoriteByEmail = function(req, res, next) {
     Favorite.find({ email: req.user.email })
         .then((favorite) => {
-
             return res.json(favorite)
         })
         .catch((err) => {

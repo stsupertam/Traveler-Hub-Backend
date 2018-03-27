@@ -13,7 +13,7 @@ module.exports = function() {
     require('../app/models/favorite.model')
     require('../app/models/dictionary.model')
     require('../app/models/image.model')
-    require('./oplog')()
+    //require('./oplog')()
 
     return db
 }

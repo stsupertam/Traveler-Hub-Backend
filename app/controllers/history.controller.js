@@ -59,7 +59,7 @@ exports.companyStatistic = function(req, res, next) {
         { 
             '$match': { 
                 'package.company': req.params.company,
-                'packageId': mongoose.Types.ObjectId(req.query.packageId) 
+                //'packageId': mongoose.Types.ObjectId(req.query.packageId) 
             } 
         },
        // {
@@ -72,9 +72,29 @@ exports.companyStatistic = function(req, res, next) {
                 'email': 1,
                 'packageId': 1,
                 'package.package_name': 1,
-                'created': 1
+                'y': {
+                    '$year': '$created'
+                },
+                'm': {
+                    '$month': '$created'
+                },
+                'd': {
+                    '$dayOfMonth': '$created'
+                }
             }
         },
+        {
+           '$group': {
+                '_id': {
+                    'year': '$y',
+                    'month': '$m',
+                    'day': '$d'
+                },
+                'count': { 
+                    '$sum': 1 
+                }
+            }
+        }
     ])
     .then((history) => {
         return res.json(history)
