@@ -46,32 +46,51 @@ exports.historyByEmail = function(req, res, next, email) {
         })
 }
 
-exports.companyStatistic = function(req, res, next) {
+exports.report = function(req, res, next) {
+    let lookup = {
+        '$lookup': {
+            'from': 'packages',
+            'localField': 'packageId',
+            'foreignField': '_id',
+            'as': 'package'
+        },
+    }
+
+    let match = {
+        '$match': { 
+            'package.company': req.params.company,
+            //'packageId':  
+        } 
+    }
+    if(req.query.packageId) {
+        match['$match']['packageId'] = mongoose.Types.ObjectId(req.query.packageId)
+    } else if(req.query.region) {
+        match['$match']['package.region'] = req.query.region
+    } else if(req.query.travel_type) {
+        match['$match']['package.travel_types'] = req.query.travel_type
+    } else if(req.query.province) {
+        match['$match']['package.provinces'] = req.query.province
+    }
+
+    if(req.query.startDate && req.query.endDate) {
+        match['$match']['created'] = {
+            '$gte': new Date(req.query.startDate),
+            '$lte': new Date(req.query.endDate)
+        }
+    } 
+
     History.aggregate([
-        {
-            '$lookup': {
-                'from': 'packages',
-                'localField': 'packageId',
-                'foreignField': '_id',
-                'as': 'package'
-            },
-        },
-        { 
-            '$match': { 
-                'package.company': req.params.company,
-                //'packageId': mongoose.Types.ObjectId(req.query.packageId) 
-            } 
-        },
-       // {
-       //     '$group': {
-       //         '_id': { 'email': '$email' }
-       //     }
-       // },
+        lookup,
+        match,
+        { '$sort': { 'created': -1 } },
         {
             '$project': {
                 'email': 1,
                 'packageId': 1,
                 'package.package_name': 1,
+                'package.provinces': 1,
+                'package.region': 1,
+                'package.travel_types': 1,
                 'y': {
                     '$year': '$created'
                 },
@@ -92,9 +111,10 @@ exports.companyStatistic = function(req, res, next) {
                 },
                 'count': { 
                     '$sum': 1 
-                }
+                },
+                //'region': { '$push': '$package.region'},
             }
-        }
+        },
     ])
     .then((history) => {
         return res.json(history)

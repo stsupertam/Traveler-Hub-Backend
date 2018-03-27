@@ -3,6 +3,6 @@ module.exports = function(app) {
     app.route('/history/:email')
         .get(history.read)
     app.route('/history/report/:company')
-        .get(history.companyStatistic)
+        .get(history.report)
     app.param('email', history.historyByEmail)
 }
