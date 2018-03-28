@@ -281,6 +281,7 @@ exports.search = function(req, res, next) {
         let results = packages.hits.hits
         let total = packages.hits.total
         let totalPage  = Math.ceil(total / pageOptions.limit)
+        if(pageOptions.page + 1 > totalPage) pageOptions.page = totalPage
         let response = {
             'totalPage': totalPage,
             'currentPage': pageOptions.page + 1,
