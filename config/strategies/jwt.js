@@ -14,7 +14,9 @@ module.exports = function() {
         },
         function (jwtPayload, done) {
             return User.findOne({ email: jwtPayload.email }).select('-password')
+                .populate('profileImage', 'path -_id')
                 .then((user) => {
+                    console.log(user)
                     return done(null, user)
                 })
                 .catch((err) => {

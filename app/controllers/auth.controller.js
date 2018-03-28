@@ -67,5 +67,3 @@ exports.verifySignature = function(req, res, next) {
         return next()
     })(req, res, next)
 }
-
-

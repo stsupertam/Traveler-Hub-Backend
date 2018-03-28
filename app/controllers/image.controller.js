@@ -18,7 +18,6 @@ let storage =   multer.diskStorage({
 let upload = multer({ storage : storage }).array('image', 5);
 
 exports.userProfileUpload = function(req, res, next) {
-    console.log('Hello')
     console.log(req.user)
     upload(req, res, (err) => {
         if(err) {
@@ -53,8 +52,9 @@ exports.facebookProfileUpload = function(req, res, next) {
                 req.user = user
                 return next()
             } else {
+                console.log(req.body.profileImage)
                 let pattern = '\d.*.jpg'
-                let filename = req.body.profileImage.split('/').slice(-1)[0].match('.*.jpg')[0]
+                let filename = req.body.userId + '-' + req.body.firstname 
                 let image = [{
                     'path': req.body.profileImage,
                     'filename': filename
