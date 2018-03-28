@@ -13,12 +13,10 @@ exports.verification = function(req, res, next) {
 }
 
 exports.messageHook = function(req, res, next) {
-    console.log('test')
     if (req.body.object === 'page') {
         req.body.entry.forEach(entry => {
             entry.messaging.forEach((event) => {
                 if (event.message && event.message.text) {
-                    console.log(event.message.text)
                     processMessage(event)
                 }
             })

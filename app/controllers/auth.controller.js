@@ -9,7 +9,7 @@ exports.login = function(req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: info,
+                message: info.message,
                 user   : user
             })
         }
