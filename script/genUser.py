@@ -28,7 +28,7 @@ def gen_user(total):
         if res.status_code == 200 or res.status_code == 201:
             print(payload['email'], 'was created')
         else:
-            print(payload['email'], 'wasn't created')
+            print(payload['email'], 'wasn\'t created')
 
         emails.append(payload['email'])
     print('Finish')
