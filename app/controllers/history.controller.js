@@ -72,17 +72,20 @@ exports.report = function(req, res, next) {
         match['$match']['package.provinces'] = req.query.province
     }
 
+    let startDate = new Date(req.query.startDate)
+    let endDate = new Date(req.query.endDate)
     if(req.query.startDate && req.query.endDate) {
+        startDateP = new Date(startDate.setDate(startDate.getDate() + 1))
+        endDateP = new Date(endDate.setDate(endDate.getDate() + 1))
         match['$match']['created'] = {
-            '$gte': new Date(req.query.startDate),
-            '$lte': new Date(req.query.endDate)
+            '$gte': startDateP,
+            '$lte': endDateP
         }
     } 
 
     History.aggregate([
         lookup,
         match,
-        { '$sort': { 'created': -1 } },
         {
             '$project': {
                 'email': 1,
@@ -91,6 +94,7 @@ exports.report = function(req, res, next) {
                 'package.provinces': 1,
                 'package.region': 1,
                 'package.travel_types': 1,
+                'created': 1,
                 'y': {
                     '$year': '$created'
                 },
@@ -112,11 +116,37 @@ exports.report = function(req, res, next) {
                 'count': { 
                     '$sum': 1 
                 },
-                //'region': { '$push': '$package.region'},
+                //'province': { '$push': '$package.provinces'},
             }
         },
     ])
+    .allowDiskUse(true)
     .then((history) => {
+        let data = []
+        for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+            let temp = new Date(d)
+            let item = {}
+            temp = new Date(temp.setDate((temp.getDate() - 1)))
+            let year = temp.getFullYear()
+            let month = temp.getMonth() + 1
+            let day = temp.getDate()
+            let count = 0
+            for (let i = 0; i < history.length; i++) {
+                console.log(history[i]['_id'])
+                historyYear = history[i]['_id']['year']
+                historyMonth = history[i]['_id']['month']
+                historyday = history[i]['_id']['day']
+                if(year === historyYear && month === historyMonth && day === historyday) {
+                    count = history[i]['count']
+                    break
+                }
+            }
+            let date = `${year}-${month}-${day}`
+            item['x'] = date
+            item['y'] = count
+            data.push(item);
+        }
+        //return res.json(data)
         return res.json(history)
     })
     .catch((err) => {

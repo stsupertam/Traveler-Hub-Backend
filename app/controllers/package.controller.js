@@ -55,6 +55,7 @@ exports.list = function(req, res, next) {
                 .limit(pageOptions.limit)
         })
         .then((packages) => {
+            if(pageOptions.page + 1 > totalPage) pageOptions.page = totalPage
             let response = {
                 'totalPage': totalPage,
                 'currentPage': pageOptions.page + 1,
@@ -277,7 +278,6 @@ exports.search = function(req, res, next) {
     raw_query['query'] = elastic_query
     Package.esSearch(raw_query, function (err, packages) {
         if (err) return next(err)
-        console.log(packages)
         let results = packages.hits.hits
         let total = packages.hits.total
         let totalPage  = Math.ceil(total / pageOptions.limit)
