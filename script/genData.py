@@ -9,7 +9,7 @@ from random import randint
 from bson.objectid import ObjectId
 
 def print_response(str, iter):
-    print(f'{str} was created [{iter+1}]')
+    print(f'{str} was updated [{iter+1}]')
 
 def init_mogodb():
     client = MongoClient('localhost', 27017)
@@ -34,7 +34,7 @@ def gen_history(total):
         history = {
             'packageId': packagesId[randint(0, len(packagesId) - 1)],
             'email': emails[randint(0, len(emails) - 1)],
-            'created': radar.random_datetime(
+            'updated': radar.random_datetime(
                 start = datetime.datetime(year=2017, month=1, day=1),
                 stop = datetime.datetime(year=2017, month=3, day=31)
             )
@@ -49,7 +49,7 @@ def gen_user(total):
 
     users = db.users
 
-    hashed_password = bcrypt.hashpw('1'.encode('utf8'), bcrypt.gensalt(10)).decode('utf8')
+    hashed_password = '$2a$10$mRKydZYcfTmIciCfbZoyauCCvvw2Y3Vn9DigyvyspjDN6KPQgkH1K'
     for i in range(total):
         user = {
             'email': str(randint(10000, 1000000)) + '@email.com',
@@ -69,18 +69,26 @@ def gen_favorite(total):
     emails = get_collection_field(db, 'users', 'email')
 
     favorites = db.favorites
+    packages = db.packages
 
     for i in range(total):
 
         favorite = {
             'packageId': packagesId[randint(0, len(packagesId) - 1)],
             'email': emails[randint(0, len(emails) - 1)],
-            'created': radar.random_datetime(
+            'updated': radar.random_datetime(
                 start = datetime.datetime(year=2017, month=1, day=1),
                 stop = datetime.datetime(year=2017, month=3, day=31)
             ),
             'like': bool(randint(0,1))
         }
+
+        if favorite['like']:
+            packages.update({ '_id':ObjectId(favorite['packageId']) }, 
+                { '$inc': { 'like': 1 } })
+        else:
+            packages.update({ '_id':ObjectId(favorite['packageId']) }, 
+                { '$inc': { 'dislike': 1 } })
         
         favorites.insert_one(favorite)
         print_response('Favorite' , i)

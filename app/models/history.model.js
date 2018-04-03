@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 let HistorySchema = new Schema({
     email: String,
     packageId: { type: Schema.ObjectId, ref: 'Package' },
-    created: {
+    updated: {
         type: Date,
         default: Date.now
     }

@@ -40,6 +40,14 @@ let PackageSchema = new Schema({
         type: String,
         es_indexed: true
     },
+    like: {
+        type: Number,
+        default: 0
+    },
+    dislike: {
+        type: Number,
+        default: 0
+    },
     travel_types: {
         type: [String],
         es_indexed: true
@@ -81,7 +89,7 @@ let PackageSchema = new Schema({
         es_indexed: true,
         default: 0
     },
-    created: {
+    updated: {
         type: Date,
         default: Date.now
     }
