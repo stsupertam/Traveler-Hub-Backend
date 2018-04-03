@@ -50,6 +50,25 @@ UserSchema.pre('save', function(next) {
         })
 })
 
+UserSchema.pre('findOneAndUpdate', function (next) {
+    let user = this
+    user.setOptions({
+      new: true,
+      runValidators: true
+    })
+    if (user.getUpdate().password) { 
+        bcrypt.genSalt(SALT_WORK_FACTOR)
+            .then((salt) => {
+                return bcrypt.hash(user.getUpdate().password, salt)
+            })
+            .then((hash) => {
+                user.getUpdate().password = hash
+                next()
+            })
+    }
+    next()
+})
+
 UserSchema.methods.comparePassword = function(candidatePassword, callback) {
     bcrypt.compare(candidatePassword, this.password)
         .then((isMatch) => callback(null, isMatch))

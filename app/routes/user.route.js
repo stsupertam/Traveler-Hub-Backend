@@ -5,10 +5,7 @@ module.exports = function(app) {
     let auth = require('../controllers/auth.controller')
     app.route('/user')
         .post(user.create)
-        //.get(user.list)
-    app.route('/user/:email')
         .get(auth.verifySignature, user.read)
         .put(auth.verifySignature, user.update)
         .delete(auth.verifySignature, user.delete)
-    app.param('email', user.userByEmail)
 }

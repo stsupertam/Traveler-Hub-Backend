@@ -146,8 +146,8 @@ exports.report = function(req, res, next) {
             item['y'] = count
             data.push(item);
         }
-        //return res.json(data)
-        return res.json(history)
+        return res.json(data)
+        //return res.json(history)
     })
     .catch((err) => {
         return next(err)

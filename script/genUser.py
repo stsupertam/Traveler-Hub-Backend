@@ -3,8 +3,10 @@ from random import randint
 import requests
 import sys
 import json
-
-USER_API_ROOT = 'http://localhost:5000/user'
+import radar 
+import datetime
+import pymongo
+from pymongo import MongoClient
 
 def response_print(res):
     print()
@@ -13,25 +15,24 @@ def response_print(res):
     print('--------------------')
     print()
 
+def init_mogodb():
+    client = MongoClient('localhost', 27017)
+    db = client.testdb
+    return db
+
 def gen_user(total):
-    URL = USER_API_ROOT
-    headers = {'Content-type': 'application/json'}
-    emails = []
+    gender = ['male', 'female']
     for i in range(total):
         payload = {
             'email': str(randint(10000, 1000000)) + '@email.com',
-            'password': '1'
+            'password': '1',
+            'gender': gender[randint(0,1)],
+            'age': radar.random_datetime(
+                start = datetime.datetime(year=1965, month=1, day=1),
+                stop = datetime.datetime(year=2002, month=12, day=31)
+            )
         }
-
-        res = requests.post(URL, data=json.dumps(payload), headers=headers)
-
-        if res.status_code == 200 or res.status_code == 201:
-            print(payload['email'], 'was created')
-        else:
-            print(payload['email'], 'wasn\'t created')
-
-        emails.append(payload['email'])
-    print('Finish')
+    print('User was created')
 
 if __name__ == '__main__':
     print(sys.argv)

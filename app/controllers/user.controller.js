@@ -42,7 +42,7 @@ exports.delete = function(req, res, next) {
 }
 
 exports.update = function(req, res, next) {
-    User.findOneAndUpdate({ email: req.user.email }, req.body, { runValidators: true })
+    User.findOneAndUpdate({ email: req.user.email }, req.body)
         .populate('profileImage', 'path -_id')
         .then((user) => {
             return res.json(user)
@@ -56,8 +56,8 @@ exports.read = function(req, res) {
     return res.json(req.user)
 }
 
-exports.userByEmail = function(req, res, next, email) {
-    User.findOne({ email: email }).select('-_id -__v -created')
+exports.userByEmail = function(req, res, next) {
+    User.findOne({ email: req.user.email }).select('-_id -__v -created')
         .populate('profileImage', 'path -_id')
         .then((user) => {
             req.user = user
