@@ -17,7 +17,7 @@ exports.likeDislike = function(req, res, next) {
                     })
                 return favorite.save()
             } else {
-                return favorite.update({ favorite: req.body.like, updated: Date.now() })
+                return favorite.update({ like: req.body.like, updated: Date.now() })
             }
         })
         .then((favorite) => {
@@ -44,12 +44,11 @@ exports.display = function(req, res, next) {
     Favorite.find({ email: req.user.email })
         .limit(10)
         .sort('-updated')
-        .populate('packageId', 'package_name travel_date price')
+        .populate('packageId', 'package_name travel_date human_price image detail')
         .then((favorite) => {
             return res.json(favorite)
         })
         .catch((err) => {
             return next(err)
         })
-
 }

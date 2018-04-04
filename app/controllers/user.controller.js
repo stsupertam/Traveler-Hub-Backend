@@ -6,6 +6,7 @@ const { JWT_SECRET } = require('../../config/config')
 
 exports.create = function(req, res, next) {
     let user = new User(req.body)
+    console.log(req.body)
     user.validate()
         .then(() => {
             delete req.body.password

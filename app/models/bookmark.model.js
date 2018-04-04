@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-let FavoriteSchema = new Schema({
+let BookmarkSchema = new Schema({
     email: String,
     packageId: { type: Schema.ObjectId, ref: 'Package' },
-    like: Boolean,
+    bookmark: Boolean,
     updated: {
         type: Date,
         default: Date.now
@@ -14,11 +14,11 @@ let FavoriteSchema = new Schema({
     toJSON: {virtuals:true} 
 })
 
-FavoriteSchema.virtual('user', {
+BookmarkSchema.virtual('user', {
     ref: 'User',
     localField: 'email',
     foreignField: 'email',
     justOne: true
 });
   
-mongoose.model('Favorite', FavoriteSchema)
+mongoose.model('Bookmark', BookmarkSchema)
