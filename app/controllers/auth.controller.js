@@ -62,6 +62,12 @@ exports.verifySignature = function(req, res, next) {
         }
         if(req.url === '/auth') {
             return res.json(user)
+        } else if(req.url === '/history/report') {
+            if(user.usertype != 'agency') {
+                return res.status(422).json({
+                    error: 'You don\'t have permission to access this site.'
+                })
+            }
         }
         req.user = user
         return next()

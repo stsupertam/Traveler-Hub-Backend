@@ -93,6 +93,28 @@ def gen_favorite(total):
         favorites.insert_one(favorite)
         print_response('Favorite' , i)
 
+def gen_bookmark(total):
+    db = init_mogodb()
+    packagesId = get_collection_field(db, 'packages', '_id')
+    emails = get_collection_field(db, 'users', 'email')
+
+    bookmarks = db.bookmarks
+    packages = db.packages
+
+    for i in range(total):
+
+        bookmark = {
+            'packageId': packagesId[randint(0, len(packagesId) - 1)],
+            'email': emails[randint(0, len(emails) - 1)],
+            'updated': radar.random_datetime(
+                start = datetime.datetime(year=2017, month=1, day=1),
+                stop = datetime.datetime(year=2017, month=3, day=31)
+            ),
+            'bookmark': bool(randint(0,1))
+        }
+
+        bookmarks.insert_one(bookmark)
+        print_response('Bookmark' , i)
 
 if __name__ == '__main__':
     if sys.argv[2] == 'create':
@@ -103,6 +125,8 @@ if __name__ == '__main__':
                 gen_user(int(sys.argv[3]))
             elif sys.argv[1] == 'favorite':
                 gen_favorite(int(sys.argv[3]))
+            elif sys.argv[1] == 'bookmark':
+                gen_bookmark(int(sys.argv[3]))
             else:
                 print('Error. Can generate only history or user.')
         elif len(sys.argv) == 3:
@@ -112,6 +136,8 @@ if __name__ == '__main__':
                 gen_user(1)
             elif sys.argv[1] == 'favorite':
                 gen_user(1)
+            elif sys.argv[1] == 'bookmark':
+                gen_bookmark(1)
             else:
                 print('Error. Can generate only history or user.')
         else:

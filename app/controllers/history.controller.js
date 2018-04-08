@@ -1,34 +1,6 @@
 const mongoose = require('mongoose')
 const History = mongoose.model('History')
 
-//exports.updateHistory = function(req, res, next) {
-//    History.findOne({ email: req.body.email })
-//        .then((history) => {
-//            if(!history) {
-//                history = new History({ email: req.body.email, packageId: req.body.packageId })
-//                history.save()
-//                    .then(() => {
-//                        return res.json({ message: 'History successfully updated' })
-//                    })
-//                    .catch((err) => {
-//                        return next(err)
-//                    })
-//            } else {
-//                history.packageId.addToSet(req.body._id)
-//                history.save()
-//                    .then(() => {
-//                        return res.json({ message: 'History successfully updated' })
-//                    })
-//                    .catch((err) => {
-//                        return next(err)
-//                    })
-//            }
-//        })
-//        .catch((err) => {
-//            return next(err)
-//        })
-//}
-
 exports.read = function(req, res) {
     return res.json(req.history)
 }
@@ -58,8 +30,7 @@ exports.report = function(req, res, next) {
 
     let match = {
         '$match': { 
-            'package.company': req.params.company,
-            //'packageId':  
+            'package.company': req.user.company,
         } 
     }
     if(req.query.packageId) {
@@ -132,7 +103,6 @@ exports.report = function(req, res, next) {
             let day = temp.getDate()
             let count = 0
             for (let i = 0; i < history.length; i++) {
-                console.log(history[i]['_id'])
                 historyYear = history[i]['_id']['year']
                 historyMonth = history[i]['_id']['month']
                 historyday = history[i]['_id']['day']

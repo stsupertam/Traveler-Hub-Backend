@@ -7,6 +7,8 @@ module.exports = function(app) {
         .post(auth.login)
     app.route('/auth')
         .get(auth.verifySignature)
+    app.route('/auth/agency')
+        .get(auth.verifySignature)
     app.route('/auth/facebook')
         .post(image.facebookProfileUpload, auth.facebook)
 }
