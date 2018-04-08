@@ -60,9 +60,9 @@ exports.verifySignature = function(req, res, next) {
                 user   : user
             })
         }
-        if(req.url === '/auth') {
+        if(req.path === '/auth') {
             return res.json(user)
-        } else if(req.url === '/history/report') {
+        } else if(req.path === '/history/report') {
             if(user.usertype != 'agency') {
                 return res.status(422).json({
                     error: 'You don\'t have permission to access this site.'
