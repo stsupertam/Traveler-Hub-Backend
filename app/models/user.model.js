@@ -25,7 +25,7 @@ let UserSchema = new Schema({
     firstname: String,
     lastname: String,
     company: String,
-    birthday: Date,
+    birthdate: Date,
     gender: String,
     country: String,
     province: String,
