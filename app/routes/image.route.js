@@ -5,4 +5,6 @@ module.exports = function(app) {
         .post(image.dictionaryImage)
     app.route('/upload/profile')
         .post(auth.verifySignature, image.userProfileUpload)
+    app.route('/upload/image')
+        .post(image.upload)
 }

@@ -17,6 +17,23 @@ let storage =   multer.diskStorage({
   });
 let upload = multer({ storage : storage }).array('image', 5);
 
+exports.upload = function(req, res, next) {
+    upload(req, res, (err) => {
+        if(err) {
+            console.log(err)
+            return res.end('Error uploading file.');
+        }
+        Image.insertMany(req.files)
+            .then((image) => {
+                return res.json({
+                    message: 'Image uploaded successfully'
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    })
+}
 exports.userProfileUpload = function(req, res, next) {
     console.log(req.user)
     upload(req, res, (err) => {
