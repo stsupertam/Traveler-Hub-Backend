@@ -6,7 +6,7 @@ exports.read = function(req, res) {
 }
 
 exports.historyByEmail = function(req, res, next, email) {
-    History.findOne({ email: email }).select('-_id -__v -created')
+    History.findOne({ email: email }).select('-_id -__v -updated')
         .populate('packageId', 'province travel_types region tags')
         .populate('user', 'gender age')
         .then((history) => {
@@ -48,7 +48,7 @@ exports.report = function(req, res, next) {
     if(req.query.startDate && req.query.endDate) {
         startDateP = new Date(startDate.setDate(startDate.getDate() + 1))
         endDateP = new Date(endDate.setDate(endDate.getDate() + 1))
-        match['$match']['created'] = {
+        match['$match']['updated'] = {
             '$gte': startDateP,
             '$lte': endDateP
         }
@@ -65,15 +65,15 @@ exports.report = function(req, res, next) {
                 'package.provinces': 1,
                 'package.region': 1,
                 'package.travel_types': 1,
-                'created': 1,
+                'updated': 1,
                 'y': {
-                    '$year': '$created'
+                    '$year': '$updated'
                 },
                 'm': {
-                    '$month': '$created'
+                    '$month': '$updated'
                 },
                 'd': {
-                    '$dayOfMonth': '$created'
+                    '$dayOfMonth': '$updated'
                 }
             }
         },
