@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const History = mongoose.model('History')
 
 async function aggregate(company, items, date, type) {
+    items = items.split(' ')
     let result = []
     let lookup = {
         '$lookup': {
@@ -72,7 +73,7 @@ async function aggregate(company, items, date, type) {
             }
         ])
         .allowDiskUse(true)
-        result.push(await history)
+        result.push(history)
     }
     return result
 }
@@ -133,15 +134,15 @@ exports.report = async function(req, res, next) {
     date.startDate = new Date(req.query.startDate)
     date.endDate = new Date(req.query.endDate)
 
-    if(req.query.region) {
-        let regions = req.query.region.split(' ')
-        aggResult = await aggregate(req.user.company, regions, date, 'region')
-    } else if(req.query.travel_type) {
-        let travel_types = req.query.travel_type.split(' ')
-        aggResult = await aggregate(req.user.company, travel_types, date, 'travel_types')
+    if(req.query.regions) {
+        aggResult = await aggregate(req.user.company, req.query.region, date, 'region')
+    } else if(req.query.travel_types) {
+        aggResult = await aggregate(req.user.company, req.query.travel_type, date, 'travel_types')
+    } else if(req.query.provinces) {
+        aggResult = await aggregate(req.user.company, req.query.provinces, date, 'provinces')
     }
 
-    result = mapDate(await aggResult, date)
+    result = mapDate(aggResult, date)
     return res.json(await result)
 }
 
