@@ -37,15 +37,6 @@ async function aggregateFavorite(company, date, type) {
         items = travel_types
     }
     let result = []
-    let lookup = {
-        '$lookup': {
-            'from': 'packages',
-            'localField': 'packageId',
-            'foreignField': '_id',
-            'as': 'package'
-        },
-    }
-
     let match = {
         '$match': { 
             'package.company': company,
@@ -214,6 +205,7 @@ async function aggregateTotal(company, date) {
         temp.value = item.count
         result.push(temp)
     }
+    console.log(history)
     return result
 }
 
