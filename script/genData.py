@@ -36,7 +36,7 @@ def gen_history(total):
             'email': emails[randint(0, len(emails) - 1)],
             'updated': radar.random_datetime(
                 start = datetime.datetime(year=2018, month=1, day=1),
-                stop = datetime.datetime(year=2018, month=3, day=31)
+                stop = datetime.datetime(year=2018, month=12, day=31)
             )
         }
         
@@ -78,7 +78,7 @@ def gen_favorite(total):
             'email': emails[randint(0, len(emails) - 1)],
             'updated': radar.random_datetime(
                 start = datetime.datetime(year=2018, month=1, day=1),
-                stop = datetime.datetime(year=2018, month=3, day=31)
+                stop = datetime.datetime(year=2018, month=12, day=31)
             ),
             'like': bool(randint(0,1))
         }
