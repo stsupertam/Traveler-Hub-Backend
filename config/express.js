@@ -34,6 +34,7 @@ module.exports = function() {
     require('../app/routes/dictionary.route')(app)
     require('../app/routes/history.route')(app)
     require('../app/routes/bookmark.route')(app)
+    require('../app/routes/report.route')(app)
     require('../app/routes/index.route')(app)
     return app
 }
