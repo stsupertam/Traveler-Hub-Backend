@@ -77,8 +77,8 @@ def gen_favorite(total):
             'packageId': packagesId[randint(0, len(packagesId) - 1)],
             'email': emails[randint(0, len(emails) - 1)],
             'updated': radar.random_datetime(
-                start = datetime.datetime(year=2017, month=1, day=1),
-                stop = datetime.datetime(year=2017, month=3, day=31)
+                start = datetime.datetime(year=2018, month=1, day=1),
+                stop = datetime.datetime(year=2018, month=3, day=31)
             ),
             'like': bool(randint(0,1))
         }

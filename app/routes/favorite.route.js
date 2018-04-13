@@ -6,4 +6,6 @@ module.exports = function(app) {
     app.route('/favorite')
         .put(auth.verifySignature, favorite.likeDislike)
         .get(auth.verifySignature, favorite.display)
+    app.route('/favorite/report')
+        .get(auth.verifySignature, favorite.report)
 }
