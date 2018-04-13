@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const History = mongoose.model('History')
 const Favorite = mongoose.model('Favorite')
+const Package = mongoose.model('Package')
 
 const regions = ['เหนือ', 'ใต้', 'ตะวันออกเฉียงเหนือ', 'ตะวันตก', 'กลาง', 'ตะวันออก']
 const travel_types = ['ธรรมะ', 'ผจญภัย', 'ธรรมชาติ', 'สถานที่น่าสนใจ']
@@ -19,6 +20,13 @@ const lookupUser = {
         'foreignField': 'email',
         'as': 'user'
     },
+}
+
+async function findTheGreatest(mostType, company) {
+    return Package.findOne({ company: company })
+        .sort(mostType)
+        .select('_id package_name company like dislike number_of_views')
+
 }
 
 async function aggregateFavorite(company, date, type) {
@@ -348,4 +356,28 @@ exports.reportFavorite = async function(req, res, next) {
         aggResult = await aggregateFavorite(req.user.company, date, 'travel_types')
     }
     return res.json(aggResult)
+}
+
+exports.most = async function(req, res, next) {
+    let mostLike = await findTheGreatest('-like', req.user.company)
+    let mostDisLike = await findTheGreatest('-dislike', req.user.company)
+    let mostView = await findTheGreatest('-number_of_views', req.user.company)
+
+    let result = {
+        like: mostLike,
+        dislike: mostDisLike,
+        view: mostView
+    }
+    return res.json(result)
+}
+
+exports.package = function(req, res, next) {
+    Package.find({ company: req.user.company })
+        .select('_id package_name like dislike number_of_views region province ')
+        .then((packages) => {
+            return res.json(packages)
+        })
+        .catch((err) => {
+            return next(err)
+        })
 }

@@ -7,4 +7,9 @@ module.exports = function(app) {
         .get(auth.verifySignature, report.reportViewTotal)
     app.route('/report/favorite')
         .get(auth.verifySignature, report.reportFavorite)
+    app.route('/report/most')
+        .get(auth.verifySignature, report.most)
+    app.route('/report/package')
+        .get(auth.verifySignature, report.package)
+
 }
