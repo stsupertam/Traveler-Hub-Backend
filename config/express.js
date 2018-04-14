@@ -23,7 +23,8 @@ module.exports = function() {
     app.use(passport.initialize())
     app.use(passport.session())
     app.use(cors())
-    app.use('/images', express.static('images'));
+    app.use('/images', express.static('../images'));
+    console.log(__dirname)
     require('../app/routes/user.route')(app)
     require('../app/routes/package.route')(app)
     require('../app/routes/company.route')(app)
