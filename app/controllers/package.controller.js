@@ -1,8 +1,10 @@
 const moment = require('moment')
 const numeral = require('numeral')
 const Package = require('mongoose').model('Package')
+const wordcut = require('wordcut')
 
-let th_month = [
+wordcut.init('./text_processing/dictionary.txt', true)
+const th_month = [
     'ม.ค.', 'ก.พ.', 'มี.ค.',
     'เม.ย.', 'พ.ค.', 'มิ.ย.',
     'ก.ค.', 'ส.ค.', 'ก.ย.',
@@ -146,10 +148,15 @@ exports.search = function(req, res, next) {
         },
     }
     if (query.name) { 
+        let text_tokenization = wordcut.cut(query.name)
+        text_tokenization.replace('|', ' ')
         let text = {
             match: {
                 text: {
-                    query: query.name
+                    query: text_tokenization,
+                    operator: 'and',
+                    minimum_should_match: '75%',
+                    fuzziness: 'AUTO',
                 }
             }
         }
