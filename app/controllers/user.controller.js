@@ -47,7 +47,9 @@ exports.update = function(req, res, next) {
         .populate('profileImage', 'path -_id')
         .lean()
         .then((user) => {
-            user.profileImage = '/images/' + user.profileImage.filename
+            if(user.profileImage) {
+                user.profileImage = '/images/' + user.profileImage.filename
+            }
             return res.json(user)
         })
         .catch((err) => {
@@ -60,7 +62,9 @@ exports.read = function(req, res) {
         .populate('profileImage', 'filename -_id')
         .lean()
         .then((user) => {
-            user.profileImage = '/images/' + user.profileImage.filename
+            if(user.profileImage) {
+                user.profileImage = '/images/' + user.profileImage.filename
+            }
             return res.json(user)
         })
         .catch((err) => {

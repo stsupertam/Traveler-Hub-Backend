@@ -67,7 +67,9 @@ exports.verifySignature = function(req, res, next) {
             })
         }
         if(req.path === '/auth') {
-            user.profileImage = '/images/' + user.profileImage.filename
+            if(user.profileImage) {
+                user.profileImage = '/images/' + user.profileImage.filename
+            }
             return res.json(user)
         } else if(req.path === '/history/report') {
             if(user.usertype != 'agency') {
