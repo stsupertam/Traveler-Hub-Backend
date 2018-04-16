@@ -9,15 +9,20 @@ exports.update = function(req, res, next) {
     Bookmark.findOne({ email: req.user.email, packageId: packageId })
         .then((bookmark) => {
             if(!bookmark) {
+                console.log('start')
                 let bookmark = new Bookmark(
                     { 
                         email: req.user.email, 
                         packageId: mongoose.Types.ObjectId(req.body.packageId), 
-                        bookmark: req.body.bookmark 
+                        bookmark: true
                     })
                 return bookmark.save()
             } else {
-                return bookmark.update({ bookmark: req.body.bookmark, updated: Date.now() })
+                let setBookmark = true
+                if(bookmark.bookmark === true) {
+                    setBookmark = false
+                }
+                return bookmark.update({ bookmark: setBookmark, updated: Date.now() })
             }
         })
         .then((bookmark) => {
