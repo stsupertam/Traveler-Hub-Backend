@@ -1,5 +1,6 @@
 module.exports = function(app) {
     let package = require('../controllers/package.controller')
+    let auth = require('../controllers/auth.controller')
     let middleware = require('../middlewares/updateHistory.middleware')
     app.route('/package')
         .post(package.create)
@@ -11,7 +12,7 @@ module.exports = function(app) {
     app.route('/package/search')
         .get(package.search)
     app.route('/package/:id')
-        .get(middleware.updateHistory, package.read)
+        .get(auth.verifySignature, middleware.updateHistory, package.read)
         .put(package.update)
         .delete(package.delete)
     app.param('id', package.packageById)

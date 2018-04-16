@@ -1,6 +1,8 @@
 const moment = require('moment')
 const numeral = require('numeral')
 const Package = require('mongoose').model('Package')
+const Favorite = require('mongoose').model('Favorite')
+const Bookmark = require('mongoose').model('Bookmark')
 const wordcut = require('wordcut')
 
 wordcut.init('./text_processing/dictionary.txt', true)
@@ -90,14 +92,17 @@ exports.update = function(req, res, next) {
         })
 }
 
-exports.read = function(req, res, next) {
-    Package.findOneAndUpdate({ _id: req.package._id}, { $inc: { number_of_views: 1 }})
-        .then((package) => {
-            return res.json(req.package)
-        })
-        .catch((err) => {
-            return next(err)
-        })
+exports.read = async function(req, res, next) {
+    let package = await Package.findOneAndUpdate({ _id: req.package._id}, { $inc: { number_of_views: 1 }})
+    let like = await Favorite.findOne({ packageId: req.package._id, email: req.user.email })
+    let bookmark = await Bookmark.findOne({ packageId: req.package._id, email: req.user.email })
+    if(like) {
+        package.userLike = like.like
+    }
+    if(bookmark) {
+        package.userBookmark = bookmark.bookmark
+    }
+    return res.json(package)
 }
 
 exports.packageById = function(req, res, next, id) {
