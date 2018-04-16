@@ -37,7 +37,7 @@ exports.display = function(req, res, next) {
     Bookmark.find({ email: req.user.email, bookmark: true })
         .limit(10)
         .sort('-updated')
-        .populate('packageId', 'package_name travel_date human_price image detail')
+        .populate('packageId', 'package_name travel_date human_price images detail')
         .then((bookmark) => {
             return res.json(bookmark)
         })
