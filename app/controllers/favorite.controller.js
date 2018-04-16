@@ -15,28 +15,61 @@ exports.likeDislike = function(req, res, next) {
                         packageId: mongoose.Types.ObjectId(req.body.packageId), 
                         like: req.body.like 
                     })
-                return favorite.save()
+                favorite.save()
+                    .then(() => {
+                        Package.findById(packageId)
+                            .then((package) => {
+                                if(req.body.like) {
+                                    package.like += 1
+                                } else {
+                                    package.dislike += 1
+                                }
+                                package.save()
+                                return res.json({ 'message': 'Update Successfully'})
+                            })
+                            .catch((err) => {
+                                return next(err)
+                            })
+                    })
             } else {
-                return favorite.update({ like: req.body.like, updated: Date.now() })
+                if(req.body.like === favorite.like) {
+                    favorite.remove()
+                        .then(() => {
+                            return Package.findById(packageId)
+                        })
+                        .then((package) => {
+                            if(req.body.like === true) {
+                                package.like -= 1
+                            } else {
+                                package.dislike -= 1
+                            }
+                            package.save()
+                            return res.json({ 'message': 'Update Successfully'})
+                        })
+                        .catch((err) => {
+                            return next(err)
+                        })
+                } else {
+                    favorite.update({ like: req.body.like, updated: Date.now() })
+                        .then(() => {
+                            Package.findById(packageId)
+                                .then((package) => {
+                                    if(req.body.like) {
+                                        package.like += 1
+                                        package.dislike -= 1
+                                    } else {
+                                        package.like -= 1
+                                        package.dislike += 1
+                                    }
+                                    package.save()
+                                    return res.json({ 'message': 'Update Successfully'})
+                                })
+                                .catch((err) => {
+                                    return next(err)
+                                })
+                        })
+                }
             }
-        })
-        .then((favorite) => {
-            Package.findById(packageId)
-                .then((package) => {
-                    if(req.body.like) {
-                        package.like += 1
-                    } else {
-                        package.dislike += 1
-                    }
-                    package.save()
-                    return res.json({ 'message': 'Update Successfully'})
-                })
-                .catch((err) => {
-                    return next(err)
-                })
-        })
-        .catch((err) => {
-            return next(err)
         })
 }
 
