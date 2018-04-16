@@ -34,6 +34,7 @@ exports.update = function(req, res, next) {
 }
 
 exports.display = function(req, res, next) {
+    console.log(req.user)
     Bookmark.find({ email: req.user.email, bookmark: true })
         .limit(10)
         .sort('-updated')

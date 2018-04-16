@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const url = require('url')
+const mongoose = require('mongoose')
 const User = require('mongoose').model('User')
+const Image = require('mongoose').model('Image')
 const randomstring = require('randomstring')
 const { JWT_SECRET } = require('../../config/config')
 
@@ -13,9 +15,13 @@ exports.login = function(req, res, next) {
                 user   : user
             })
         }
-        req.login(user, {session: false}, (err) => {
+        req.login(user, {session: false}, async (err) => {
             if (err) {
                 res.send(err)
+            }
+            let image = await Image.findById(mongoose.Types.ObjectId(user.profileImage))
+            if(image) {
+                user.profileImage = '/images/' + image.filename
             }
             const token = jwt.sign(user, JWT_SECRET)
             return res.json({ user, token })
@@ -53,7 +59,7 @@ exports.facebook = function(req, res, next) {
 }
 
 exports.verifySignature = function(req, res, next) {
-    passport.authenticate('jwt', {session: false}, (err, user, info) => {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
                 message: info,
@@ -61,6 +67,7 @@ exports.verifySignature = function(req, res, next) {
             })
         }
         if(req.path === '/auth') {
+            user.profileImage = '/images/' + user.profileImage.filename
             return res.json(user)
         } else if(req.path === '/history/report') {
             if(user.usertype != 'agency') {

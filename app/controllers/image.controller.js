@@ -6,7 +6,7 @@ const Dictionary = require('mongoose').model('Dictionary')
 
 let storage =   multer.diskStorage({
     destination: function (req, file, callback) {
-        callback(null, './images');
+        callback(null, '../images');
     },
     filename: function (req, file, callback) {
         let ext = ''; // set default extension (if any)
@@ -35,21 +35,19 @@ exports.upload = function(req, res, next) {
     })
 }
 exports.userProfileUpload = function(req, res, next) {
-    console.log(req.user)
     upload(req, res, (err) => {
         if(err) {
             console.log(err)
             return res.end('Error uploading file.');
         }
-        Image.insertMany(req.files)
+        Image.create(req.files)
             .then((image) => {
                 let imageId = image[0]._id
-                console.log(imageId)
                 return User.findOneAndUpdate({ email: req.user.email }, 
                     { profileImage: imageId }, {new:true})
             })
             .then((user) => {
-                return user.populate('profileImage', 'path -_id').execPopulate()
+                return user.populate('profileImage', 'filename -_id').execPopulate()
             })
             .then((user) => {
                 return res.json(user)

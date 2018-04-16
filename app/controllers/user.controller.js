@@ -6,7 +6,6 @@ const { JWT_SECRET } = require('../../config/config')
 
 exports.create = function(req, res, next) {
     let user = new User(req.body)
-    console.log(req.body)
     user.validate()
         .then(() => {
             delete req.body.password
@@ -24,6 +23,7 @@ exports.create = function(req, res, next) {
 exports.list = function(req, res, next) {
     User.find({}).select('-_id -__v -created')
         .populate('profileImage', 'path -_id')
+        .lean()
         .then((users) => {
             return res.json(users)
         })
@@ -45,7 +45,9 @@ exports.delete = function(req, res, next) {
 exports.update = function(req, res, next) {
     User.findOneAndUpdate({ email: req.user.email }, req.body)
         .populate('profileImage', 'path -_id')
+        .lean()
         .then((user) => {
+            user.profileImage = '/images/' + user.profileImage.filename
             return res.json(user)
         })
         .catch((err) => {
@@ -54,15 +56,12 @@ exports.update = function(req, res, next) {
 }
 
 exports.read = function(req, res) {
-    return res.json(req.user)
-}
-
-exports.userByEmail = function(req, res, next) {
     User.findOne({ email: req.user.email }).select('-_id -__v -created')
-        .populate('profileImage', 'path -_id')
+        .populate('profileImage', 'filename -_id')
+        .lean()
         .then((user) => {
-            req.user = user
-            return next()
+            user.profileImage = '/images/' + user.profileImage.filename
+            return res.json(user)
         })
         .catch((err) => {
             return next(err)

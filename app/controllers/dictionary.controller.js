@@ -23,8 +23,18 @@ exports.update = function(req, res, next, id) {
 
 exports.getDictionary = function(req, res, next) {
     Dictionary.findOne({})
-        .populate('regions.images travel_types.images', 'path -_id')
+        .populate('regions.images travel_types.images', 'filename -_id')
         .then((dictionary) => {
+            for (item of dictionary.regions) {
+                for (image of item.images) {
+                    image.path = '/images/' + image.filename
+                }
+            }
+            for (item of dictionary.travel_types) {
+                for (image of item.images) {
+                    image.path = '/images/' + image.filename
+                }
+            }
             return res.json(dictionary)
         })
         .catch((err) => {
