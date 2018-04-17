@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 let RecommendSchema = new Schema({
     email: String,
-    likes: {
+    package_likes: {
         type: [ Schema.ObjectId ],
         es_indexed: true
     },

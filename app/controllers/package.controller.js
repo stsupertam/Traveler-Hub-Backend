@@ -1,8 +1,10 @@
 const moment = require('moment')
 const numeral = require('numeral')
+const mongoose = require('mongoose')
 const Package = require('mongoose').model('Package')
 const Favorite = require('mongoose').model('Favorite')
 const Bookmark = require('mongoose').model('Bookmark')
+const Recommend = require('mongoose').model('Recommend')
 const wordcut = require('wordcut')
 
 wordcut.init('./text_processing/dictionary.txt', true)
@@ -302,5 +304,40 @@ exports.search = function(req, res, next) {
         }
         return res.json(response)
     })
+}
 
+exports.recommend = async function(req, res, next) {
+    let recommend = await Recommend.findOne({ email: req.user.email })
+    if(recommend.package_likes.length != 0) {
+        let query = {
+            query: {
+                match: {
+                    package_likes: recommend.package_likes[recommend.package_likes.length - 1],
+                }
+            },
+            aggregations: {
+                package_like_this: {
+                    significant_terms: {
+                        field: 'package_likes',
+                        min_doc_count: 1,
+                    }
+                }
+            },
+        }
+        Recommend.esSearch(query, async function (err, result) {
+            if (err) return next(err)
+            let buckets = result.aggregations.package_like_this.buckets
+            let output = []
+            for(item of buckets) {
+                let packageId = item.key
+                if(recommend.package_likes.indexOf(packageId) === -1) {
+                    output.push(mongoose.Types.ObjectId(packageId))
+                }
+            }
+            console.log(output)
+            let packages = await Package.find({_id: { $in: output}})
+            return res.json(packages)
+        })
+    }
+    //return res.json(recommend)
 }

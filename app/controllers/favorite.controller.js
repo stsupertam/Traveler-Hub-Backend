@@ -22,14 +22,14 @@ function synchronize() {
 async function add_like_to_recommend(email, packageId) {
     let recommend = await Recommend.findOne({ email: email })
     if(recommend) {
-        let index = recommend.likes.indexOf(packageId)
+        let index = recommend.package_likes.indexOf(packageId)
         if(index > -1) {
-            recommend.likes.splice(index, 1);
+            recommend.package_likes.splice(index, 1);
         } else {
-            if(recommend.likes.length === 0) {
-                recommend.likes = []
+            if(recommend.package_likes.length === 0) {
+                recommend.package_likes = []
             }
-            recommend.likes.push(packageId)
+            recommend.package_likes.push(packageId)
         }
         recommend.save()
     } else {
@@ -37,7 +37,7 @@ async function add_like_to_recommend(email, packageId) {
             email: email,
             likes: []
         }
-        recommend.likes.push(packageId)
+        recommend.package_likes.push(packageId)
         Recommend.create(recommend)
     }
 }
