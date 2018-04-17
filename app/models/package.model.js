@@ -107,7 +107,7 @@ stream.on('data', function(err, doc){
     count++
 })
 stream.on('close', function(){
-    console.log('indexed ' + count + ' documents!')
+    console.log('Package: indexed ' + count + ' documents!')
 })
 stream.on('error', function(err){
     console.log(err)

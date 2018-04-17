@@ -1,8 +1,34 @@
 const mongoose = require('mongoose')
 const User = require('mongoose').model('User')
 const Favorite = require('mongoose').model('Favorite')
+const Recommend = require('mongoose').model('Recommend')
 const Package = require('mongoose').model('Package')
 const _ = require('lodash')
+
+async function add_like_to_recommend (email, packageId) {
+    let recommend = await Recommend.findOne({ email: email })
+    if(recommend) {
+        let index = recommend.likes.indexOf(packageId)
+        if(index > -1) {
+            recommend.likes.splice(index, 1);
+        } else {
+            console.log(recommend.likes.length)
+            console.log(recommend.likes)
+            //if(recommend.likes.length === 0) {
+            //    recommend.likes = []
+            //}
+            recommend.likes.push(packageId)
+        }
+        recommend.save()
+    } else {
+        recommend = {
+            email: email,
+            likes: []
+        }
+        recommend.likes.push(packageId)
+        Recommend.create(recommend)
+    }
+}
 
 exports.likeDislike = function(req, res, next) {
     let packageId = mongoose.Types.ObjectId(req.body.packageId)
@@ -20,6 +46,7 @@ exports.likeDislike = function(req, res, next) {
                         Package.findById(packageId)
                             .then((package) => {
                                 if(req.body.like) {
+                                    add_like_to_recommend(req.user.email, packageId)
                                     package.like += 1
                                 } else {
                                     package.dislike += 1
@@ -39,6 +66,7 @@ exports.likeDislike = function(req, res, next) {
                         })
                         .then((package) => {
                             if(req.body.like === true) {
+                                add_like_to_recommend(req.user.email, packageId)
                                 package.like -= 1
                             } else {
                                 package.dislike -= 1
@@ -55,6 +83,7 @@ exports.likeDislike = function(req, res, next) {
                             Package.findById(packageId)
                                 .then((package) => {
                                     if(req.body.like) {
+                                        add_like_to_recommend(req.user.email, packageId)
                                         package.like += 1
                                         package.dislike -= 1
                                     } else {
