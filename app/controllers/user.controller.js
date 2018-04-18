@@ -9,7 +9,9 @@ exports.create = function(req, res, next) {
     user.validate()
         .then(() => {
             delete req.body.password
-            user.birthdate = new Date(req.body.birthdate)
+            if(req.body.birthdate) {
+                user.birthdate = new Date(req.body.birthdate)
+            }
             const token = jwt.sign(req.body, JWT_SECRET)
             user.save()
             return res.json({ message: 'Register Successfully', token: token })
