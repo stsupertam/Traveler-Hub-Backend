@@ -4,7 +4,7 @@ const Favorite = mongoose.model('Favorite')
 const Package = mongoose.model('Package')
 
 const regions = ['เหนือ', 'ใต้', 'ตะวันออกเฉียงเหนือ', 'ตะวันตก', 'กลาง', 'ตะวันออก']
-const travel_types = ['ผจญภัย', 'ธรรมชาติ', 'สถานที่', 'ศาสนา', 'ขึ้นดอย', 'อุทยาน', 'ทะเลและหมู่เกาะ', 'ย้อนรอยอดีต', 'เทศกาล']
+const travel_types = ['ผจญภัย', 'ธรรมชาติ', 'สถานที่น่าสนใจ', 'ศาสนา', 'ขึ้นดอย', 'อุทยาน', 'ทะเลและหมู่เกาะ', 'ย้อนรอยอดีต', 'เทศกาล']
 const lookupPackage = {
     '$lookup': {
         'from': 'packages',
@@ -89,7 +89,7 @@ async function aggregateFavorite(company, date, type) {
             }
         } else {
             temp = {
-                'name': favorite[0]._id[0],
+                'name': item,
                 'like': favorite[0].like,
                 'dislike': favorite[0].dislike
             }
