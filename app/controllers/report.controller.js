@@ -69,7 +69,7 @@ async function aggregateFavorite(company, date, type) {
             },
             {
                '$group': {
-                    '_id': '$package' + type,
+                    '_id': '$package.' + type,
                     'like': {
                         '$sum': { '$cond': ['$like', 1, 0] }
                     },
