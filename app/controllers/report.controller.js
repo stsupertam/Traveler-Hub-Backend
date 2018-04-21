@@ -4,7 +4,7 @@ const Favorite = mongoose.model('Favorite')
 const Package = mongoose.model('Package')
 
 const regions = ['เหนือ', 'ใต้', 'ตะวันออกเฉียงเหนือ', 'ตะวันตก', 'กลาง', 'ตะวันออก']
-const travel_types = ['ธรรมะ', 'ผจญภัย', 'ธรรมชาติ', 'สถานที่น่าสนใจ']
+const travel_types = ['ผจญภัย', 'ธรรมชาติ', 'สถานที่', 'ศาสนา', 'ขึ้นดอย', 'อุทยาน', 'ทะเลและหมู่เกาะ', 'ย้อนรอยอดีต', 'เทศกาล']
 const lookupPackage = {
     '$lookup': {
         'from': 'packages',
@@ -51,6 +51,7 @@ async function aggregateFavorite(company, date, type) {
     let matchKey = 'package.' + type
     for (let item of items) {
         match['$match'][matchKey] = item
+        console.log(item)
         let favorite = await Favorite.aggregate([
             lookupPackage,
             match,
@@ -68,7 +69,7 @@ async function aggregateFavorite(company, date, type) {
             },
             {
                '$group': {
-                    '_id': '$package.region',
+                    '_id': '$package' + type,
                     'like': {
                         '$sum': { '$cond': ['$like', 1, 0] }
                     },
@@ -267,23 +268,6 @@ function getDate(dateRange) {
         result.endDate = genDate(date.getFullYear(), 11, 31)
     }
     return result
-}
-
-exports.read = function(req, res) {
-    return res.json(req.history)
-}
-
-exports.historyByEmail = function(req, res, next, email) {
-    History.findOne({ email: email }).select('-_id -__v -updated')
-        .populate('packageId', 'province travel_types region tags')
-        .populate('user', 'gender age')
-        .then((history) => {
-            req.history = history
-            return next()
-        })
-        .catch((err) => {
-            return next(err)
-        })
 }
 
 exports.reportViewTotal = async function(req, res, next) {
