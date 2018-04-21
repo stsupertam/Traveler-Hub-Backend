@@ -35,7 +35,7 @@ async function add_like_to_recommend(email, packageId) {
     } else {
         recommend = {
             email: email,
-            likes: []
+            package_likes: []
         }
         recommend.package_likes.push(packageId)
         Recommend.create(recommend)
