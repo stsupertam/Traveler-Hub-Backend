@@ -52,7 +52,7 @@ async function aggregateFavorite(company, date, type) {
     for (let item of items) {
         match['$match'][matchKey] = item
         let favorite = await Favorite.aggregate([
-            lookup,
+            lookupPackage,
             match,
             {
                 '$project': {
