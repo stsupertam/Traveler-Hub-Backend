@@ -96,15 +96,16 @@ exports.update = function(req, res, next) {
 
 exports.read = async function(req, res, next) {
     let package = await Package.findOneAndUpdate({ _id: req.package._id}, { $inc: { number_of_views: 1 }})
+    let copyPackage = JSON.parse(JSON.stringify(package))
     let like = await Favorite.findOne({ packageId: req.package._id, email: req.user.email })
     let bookmark = await Bookmark.findOne({ packageId: req.package._id, email: req.user.email })
     if(like) {
-        package.userLike = like.like
+        copyPackage.userLike = like.like
     }
     if(bookmark) {
-        package.userBookmark = bookmark.bookmark
+        copyPackage.userBookmark = bookmark.bookmark
     }
-    return res.json(package)
+    return res.json(copyPackage)
 }
 
 exports.packageById = function(req, res, next, id) {
