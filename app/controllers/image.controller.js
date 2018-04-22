@@ -68,7 +68,7 @@ exports.facebookProfileUpload = function(req, res, next) {
                 return next()
             } else {
                 let pattern = '\d.*.jpg'
-                let filename = req.body.userId + '-' + req.body.firstname 
+                let filename = req.body.userID
                 let image = [{
                     'path': req.body.profileImage,
                     'filename': filename

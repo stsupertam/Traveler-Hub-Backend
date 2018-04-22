@@ -204,7 +204,6 @@ async function aggregateTotal(company, date) {
         temp.name = item._id[0]
         temp.value = item.count
         if(temp.name !== undefined) {
-            console.log(temp)
             result.push(temp)
         }
     }
