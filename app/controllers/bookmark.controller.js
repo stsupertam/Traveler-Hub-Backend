@@ -9,7 +9,6 @@ exports.update = function(req, res, next) {
     Bookmark.findOne({ email: req.user.email, packageId: packageId })
         .then((bookmark) => {
             if(!bookmark) {
-                console.log('start')
                 let bookmark = new Bookmark(
                     { 
                         email: req.user.email, 
@@ -34,7 +33,6 @@ exports.update = function(req, res, next) {
 }
 
 exports.display = function(req, res, next) {
-    console.log(req.user)
     Bookmark.find({ email: req.user.email, bookmark: true })
         .limit(10)
         .sort('-updated')

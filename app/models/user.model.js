@@ -20,7 +20,6 @@ let UserSchema = new Schema({
         ref: 'Image' 
     },
     facebookID: Number,
-    facebookToken: String,
     usertype: String,
     firstname: String,
     lastname: String,

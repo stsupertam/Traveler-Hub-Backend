@@ -5,7 +5,6 @@ exports.create = function(req, res, next) {
     let company = new Company(req.body)
     company.validate()
         .catch((err) => {
-            console.log('company fail validate')
             Object.assign(errors, err['errors'])
         })
         .then(() => {
@@ -24,7 +23,6 @@ exports.create = function(req, res, next) {
 exports.list = function(req, res, next) {
     Company.find({})
         .then((company) => {
-            console.log(company)
             return res.json(company)
         })
         .catch((err) => {

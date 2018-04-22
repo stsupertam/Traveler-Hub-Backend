@@ -67,7 +67,6 @@ exports.facebookProfileUpload = function(req, res, next) {
                 req.user = user
                 return next()
             } else {
-                console.log(req.body.profileImage)
                 let pattern = '\d.*.jpg'
                 let filename = req.body.userId + '-' + req.body.firstname 
                 let image = [{
@@ -110,7 +109,6 @@ exports.dictionaryImage = function(req, res, next) {
                 }
             })
             .then((dictionary) => {
-                console.log(dictionary)
                 return res.end('File is uploaded')
             })
             .catch((err) => {

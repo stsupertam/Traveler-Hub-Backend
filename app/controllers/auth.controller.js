@@ -36,8 +36,9 @@ exports.facebook = function(req, res, next) {
         token = jwt.sign(user.toJSON(), JWT_SECRET)
         return res.json({ user, token })
     } else {
+        req.body.usertype = 'customer'
+        req.body.facebookID = req.body.userID 
         user = new User(req.body)
-        token = jwt.sign(user.toJSON(), JWT_SECRET)
         user['password'] = randomstring.generate(16)
         user.validate()
             .then(() => {
@@ -47,12 +48,13 @@ exports.facebook = function(req, res, next) {
                 return user.populate('profileImage', 'path -_id').execPopulate()
             })
             .then((user) => {
-                user = user.toJSON()
-                delete user['password']
-                return res.json({ user, token })
+                let userCopy = JSON.parse(JSON.stringify(user))
+                delete userCopy['password']
+                userCopy.profileImage = user.profileImage.path
+                token = jwt.sign(userCopy, JWT_SECRET)
+                return res.json({ userCopy, token })
             })
             .catch((err) => {
-                console.log(err)
                 return res.status(422).json(err['errors'])
             })
     }
@@ -68,7 +70,11 @@ exports.verifySignature = function(req, res, next) {
         }
         if(req.path === '/auth') {
             if(user.profileImage) {
-                user.profileImage = '/images/' + user.profileImage.filename
+                if(user.facebookID) {
+                    user.profileImage = user.profileImage.path
+                } else {
+                    user.profileImage = '/images/' + user.profileImage.filename
+                }
             }
             return res.json(user)
         } else if(req.path === '/history/report') {

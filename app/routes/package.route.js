@@ -11,6 +11,7 @@ module.exports = function(app) {
         .get(package.popular)
     app.route('/package/recommend')
         .get(auth.verifySignature, package.recommend)
+        //.get(package.recommend)
     app.route('/package/search')
         .get(package.search)
     app.route('/package/:id')

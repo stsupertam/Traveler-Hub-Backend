@@ -17,8 +17,6 @@ exports.create = function(req, res, next) {
             return res.json({ message: 'Register Successfully', token: token })
         })
         .catch((err) => {
-            console.log(req.body)
-            console.log(err)
             return res.status(422).json(err['errors'])
         })
 }
@@ -62,11 +60,15 @@ exports.update = function(req, res, next) {
 
 exports.read = function(req, res) {
     User.findOne({ email: req.user.email }).select('-_id -__v -created')
-        .populate('profileImage', 'filename -_id')
+        .populate('profileImage', 'filename path -_id')
         .lean()
         .then((user) => {
             if(user.profileImage) {
-                user.profileImage = '/images/' + user.profileImage.filename
+                if(user.facebookID) {
+                    user.profileImage = user.profileImage.path
+                } else {
+                    user.profileImage = '/images/' + user.profileImage.filename
+                }
             }
             return res.json(user)
         })

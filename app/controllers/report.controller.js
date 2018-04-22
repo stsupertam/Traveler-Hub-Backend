@@ -51,7 +51,6 @@ async function aggregateFavorite(company, date, type) {
     let matchKey = 'package.' + type
     for (let item of items) {
         match['$match'][matchKey] = item
-        console.log(item)
         let favorite = await Favorite.aggregate([
             lookupPackage,
             match,
@@ -204,9 +203,10 @@ async function aggregateTotal(company, date) {
         let temp = {}
         temp.name = item._id[0]
         temp.value = item.count
-        result.push(temp)
+        if(temp.name != '') {
+            result.push(temp)
+        }
     }
-    console.log(history)
     return result
 }
 
@@ -349,7 +349,7 @@ exports.most = async function(req, res, next) {
 
 exports.package = function(req, res, next) {
     Package.find({ company: req.user.company })
-        .select('_id package_name like dislike number_of_views region province ')
+        .select('_id package_name like dislike number_of_views region province')
         .then((packages) => {
             return res.json(packages)
         })
