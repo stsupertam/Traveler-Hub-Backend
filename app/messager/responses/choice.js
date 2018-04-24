@@ -5,7 +5,7 @@ exports.select = function(choice) {
         quick_replies:[
         	{
         	  	content_type: 'text',
-        	  	title: 'ค้นหาตามชื่อแพ็กเกจ',
+        	  	title: 'ค้นหาตามใจคุณ',
         	  	payload: 'search',
         	},
         	{
@@ -29,7 +29,9 @@ exports.select = function(choice) {
     if(choice === 'start') {
         payload['text'] = 'สวัสดีครับ ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้'
     } else if(choice === 'ls') {
-        payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี'
+		payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี'
+	} else if(choice === 'unknown') {
+		payload['text'] = 'อยากให้เลือกตามตัวเลือกครับ'
     } else if(choice == 'end'){
         payload = {
           	text: 'อยากสอบถามเพิ่มเติมอีกไหม',

@@ -24,11 +24,21 @@ exports.choice = function(message, senderId, responseType = 'None') {
             .catch((err) => {console.log(err['error'])})
 }
 
+exports.unknown = function(message, senderId, responseType = 'None') {
+    console.log(`ResponseType : ${responseType}`)
+    console.log(`Message : ${message}`)
+    console.log(`SenderID : ${senderId}`)
+    return request(facebook_request(choice.select(responseType), senderId))
+            .catch((err) => {console.log(err['error'])})
+}
+
 exports.search = function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`)
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
-    return request(facebook_request({text: 'ลองพิมพ์มา เช่น ทะเล'}, senderId))
+    return query.latest()
+            .then((message) => { return request(facebook_request(message, senderId)) })
+            .then(() => { return request(facebook_request(choice.select('search'), senderId)) })
             .catch((err) => {console.log(err['error'])})
 //    return query.search(message)
 //            .then((message) => { return request(facebook_request(message, senderId)) })
