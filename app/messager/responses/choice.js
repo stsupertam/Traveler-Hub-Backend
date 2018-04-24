@@ -3,26 +3,26 @@ exports.select = function(choice) {
     let payload = {
         text: message,
         quick_replies:[
-          {
-            content_type: 'text',
-            title: 'ค้นหาตามชื่อแพ็กเกจ',
-            payload: 'search',
-          },
-          {
-            content_type: 'text',
-            title: 'แพ็กเกจยอดนิยม',
-            payload: 'popular',
-          },
-          {
-            content_type: 'text',
-            title: 'แพ็กเกจล่าสุด',
-            payload: 'latest',
-          },
-          {
-            content_type: 'text',
-            title: 'แนะนำตามใจคุณ',
-            payload: 'question'
-          }
+        	{
+        	  	content_type: 'text',
+        	  	title: 'ค้นหาตามชื่อแพ็กเกจ',
+        	  	payload: 'search',
+        	},
+        	{
+        	  	content_type: 'text',
+        	  	title: 'แพ็กเกจยอดนิยม',
+        	  	payload: 'popular',
+        	},
+        	{
+        	  	content_type: 'text',
+        	  	title: 'แพ็กเกจล่าสุด',
+        	  	payload: 'latest',
+        	},
+        	{
+        	  	content_type: 'text',
+        	  	title: 'แนะนำตามใจคุณ',
+        	  	payload: 'question'
+        	}
         ]
     }
 
@@ -32,43 +32,41 @@ exports.select = function(choice) {
         payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี'
     } else if(choice == 'end'){
         payload = {
-          text: 'อยากสอบถามเพิ่มเติมอีกไหม',
-          quick_replies:[
-            {
-              content_type: 'text',
-              title: 'ค้นหาเพิ่มเติม',
-              payload: 'search',
-            },
-            {
-              content_type: 'text',
-              title: 'หยุดการค้นหา',
-              payload: 'stop',
-            },
+          	text: 'อยากสอบถามเพิ่มเติมอีกไหม',
+          	quick_replies:[
+            	{
+            	  	content_type: 'text',
+            	  	title: 'ค้นหาเพิ่มเติม',
+            	  	payload: 'search',
+            	},
+            	{
+            	  	content_type: 'text',
+            	  	title: 'หยุดการค้นหา',
+            	  	payload: 'stop',
+            	},
           ]
         }
     } else if(choice == 'search'){
         payload = {
-          text: 'อยากสอบถามเพิ่มเติมอีกไหม',
-          quick_replies:[
-            {
-              content_type: 'text',
-              title: 'ค้นหาเพิ่มเติม',
-              payload: 'search',
-            },
-            {
-              content_type: 'text',
-              title: 'สอบถามอย่างอื่น',
-              payload: 'another',
-            },
-            {
-              content_type: 'text',
-              title: 'หยุดการค้นหา',
-              payload: 'stop',
-            },
+          	text: 'อยากสอบถามเพิ่มเติมอีกไหม',
+          	quick_replies:[
+            	{
+            		content_type: 'text',
+            		title: 'ค้นหาเพิ่มเติม',
+            		payload: 'search',
+            	},
+            	{
+            	  	content_type: 'text',
+            	  	title: 'สอบถามอย่างอื่น',
+            	  	payload: 'another',
+            	},
+            	{
+            	  	content_type: 'text',
+            	  	title: 'หยุดการค้นหา',
+            	  	payload: 'stop',
+            	},
           ]
         }
     }
-
-
     return payload
 }

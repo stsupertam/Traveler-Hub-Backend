@@ -1,6 +1,7 @@
 const Package = require('mongoose').model('Package')
 const _ = require('lodash')
-const rootUrl = 'localhost:3000/package/' 
+const rootUrl = 'https://travelerhub.xyz/package/detail/' 
+const imageUrl = 'https://api.travelerhub.xyz' 
 
 function getItem(packages) {
     let data = {
@@ -19,10 +20,13 @@ function getItem(packages) {
     }]
     _.map(packages, (package) => {
         item = {}
-        button[0]['url'] = rootUrl + package['package_id']
+        let randomIndex = Math.floor(Math.random()*package.images.length)
+        button[0]['url'] = rootUrl + package['_id']
         item['title'] = package['package_name']
-        item['subtitle'] = package['human_price'] + '\n' + package['travel_date']
-        item['image_url'] = package['image']
+        item['subtitle'] = package['human_price'] + '\n' + 
+                           package['travel_date'] + '\n' + 'company: ' + 
+                           package['company']
+        item['image_url'] = imageUrl + package['images'][randomIndex]
         item['buttons'] = button
         data.attachment.payload.elements.push(item)
     })
@@ -30,14 +34,14 @@ function getItem(packages) {
 }
 
 exports.latest = function() {
-    return Package.find({}).sort('-created').limit(5).select('-_id -__v -created')
+    return Package.find({}).sort('-created').limit(10).select('-__v -created').lean()
             .then((packages) => {
                 return getItem(packages)
             })
 }
 
 exports.popular = function() {
-    return Package.find({}).sort('-number_of_views').limit(5).select('-_id -__v -created')
+    return Package.find({}).sort('-number_of_views').limit(10).select('-__v -created').lean()
             .then((packages) => {
                 return getItem(packages)
             })
@@ -45,7 +49,7 @@ exports.popular = function() {
 }
 
 exports.search = function(query) {
-    return Package.find({ $text: { $search: query }}).sort('-number_of_views').limit(5).select('-_id -__v -created')
+    return Package.find({ $text: { $search: query }}).sort('-number_of_views').limit(5).select('images').lean()
             .then((packages) => {
                 if(packages.length === 0) {
                     return {text: 'หาแพ็กเกจที่ต้องการไม่เจอ'}
