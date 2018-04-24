@@ -275,7 +275,7 @@ exports.reportViewTotal = async function(req, res, next) {
     let result = []
     let date = ''
 
-    if(req.query.latestDate) {
+    if(req.query.latestDay) {
         date = getDate('day')
     } else if(req.query.latestWeek) {
         date = getDate('week')

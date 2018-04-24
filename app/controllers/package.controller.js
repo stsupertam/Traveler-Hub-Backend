@@ -312,43 +312,50 @@ exports.search = function(req, res, next) {
 }
 
 exports.recommend = async function(req, res, next) {
-    Package.find({}).sort('-number_of_views').limit(5).select('-__v -created')
-        .then((package) => {
-            return res.json(package)
-        })
-        .catch((err) => {
-            return next(err)
-        })
-    //let recommend = await Recommend.findOne({ email: req.user.email })
-    //if(recommend.package_likes.length != 0) {
-    //    let query = {
-    //        query: {
-    //            match: {
-    //                package_likes: recommend.package_likes[recommend.package_likes.length - 1],
-    //            }
-    //        },
-    //        aggregations: {
-    //            package_like_this: {
-    //                significant_terms: {
-    //                    field: 'package_likes',
-    //                    min_doc_count: 1,
-    //                }
-    //            }
-    //        },
-    //    }
-    //    Recommend.esSearch(query, async function (err, result) {
-    //        if (err) return next(err)
-    //        let buckets = result.aggregations.package_like_this.buckets
-    //        let output = []
-    //        for(item of buckets) {
-    //            let packageId = item.key
-    //            if(recommend.package_likes.indexOf(packageId) === -1) {
-    //                output.push(mongoose.Types.ObjectId(packageId))
-    //            }
-    //        }
-    //        console.log(output)
-    //        let packages = await Package.find({_id: { $in: output}})
-    //        return res.json(packages)
-    //    })
-    //}
+    let morePackages = await Package.find({}).sort('-like').limit(5).select('-__v -created')
+    let recommend = await Recommend.findOne({ email: req.user.email })
+    if(recommend) {
+        if(recommend.package_likes.length != 0) {
+            let query = {
+                query: {
+                    match: {
+                        package_likes: recommend.package_likes[recommend.package_likes.length - 1],
+                    }
+                },
+                aggregations: {
+                    package_like_this: {
+                        significant_terms: {
+                            field: 'package_likes',
+                            min_doc_count: 1,
+                        }
+                    }
+                },
+            }
+            Recommend.esSearch(query, async function (err, result) {
+                if (err) return next(err)
+                let buckets = result.aggregations.package_like_this.buckets
+                let output = []
+                for(item of buckets) {
+                    let packageId = item.key
+                    if(recommend.package_likes.indexOf(packageId) === -1) {
+                        output.push(mongoose.Types.ObjectId(packageId))
+                    }
+                }
+                let packages = await Package.find({_id: { $in: output}})
+                if(packages.length <= 5) {
+                    for(item of morePackages) {
+                        if(packages.length > 5) {
+                            break
+                        } else {
+                            packages.push(item)
+                        }
+                    }
+                }
+                return res.json(packages)
+            })
+        }
+    } else {
+        return res.json(morePackages)
+    }
+    //return res.json(package)
 }
