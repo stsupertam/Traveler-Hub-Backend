@@ -316,10 +316,11 @@ exports.recommend = async function(req, res, next) {
     let recommend = await Recommend.findOne({ email: req.user.email })
     if(recommend) {
         if(recommend.package_likes.length != 0) {
+            let randomIndex = Math.floor(Math.random()*recommend.package_likes.length)
             let query = {
                 query: {
                     match: {
-                        package_likes: recommend.package_likes[recommend.package_likes.length - 1],
+                        package_likes: recommend.package_likes[randomIndex],
                     }
                 },
                 aggregations: {
@@ -357,5 +358,4 @@ exports.recommend = async function(req, res, next) {
     } else {
         return res.json(morePackages)
     }
-    //return res.json(package)
 }
