@@ -302,13 +302,13 @@ exports.reportHistory = async function(req, res, next) {
 
     if(req.query.regions) {
         aggResult = await aggregateHistory(req.user.company, req.query.regions, date, 'region')
-        reportType = regions
+        reportType = 'regions'
     } else if(req.query.travel_types) {
         aggResult = await aggregateHistory(req.user.company, req.query.travel_types, date, 'travel_types')
-        reportType = travel_types
+        reportType = 'travel_types'
     } else if(req.query.provinces) {
         aggResult = await aggregateHistory(req.user.company, req.query.provinces, date, 'provinces')
-        reportType = provinces 
+        reportType = 'provinces' 
     }
 
     result = await mapDate(aggResult, date)
