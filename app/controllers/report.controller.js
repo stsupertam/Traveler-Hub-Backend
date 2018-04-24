@@ -291,6 +291,7 @@ exports.reportViewTotal = async function(req, res, next) {
 }
 
 exports.reportHistory = async function(req, res, next) {
+    let reportType = ''
     let aggResult = []
     let result = []
     let regions = []
@@ -301,14 +302,21 @@ exports.reportHistory = async function(req, res, next) {
 
     if(req.query.regions) {
         aggResult = await aggregateHistory(req.user.company, req.query.regions, date, 'region')
+        reportType = regions
     } else if(req.query.travel_types) {
         aggResult = await aggregateHistory(req.user.company, req.query.travel_types, date, 'travel_types')
+        reportType = travel_types
     } else if(req.query.provinces) {
         aggResult = await aggregateHistory(req.user.company, req.query.provinces, date, 'provinces')
+        reportType = provinces 
     }
 
-    result = mapDate(aggResult, date)
-    return res.json(await result)
+    result = await mapDate(aggResult, date)
+    response = {
+        type: reportType,
+        data: result
+    }
+    return res.json(response)
 }
 
 exports.reportFavorite = async function(req, res, next) {
