@@ -87,6 +87,9 @@ async function aggregateFavorite(company, date, type) {
                 'dislike': 0
             }
         } else {
+            if(item === 'ทะเลและหมู่เกาะ') {
+                item = 'ทะเล'
+            }
             temp = {
                 'name': item,
                 'like': favorite[0].like,
@@ -210,6 +213,10 @@ async function aggregateTotal(company, date) {
     return result
 }
 
+function filterArray(array) {
+
+}
+
 function mapDate(items, date) {
     data = []
     for (let d = date.startDate; d <= date.endDate; d.setDate(d.getDate() + 1)) {
@@ -233,7 +240,9 @@ function mapDate(items, date) {
                     break
                 }
             }
-            result[item[0].key] = count
+            if(item[0]) {
+                result[item[0].key] = count
+            }
         }
         data.push(result);
     }
@@ -297,24 +306,38 @@ exports.reportHistory = async function(req, res, next) {
     let regions = []
     let travel_types = []
     let date = {}
+    let legends = []
     date.startDate = new Date(req.query.startDate)
     date.endDate = new Date(req.query.endDate)
 
     if(req.query.regions) {
         aggResult = await aggregateHistory(req.user.company, req.query.regions, date, 'region')
         reportType = 'regions'
+        legends = req.query.regions.split(' ')
     } else if(req.query.travel_types) {
         aggResult = await aggregateHistory(req.user.company, req.query.travel_types, date, 'travel_types')
         reportType = 'travel_types'
+        legends = req.query.travel_types.split(' ')
     } else if(req.query.provinces) {
         aggResult = await aggregateHistory(req.user.company, req.query.provinces, date, 'provinces')
         reportType = 'provinces' 
+        legends = req.query.provinces.split(' ')
     }
 
-    result = await mapDate(aggResult, date)
-    response = {
-        type: reportType,
-        data: result
+    aggResult = aggResult.filter(result => result.length > 0)
+
+    console.log(aggResult)
+    if(aggResult.length > 0) {
+        result = await mapDate(aggResult, date)
+        response = {
+            legends: legends,
+            type: reportType,
+            data: result
+        }
+    } else {
+        response = {
+            data: 'Data not found'
+        }
     }
     return res.json(response)
 }
