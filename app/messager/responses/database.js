@@ -49,11 +49,9 @@ exports.popular = function() {
 }
 
 exports.search = function(query) {
-    console.log('Hello Word')
     return Package.find({package_name: 'eiei'}).limit(1).sort('-number_of_views').select('-__v -created').lean()
             .then((packages) => {
                 if(packages.length === 0) {
-                    console.log('Thje bessfdjldfjl')
                     return { text: 'หาแพ็กเกจที่ต้องการไม่เจอ' }
                 }
                 return getItem(packages)

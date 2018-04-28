@@ -6,13 +6,13 @@ const State = require('mongoose').model('State')
 let fsm = new StateMachine({
     init: 'greet',
     transitions: [
-        { name: 'reset',       from: '*',                            to: 'greet'    },
-        { name: 'to_latest',   from: ['choice', 'unknown'],          to: 'latest'   },
-        { name: 'to_popular',  from: ['choice', 'unknown'],          to: 'popular'  },
-        { name: 'to_search',   from: ['choice', 'query'],            to: 'search'   },
-        { name: 'to_query',    from: ['search', 'query'],            to: 'query'    },
-        { name: 'to_end',      from: ['latest', 'popular', 'query'], to: 'end'      },
-        { name: 'goto',        from: '*',                            to: function(s) { return s }},
+        { name: 'reset',           from: '*',                            to: 'greet'     },
+        { name: 'to_latest',       from: ['choice', 'unknown'],          to: 'latest'    },
+        { name: 'to_popular',      from: ['choice', 'unknown'],          to: 'popular'   },
+        { name: 'to_search',       from: ['choice', 'query'],            to: 'search'    },
+        { name: 'to_query',        from: ['search', 'query'],            to: 'query'     },
+        { name: 'to_end',          from: ['latest', 'popular', 'query'], to: 'end'       },
+        { name: 'goto',            from: '*',                            to: function(s) { return s }},
         { 
             name: 'to_choice',   
             from: [ 'greet', 'search', 'query', 'latest', 'popular', 'unknown' ], 
@@ -43,7 +43,7 @@ let fsm = new StateMachine({
 
 async function updateUserState(userId, state) {
     try {
-        await State.findOneAndUpdate({ userId: userId}, { $set: { state: state }})
+        await State.findOneAndUpdate({ userId: userId }, { $set: { state: state } })
     } catch(err) {
         console.log(err)
     }
@@ -110,12 +110,13 @@ module.exports = async function(event) {
                     fsm.toEnd(message, senderId, 'end')
                 } else if(message === 'ค้นหาในรูปแบบอื่น') {
                     fsm.toChoice(message, senderId, 'other')
-                } else if(message === 'ค้นหาเพิ่มเติม') {
-                    fsm.toSearch(message, senderId, 'search')
+                } else if(message === 'เพิ่มเงื่อนไข') {
+                    fsm.toSearch(message, senderId, 'condition')
+                } else if(message === 'เริ่มค้นหาใหม่') {
+                    fsm.toSearch(message, senderId, 'new')
                 } else {
                     handleResponse.unknown(senderId, 'search')
                 }
-
             }
         }
         updateUserState(senderId, fsm.state)

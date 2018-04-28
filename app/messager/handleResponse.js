@@ -1,6 +1,7 @@
 const request = require('request-promise-native')
 const choice = require('./responses/choice')
 const query = require('./responses/database')
+const State = require('mongoose').model('State')
 const { FACEBOOK_ACCESS_TOKEN } = require('../../config/chatbot')
 
 function facebook_request(message, senderId) {
@@ -33,18 +34,43 @@ exports.end = function(message, senderId, responseType = 'None') {
             .catch((err) => {console.log(err['error'])})
 }
 
-exports.search = function(message, senderId, responseType = 'None') {
+exports.search = async function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`)
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
-    return request(facebook_request({text: 'ลองพิมพ์มา เช่น ทะเล'}, senderId))
+    let text = ''
+    if(responseType === 'new' || responseType === 'None') {
+        text = 'ลองพิมพ์มา เช่น ทะเล ภูเขา หรือ จะพิมพ์เป็นประโยค เช่น \
+                อยากเที่ยวเชียงใหม่ ช่วงวันที่ 9 - 12 เดือนหน้า \
+                งบ 5000 - 10000'
+        try {
+            await State.findOneAndUpdate({ userId: senderId }, { $set: { latestMessage: '' } })
+        } catch(err) {
+            console.log(err)
+        }
+    } else if(responseType === 'condition') {
+        text = 'เพิ่มเงื่อนไข เช่น เที่ยวภาคเหนือ บริษัท Noomsaotours'
+    }
+    return request(facebook_request({ text: text }, senderId))
             .catch((err) => {console.log(err['error'])});
 }
 
-exports.query = function(message, senderId, responseType = 'None') {
+exports.query = async function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`)
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
+    let state = {}
+    try {
+        state = await State.findOne({ userId: senderId }).lean()
+        if(state.latestMessage !== '') {
+            message = state.latestMessage + ' ' + message
+        }
+        await State.findOneAndUpdate({ userId: senderId }, { $set: { latestMessage: message } })
+    } catch(err) {
+        console.log(err)
+    }
+
+
     return query.search(message)
             .then((message) => { return request(facebook_request(message, senderId)) })
             .then(() => { return request(facebook_request(choice.select('search'), senderId)) })

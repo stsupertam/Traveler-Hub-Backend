@@ -40,7 +40,12 @@ let payload_search = {
   	quick_replies:[
     	{
     		content_type: 'text',
-    		title: 'ค้นหาเพิ่มเติม',
+    		title: 'เพิ่มเงื่อนไข',
+    		payload: 'search',
+		},
+    	{
+    		content_type: 'text',
+    		title: 'เริ่มค้นหาใหม่',
     		payload: 'search',
     	},
     	{

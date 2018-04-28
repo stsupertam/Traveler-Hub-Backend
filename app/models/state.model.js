@@ -6,6 +6,10 @@ let StateSchema = new Schema({
         type: String,
         unique: true
     },
+    latestMessage: {
+        type: String,
+        default: ''
+    },
     state: String,
 })
 
