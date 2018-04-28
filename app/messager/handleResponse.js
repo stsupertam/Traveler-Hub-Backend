@@ -24,11 +24,12 @@ exports.choice = function(message, senderId, responseType = 'None') {
             .catch((err) => {console.log(err['error'])})
 }
 
-exports.unknown = function(message, senderId, responseType = 'None') {
+
+exports.end = function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`)
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
-    return request(facebook_request(choice.select(responseType), senderId))
+    return request(facebook_request(choice.select('end'), senderId))
             .catch((err) => {console.log(err['error'])})
 }
 
@@ -40,9 +41,6 @@ exports.search = function(message, senderId, responseType = 'None') {
             .then((message) => { return request(facebook_request(message, senderId)) })
             .then(() => { return request(facebook_request(choice.select('search'), senderId)) })
             .catch((err) => {console.log(err['error'])})
-//    return query.search(message)
-//            .then((message) => { return request(facebook_request(message, senderId)) })
-//            .catch((err) => {console.log(err['error'])})
 }
 
 exports.query = function(message, senderId, responseType = 'None') {
@@ -61,7 +59,7 @@ exports.latest = function(message, senderId, responseType = 'None') {
     console.log(`SenderID : ${senderId}`)
     return query.latest()
             .then((message) => { return request(facebook_request(message, senderId)) })
-            .then(() => { return request(facebook_request(choice.select('end'), senderId)) })
+            .then(() => { return request(facebook_request(choice.select('more_question'), senderId)) })
             .catch((err) => {console.log(err['error'])})
 }
 
@@ -71,12 +69,11 @@ exports.popular = function(message, senderId, responseType = 'None') {
     console.log(`SenderID : ${senderId}`)
     return query.popular()
             .then((message) => { return request(facebook_request(message, senderId)) })
-            .then(() => { return request(facebook_request(choice.select('end'), senderId)) })
+            .then(() => { return request(facebook_request(choice.select('more_question'), senderId)) })
             .catch((err) => {console.log(err['error'])})
 }
-//exports.question = function(message, senderId, responseType = 'None') {
-//    console.log(`ResponseType : ${responseType}`)
-//    console.log(`Message : ${message}`)
-//    console.log(`SenderID : ${senderId}`)
-//    return request(facebook_request('ลองถาม เช่น อยากไปเที่ยวที่ เชียงใหม่ ช่วงวันที่ 1 - 10 ม.ค.', senderId)).catch((err) => { console.log(err) })
-//}
+
+exports.unknown = function(senderId, unknownType = 'None') {
+    return request(facebook_request(choice.selectUnknown(unknownType), senderId))
+            .catch((err) => {console.log(err['error'])})
+}

@@ -6,17 +6,18 @@ const State = require('mongoose').model('State')
 let fsm = new StateMachine({
     init: 'greet',
     transitions: [
-        { name: 'goto',        from: '*',                   to: function(s) { return s }},
-        { name: 'reset',       from: '*',                   to: 'greet'    },
-        { name: 'to_latest',   from: 'choice',              to: 'latest'   },
-        { name: 'to_popular',  from: 'choice',              to: 'popular'  },
-        { name: 'to_unknown',  from: ['choice', 'unknown'], to: 'unknown'  },
-        { name: 'to_search',   from: ['choice', 'query'],   to: 'search'   },
-        { name: 'to_query',    from: ['search', 'query'],   to: 'query'    },
-        { name: 'to_choice',   
-          from: [ 'greet', 'search', 'query', 'latest', 'popular', 'unknown' ], 
-          to: 'choice'   
-        },
+        { name: 'reset',       from: '*',                            to: 'greet'    },
+        { name: 'to_latest',   from: ['choice', 'unknown'],          to: 'latest'   },
+        { name: 'to_popular',  from: ['choice', 'unknown'],          to: 'popular'  },
+        { name: 'to_search',   from: ['choice', 'query'],            to: 'search'   },
+        { name: 'to_query',    from: ['search', 'query'],            to: 'query'    },
+        { name: 'to_end',      from: ['latest', 'popular', 'query'], to: 'end'      },
+        { name: 'goto',        from: '*',                            to: function(s) { return s }},
+        { 
+            name: 'to_choice',   
+            from: [ 'greet', 'search', 'query', 'latest', 'popular', 'unknown' ], 
+            to: 'choice'   
+        }
     ],
     methods: {
         onToChoice: function(lifecycle, message, senderId, responseType) { 
@@ -34,9 +35,9 @@ let fsm = new StateMachine({
         onToPopular: function(lifecycle, message, senderId, responseType) { 
             return handleResponse.popular(message, senderId, responseType)
         },
-        onToUnknown: function(lifecycle, message, senderId, responseType) { 
-            return handleResponse.unknown(message, senderId, responseType)
-        },
+        onToEnd: function(lifecycle, message, senderId, responseType) { 
+            return handleResponse.end(message, senderId, responseType)
+        }
     }
 })
 
@@ -54,6 +55,7 @@ async function getUserState(userId) {
         let currentState = ''
         if(state) {
             currentState = state.state
+            if(state.state === 'end') currentState = 'greet'
         } else {
             currentState = 'greet'
             let data = {
@@ -84,10 +86,12 @@ module.exports = async function(event) {
             if(state === 'greet') { 
                 fsm.toChoice(message, senderId, 'start') 
             } else if(state === 'latest' || state === 'popular') {
-                if(message === 'ค้นหาเพิ่มเติม') {
+                if(message === 'ค้นหาในรูปแบบอื่น') {
                     fsm.toChoice(message, senderId, 'other') 
+                } else if(message === 'หยุดการค้นหา') {
+                    fsm.toEnd(message, senderId, 'end')
                 } else {
-                    fsm.reset()
+                    handleResponse.unknown(senderId, 'latestAndPopular')
                 }
             } else if(state === 'choice') {
                 if(message === 'ค้นหาตามใจคุณ') {
@@ -96,32 +100,18 @@ module.exports = async function(event) {
                     fsm.toPopular(message, senderId, 'popular')
                 } else if(message === 'แพ็กเกจล่าสุด') { 
                     fsm.toLatest(message, senderId, 'latest')
-                } else if(message === 'แนะนำตามใจคุณ') { 
-                    fsm.toQuestion(message, senderId, 'question')
                 } else {
-                    fsm.toUnknown(message, senderId, 'unknown')
+                    handleResponse.unknown(senderId, 'choice')
                 }
             } else if(state === 'search') {
                 fsm.toQuery(message, senderId, 'search')
             } else if(state === 'query') {
                 if(message === 'หยุดการค้นหา') {
-                    fsm.reset()
-                } else if(message === 'สอบถามอย่างอื่น') {
+                    fsm.toEnd(message, senderId, 'end')
+                } else if(message === 'ค้นหาในรูปแบบอื่น') {
                     fsm.toChoice(message, senderId, 'other')
                 } else if(message === 'ค้นหาเพิ่มเติม') {
                     fsm.toQuery(message, senderId, 'search')
-                } else {
-                    fsm.toUnknown(message, senderId, 'unknown')
-                }
-            } else if(state === 'unknown') {
-                if(message === 'ค้นหาตามใจคุณ') {
-                    fsm.toSearch(message, senderId, 'search')
-                } else if(message === 'แพ็กเกจยอดนิยม') { 
-                    fsm.toPopular(message, senderId, 'popular')
-                } else if(message === 'แพ็กเกจล่าสุด') { 
-                    fsm.toLatest(message, senderId, 'latest')
-                } else {
-                    fsm.toUnknown(message, senderId, 'unknown')
                 }
             }
         }
