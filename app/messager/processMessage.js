@@ -111,8 +111,11 @@ module.exports = async function(event) {
                 } else if(message === 'ค้นหาในรูปแบบอื่น') {
                     fsm.toChoice(message, senderId, 'other')
                 } else if(message === 'ค้นหาเพิ่มเติม') {
-                    fsm.toQuery(message, senderId, 'search')
+                    fsm.toSearch(message, senderId, 'search')
+                } else {
+                    handleResponse.unknown(senderId, 'search')
                 }
+
             }
         }
         updateUserState(senderId, fsm.state)

@@ -37,10 +37,8 @@ exports.search = function(message, senderId, responseType = 'None') {
     console.log(`ResponseType : ${responseType}`)
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
-    return query.latest()
-            .then((message) => { return request(facebook_request(message, senderId)) })
-            .then(() => { return request(facebook_request(choice.select('search'), senderId)) })
-            .catch((err) => {console.log(err['error'])})
+    return request(facebook_request({text: 'ลองพิมพ์มา เช่น ทะเล'}, senderId))
+            .catch((err) => {console.log(err['error'])});
 }
 
 exports.query = function(message, senderId, responseType = 'None') {

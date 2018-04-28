@@ -75,14 +75,16 @@ exports.select = function(choice, unknownType = 'None') {
 
 exports.selectUnknown = function(unknownType = 'None') {
 	let payload = {}
+	let text = 'ขออภัยด้วยครับ อยากให้เลือกตามตัวเลือกครับ'
 	if(unknownType === 'latestAndPopular') {
-
-		payload_more_question['text'] = 'ขออภัยด้วยครับ อยากให้เลือกตามตัวเลือกครับ'
+		payload_more_question['text'] = text
 		payload = payload_more_question
 	} else if(unknownType === 'choice') {
-		console.log('bugggg')
-		payload_choice['text'] = 'ขออภัยด้วยครับ อยากให้เลือกตามตัวเลือกครับ'
+		payload_choice['text'] = text
 		payload = payload_choice
+	} else if(unknownType === 'search') {
+		payload_search['text'] = text
+		payload = payload_search
 	}
     return payload
 }
