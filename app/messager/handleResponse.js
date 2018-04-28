@@ -2,6 +2,8 @@ const request = require('request-promise-native')
 const choice = require('./responses/choice')
 const query = require('./responses/database')
 const State = require('mongoose').model('State')
+const Package = require('mongoose').model('Package')
+const wordcut = require('wordcut')
 const { FACEBOOK_ACCESS_TOKEN } = require('../../config/chatbot')
 
 function facebook_request(message, senderId) {
@@ -39,7 +41,9 @@ exports.search = async function(message, senderId, responseType = 'None') {
     console.log(`Message : ${message}`)
     console.log(`SenderID : ${senderId}`)
     let text = ''
-    if(responseType === 'new' || responseType === 'None') {
+    if(responseType === 'condition') {
+        text = 'เพิ่มเงื่อนไข เช่น เที่ยวภาคเหนือ บริษัท Noomsaotours'
+    } else {
         text = 'ลองพิมพ์มา เช่น ทะเล ภูเขา หรือ จะพิมพ์เป็นประโยค เช่น \
                 อยากเที่ยวเชียงใหม่ ช่วงวันที่ 9 - 12 เดือนหน้า \
                 งบ 5000 - 10000'
@@ -48,8 +52,6 @@ exports.search = async function(message, senderId, responseType = 'None') {
         } catch(err) {
             console.log(err)
         }
-    } else if(responseType === 'condition') {
-        text = 'เพิ่มเงื่อนไข เช่น เที่ยวภาคเหนือ บริษัท Noomsaotours'
     }
     return request(facebook_request({ text: text }, senderId))
             .catch((err) => {console.log(err['error'])});
@@ -69,10 +71,11 @@ exports.query = async function(message, senderId, responseType = 'None') {
     } catch(err) {
         console.log(err)
     }
-
-
     return query.search(message)
-            .then((message) => { return request(facebook_request(message, senderId)) })
+            .then((message) => { 
+                console.log(message) 
+                return request(facebook_request(message, senderId)) 
+            })
             .then(() => { return request(facebook_request(choice.select('search'), senderId)) })
             .catch((err) => {console.log(err['error'])})
 }

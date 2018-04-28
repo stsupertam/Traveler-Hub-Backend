@@ -1,7 +1,11 @@
-const Package = require('mongoose').model('Package')
 const _ = require('lodash')
+const Package = require('mongoose').model('Package')
+const Promise = require('bluebird')
+const wordcut = require('wordcut')
 const rootUrl = 'https://travelerhub.xyz/package/detail/' 
 const imageUrl = 'https://api.travelerhub.xyz' 
+
+Package.esSearch = Promise.promisify(Package.esSearch);
 
 function getItem(packages) {
     let data = {
@@ -19,14 +23,16 @@ function getItem(packages) {
         'title': 'More Detail'
     }]
     _.map(packages, (package) => {
+        let copyPackage = JSON.parse(JSON.stringify(package))
+        let images = copyPackage.images
         item = {}
-        let randomIndex = Math.floor(Math.random()*package.images.length)
+        let randomIndex = Math.floor(Math.random()*images.length)
         button[0]['url'] = rootUrl + package['_id']
         item['title'] = package['package_name']
         item['subtitle'] = package['human_price'] + '\n' + 
                            package['travel_date'] + '\n' + 'company: ' + 
                            package['company']
-        item['image_url'] = imageUrl + package['images'][randomIndex]
+        item['image_url'] = imageUrl + images[randomIndex]
         item['buttons'] = button
         data.attachment.payload.elements.push(item)
     })
@@ -48,12 +54,32 @@ exports.popular = function() {
 
 }
 
-exports.search = function(query) {
-    return Package.find({package_name: 'eiei'}).limit(1).sort('-number_of_views').select('-__v -created').lean()
+exports.search = async function(message) {
+    let raw_query = {
+        size: 10,
+    }
+    let elastic_query = { 
+        bool : {
+            must : [],
+            filter : []
+        },
+    }
+    let text_tokenization = wordcut.cut(message)
+    text_tokenization.replace('|', ' ')
+    let text = {
+        match: {
+            text: {
+                query: text_tokenization,
+                operator: 'and',
+                fuzziness: 'AUTO',
+            }
+        }
+    }
+    elastic_query['bool']['must'].push(text)
+    raw_query['query'] = elastic_query
+
+    return Package.esSearch(raw_query)
             .then((packages) => {
-                if(packages.length === 0) {
-                    return { text: 'หาแพ็กเกจที่ต้องการไม่เจอ' }
-                }
-                return getItem(packages)
+                return getItem(packages.hits.hits)
             })
 }
