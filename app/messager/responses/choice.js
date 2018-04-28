@@ -17,18 +17,13 @@ exports.select = function(choice) {
         	  	content_type: 'text',
         	  	title: 'แพ็กเกจล่าสุด',
         	  	payload: 'latest',
-        	},
-        	{
-        	  	content_type: 'text',
-        	  	title: 'แนะนำตามใจคุณ',
-        	  	payload: 'question'
         	}
         ]
     }
 
     if(choice === 'start') {
         payload['text'] = 'สวัสดีครับ ผมสามารถแนะนำแพ็กเกจที่น่าสนใจได้'
-    } else if(choice === 'ls') {
+    } else if(choice === 'other') {
 		payload['text'] = 'ค้นหาเกี่ยวกับอะไรดี'
 	} else if(choice === 'unknown') {
 		payload['text'] = 'อยากให้เลือกตามตัวเลือกครับ'

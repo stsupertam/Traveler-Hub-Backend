@@ -14,6 +14,7 @@ module.exports = function() {
     require('../app/models/dictionary.model')
     require('../app/models/image.model')
     require('../app/models/bookmark.model')
+    require('../app/models/state.model')
     require('../app/models/recommend.model')
 
     return db

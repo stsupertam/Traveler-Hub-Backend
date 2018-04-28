@@ -213,10 +213,6 @@ async function aggregateTotal(company, date) {
     return result
 }
 
-function filterArray(array) {
-
-}
-
 function mapDate(items, date) {
     data = []
     for (let d = date.startDate; d <= date.endDate; d.setDate(d.getDate() + 1)) {
@@ -326,7 +322,6 @@ exports.reportHistory = async function(req, res, next) {
 
     aggResult = aggResult.filter(result => result.length > 0)
 
-    console.log(aggResult)
     if(aggResult.length > 0) {
         result = await mapDate(aggResult, date)
         response = {
