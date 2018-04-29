@@ -20,7 +20,7 @@ const stopwords = fs.readFileSync('./text_processing/stopwords.txt', 'utf-8')
                     .replace(/\r/g, '').split('\n')
 
 Package.esSearch = Promise.promisify(Package.esSearch);
-wordcut.init('./text_processing/' + '*.txt', true)
+wordcut.init('./text_processing/dictionary.txt', true)
 
 function getItem(packages) {
     let data = {
@@ -54,6 +54,72 @@ function getItem(packages) {
     return data
 }
 
+function extractPrice(text, price) {
+    console.log('Extract Price from text')
+    console.log(text)
+    for(i = 0; i < text.length; i++) { 
+        if(text[i] === 'ราคา') {
+            if(i + 1 < text.length) {
+                if(isNaN(text[i+1])) {
+                    if(text[i+1] === 'มากกว่า') {
+                        if(i + 2 < text.length) {
+                            console.log('More than')
+                            if(!isNaN(text[i+2])) {
+                                price.isGreater = true
+                                price.grater = parseInt(text[i+2])
+                            }
+                        }
+                    }
+                    else if(text[i+1] === 'น้อยกว่า') {
+                        if(i + 2 < text.length) {
+                            console.log('Less than')
+                            if(!isNaN(text[i+2])) {
+                                price.isLess = true
+                                price.less = parseInt(text[i+2])
+                            }
+                        }
+                    }
+                    else if(text[i+1] === 'ถูก' || text[i+1] === 'น้อย' ||
+                            text[i+1] === 'ประหยัด' || text[i+1] === 'ต่ำ') 
+                    {
+                        console.log('Cheap package')
+                        price.isLess = true
+                        price.less = 5000
+                    }
+                    else if(text[i+1] === 'แพง' || text[i+1] === 'สูง' || 
+                            text[i+1] === 'มาก')
+                    {
+                        console.log('Expensive package')
+                        price.isGreater = true
+                        price.greater = 5000
+                    }
+                } else {
+                    console.log(`i+1: ${text[i+1]} is number`)
+                    if(i + 3 < text.length) {
+                        if(isNaN(text[i+3])) {
+                            console.log(`i+3: ${text[i+3]} is\'t number`)
+                            price.isGreater = true
+                            price.isLess = true
+                            price.greater = parseInt(text[i+1]) - 1000
+                            price.less = parseInt(text[i+1]) + 1000
+                        } else {
+                            console.log(`i+3: ${text[i+3]} is number`)
+                            price.isGreater = true
+                            price.isLess = true
+                            price.greater = parseInt(text[i+1]) 
+                            price.less = parseInt(text[i+3]) 
+                        }
+                    } else {
+                        price.isGreater = true
+                        price.isLess = true
+                        price.greater = parseInt(text[i+1]) - 1000
+                        price.less = parseInt(text[i+1]) + 1000
+                    }
+                }
+            } 
+        }
+    }
+}
 exports.latest = function() {
     return Package.find({}).sort('-created').limit(10).select('-__v -created').lean()
             .then((packages) => {
@@ -78,8 +144,6 @@ exports.search = async function(message) {
     let isQueryRegion = false
     let isQueryArrival = false
     let isQueryDeparture = false
-    let isQueryMaxPrice = false
-    let isQueryMinPrice = false
     let isQueryCompany = false
 
     let queryProvince = []
@@ -88,10 +152,14 @@ exports.search = async function(message) {
     let queryRegion = []
     let queryArrival = []
     let queryDeparture = []
-    let queryMaxPrice = []
-    let queryMinPrice = []
     let queryCompany = []
 
+    let queryPrice = {
+        isGreater: false,
+        isLess: false,
+        greater: 0,
+        less: 0
+    }
 
     let raw_query = {
         size: 10,
@@ -102,9 +170,17 @@ exports.search = async function(message) {
             filter : []
         },
     }
+    message = message.replace(/งบ/g, 'ราคา')
+                     .replace(/ต่ำกว่า/g, 'น้อยกว่า')
+                     .replace(/สูงกว่า/g, 'มากกว่า')
+                     .replace(/ประมาณ/g, '')
+                     .replace(/ๆ/g, '')
     let text_tokenization = wordcut.cutIntoArray(message)
+    text_tokenization = text_tokenization.filter((item) => item != ' ');
     //text_tokenization = text_tokenization.replace(/\|/g, ' ')
 
+    extractPrice(text_tokenization, queryPrice)
+    console.log(queryPrice)
     for(i = 0; i < text_tokenization.length; i++) { 
         if(provinces.indexOf(text_tokenization[i]) !== -1) {
             isQueryProvince = true
@@ -120,7 +196,6 @@ exports.search = async function(message) {
             isQueryCompany = true
             queryRegion.push(text_tokenization[i])
             text_tokenization[i] = ''
-
         }
         if(travel_types.indexOf(text_tokenization[i]) !== -1) {
             isQueryTravelType = true
@@ -140,6 +215,37 @@ exports.search = async function(message) {
     }
 
     text = text.join(' ')
+    if(queryPrice.isLess || queryPrice.isGreater) {
+        if(queryPrice.isLess && queryPrice.isGreater) {
+            let price = {
+                range:{
+                    price: {
+                        gte: queryPrice.greater,
+                        lte: queryPrice.less
+                    }
+                }
+            }
+            elastic_query['bool']['filter'].push(price) 
+        } else if (queryPrice.isGreater) { 
+            let price = {
+                range: {
+                    price: {
+                        gte: queryPrice.greater
+                    }
+                }
+            }
+            elastic_query['bool']['filter'].push(price)
+        } else if (queryPrice.isLess) { 
+            let price = {
+                range: {
+                    price: {
+                        lte: queryPrice.less
+                    }
+                }
+            }
+            elastic_query['bool']['filter'].push(price) 
+        }
+    }
     if(isQueryCompany) {
         console.log('Query Company')
         let company = {
