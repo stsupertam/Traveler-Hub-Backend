@@ -73,7 +73,6 @@ exports.query = async function(message, senderId, responseType = 'None') {
     }
     return query.search(message)
             .then((message) => { 
-                console.log(message) 
                 return request(facebook_request(message, senderId)) 
             })
             .then(() => { return request(facebook_request(choice.select('search'), senderId)) })
