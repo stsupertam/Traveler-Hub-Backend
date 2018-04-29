@@ -5,9 +5,11 @@ const Package = require('mongoose').model('Package')
 const Favorite = require('mongoose').model('Favorite')
 const Bookmark = require('mongoose').model('Bookmark')
 const Recommend = require('mongoose').model('Recommend')
+const Promise = require('bluebird')
 const wordcut = require('wordcut')
 
 wordcut.init('./text_processing/dictionary.txt', true)
+Package.esSearch = Promise.promisify(Package.esSearch);
 const th_month = [
     'ม.ค.', 'ก.พ.', 'มี.ค.',
     'เม.ย.', 'พ.ค.', 'มิ.ย.',
@@ -161,7 +163,7 @@ exports.search = function(req, res, next) {
     }
     if (query.name) { 
         let text_tokenization = wordcut.cut(query.name)
-        text_tokenization.replace('|', ' ')
+        text_tokenization = text_tokenization.replace(/\|/g, ' ')
         let text = {
             match: {
                 text: {
@@ -295,20 +297,22 @@ exports.search = function(req, res, next) {
         elastic_query['bool']['must'].push(travelType)
     }
     raw_query['query'] = elastic_query
-    Package.esSearch(raw_query, function (err, packages) {
-        if (err) return next(err)
-        let results = packages.hits.hits
-        let total = packages.hits.total
-        let totalPage  = Math.ceil(total / pageOptions.limit)
-        if(pageOptions.page + 1 > totalPage) pageOptions.page = totalPage
-        let response = {
-            'totalPage': totalPage,
-            'currentPage': pageOptions.page + 1,
-            'payload': raw_query,
-            'packages': results
-        }
-        return res.json(response)
-    })
+    Package.esSearch(raw_query)
+        .then((packages) => {
+            let results = packages.hits.hits
+            let total = packages.hits.total
+            let totalPage  = Math.ceil(total / pageOptions.limit)
+            if(pageOptions.page + 1 > totalPage) pageOptions.page = totalPage
+            let response = {
+                'totalPage': totalPage,
+                'currentPage': pageOptions.page + 1,
+                'payload': raw_query,
+                'packages': results
+            }
+            return res.json(response)
+        }).catch((err) => {
+            return next(err)
+        })
 }
 
 exports.recommend = async function(req, res, next) {
