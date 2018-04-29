@@ -18,7 +18,10 @@ const keywords = fs.readFileSync('./text_processing/keywords.txt', 'utf-8')
                     .replace(/\r/g, '').split('\n')
 const stopwords = fs.readFileSync('./text_processing/stopwords.txt', 'utf-8')
                     .replace(/\r/g, '').split('\n')
-
+const dayInMonth = [
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+]
+const event = ['ปีใหม่', 'เข้าพรรษา', 'สงกรานต์']
 Package.esSearch = Promise.promisify(Package.esSearch);
 wordcut.init('./text_processing/dictionary.txt', true)
 
@@ -54,11 +57,131 @@ function getItem(packages) {
     return data
 }
 
+function replaceText(text) {
+    text = text.replace(/งบ/g, 'ราคา')
+                     .replace(/ต่ำกว่า/g, 'น้อยกว่า')
+                     .replace(/สูงกว่า/g, 'มากกว่า')
+                     .replace(/ประมาณ/g, '')
+                     .replace(/ที่/g, '')
+                     .replace(/่ตั้งแต่/g, '')
+                     .replace(/ช่วงวัน/g, 'วัน')
+                     .replace(/ช่วงเดือน/g, 'เดือน')
+                     .replace(/ปีใหม่/g, 'ใหม่')
+                     .replace(/ๆ/g, '')
+                     .replace(/ฯ/g, '')
+                     .replace(/\./g, '')
+                     .replace(/มค/g, '1')
+                     .replace(/กพ/g, '2')
+                     .replace(/มีค/g, '3')
+                     .replace(/เมย/g, '4')
+                     .replace(/พค/g, '5')
+                     .replace(/มิย/g, '6')
+                     .replace(/กค/g, '7')
+                     .replace(/สค/g, '8')
+                     .replace(/กย/g, '9')
+                     .replace(/ตค/g, '10')
+                     .replace(/พย/g, '11')
+                     .replace(/ธค/g, '12')
+                     .replace(/มกราคม/g, 'มกรา')
+                     .replace(/กุมภาพันธ์/g, 'กุมภา')
+                     .replace(/มีนาคม/g, 'มีนา')
+                     .replace(/เมษายน/g, 'เมษา')
+                     .replace(/พฤษภาคม/g, 'พฤษภา')
+                     .replace(/มิถุนายน/g, 'มิถุนา')
+                     .replace(/กรกฎาคม/g, 'กรกฎา')
+                     .replace(/สิงหาคม/g, 'สิงหา')
+                     .replace(/กันยายน/g, 'กันยา')
+                     .replace(/ตุลาคม/g, 'ตุลา')
+                     .replace(/พฤศจิกายน/g, 'พฤศจิกา')
+                     .replace(/ธันวาคม/g, 'ธันวา')
+                     .replace(/มกรา/g, '1')
+                     .replace(/กุมภา/g, '2')
+                     .replace(/มีนา/g, '3')
+                     .replace(/เมษา/g, '4')
+                     .replace(/พฤษภา/g, '5')
+                     .replace(/มิถุนา/g, '6')
+                     .replace(/กรกฎา/g, '7')
+                     .replace(/สิงหา/g, '8')
+                     .replace(/กันยา/g, '9')
+                     .replace(/ตุลา/g, '10')
+                     .replace(/พฤศจิกา/g, 'พฤศจิ')
+                     .replace(/ธันวา/g, '12')
+                     .replace(/พฤศจิ/g, '11')
+    return text
+}
+
+function extractDate(text, date) {
+    console.log('Extract Date from text')
+    console.log(text)
+    let year = (new Date()).getFullYear()
+    for(i = 0; i < text.length; i++) { 
+        if(text[i] === 'ช่วง') {
+            if(i + 1 < text.length) {
+                if(text[i+1] === 'สงกรานต์') {
+                    date.isArrival = true
+                    date.isDeparture = true
+                    date.arrival = `${year}/04/01`
+                    date.departure = `${year + 1}/04/20`
+                }
+                else if(text[i+1] === 'ใหม่') {
+                    date.isArrival = true
+                    date.isDeparture = true
+                    date.arrival = `${year}/12/25`
+                    date.departure = `${year + 1}/01/10`
+                }
+            }
+        }
+        else if(text[i] === 'เดือน') {
+            console.log('Month')
+            if(i + 1 < text.length) {
+                if(!isNaN(text[i+1])) {
+                    console.log(`${text[i+1]} is number`)
+                    if(i + 3 < text.length) {
+                        if(!isNaN(text[i+3])) {
+                            console.log(`${text[i+3]} is number`)
+                            let day = dayInMonth[parseInt(text[i+3])-1]
+                            date.isArrival = true
+                            date.isDeparture = true
+                            date.arrival = `${year}/${text[i+1]}/01`
+                            date.departure = `${year}/${text[i+3]}/${day}`
+                        } else {
+                            console.log(`${text[i+3]} is number`)
+                            let day = dayInMonth[parseInt(text[i+1])-1]
+                            date.isArrival = true
+                            date.isDeparture = true
+                            date.arrival = `${year}/${text[i+1]}/01`
+                            date.departure = `${year}/${text[i+1]}/${day}`
+                        }
+                    } else {
+                        let day = dayInMonth[parseInt(text[i+1])-1]
+                        date.isArrival = true
+                        date.isDeparture = true
+                        date.arrival = `${year}/${text[i+1]}/01`
+                        date.departure = `${year}/${text[i+1]}/${day}`
+                    }
+                }
+            }
+        }
+        else if(text[i] === 'วัน') {
+            if(i + 4 < text.length) {
+                if(!isNaN(text[i+1]) && !isNaN(text[i+3]) && !isNaN(text[i+4])) {
+                    date.isArrival = true
+                    date.isDeparture = true
+                    date.arrival = `${year}/${text[i+4]}/${text[i+1]}`
+                    date.departure = `${year}/${text[i+4]}/${text[i+3]}`
+                }
+            }
+        }
+    }
+    console.log(date)
+}
+
 function extractPrice(text, price) {
     console.log('Extract Price from text')
     console.log(text)
     for(i = 0; i < text.length; i++) { 
         if(text[i] === 'ราคา') {
+            text[i] = ''
             if(i + 1 < text.length) {
                 if(isNaN(text[i+1])) {
                     if(text[i+1] === 'มากกว่า') {
@@ -67,6 +190,8 @@ function extractPrice(text, price) {
                             if(!isNaN(text[i+2])) {
                                 price.isGreater = true
                                 price.grater = parseInt(text[i+2])
+                                text[i+1] = ''
+                                text[i+2] = ''
                             }
                         }
                     }
@@ -76,6 +201,8 @@ function extractPrice(text, price) {
                             if(!isNaN(text[i+2])) {
                                 price.isLess = true
                                 price.less = parseInt(text[i+2])
+                                text[i+1] = ''
+                                text[i+2] = ''
                             }
                         }
                     }
@@ -83,6 +210,7 @@ function extractPrice(text, price) {
                             text[i+1] === 'ประหยัด' || text[i+1] === 'ต่ำ') 
                     {
                         console.log('Cheap package')
+                        text[i+1] = ''
                         price.isLess = true
                         price.less = 5000
                     }
@@ -90,6 +218,7 @@ function extractPrice(text, price) {
                             text[i+1] === 'มาก')
                     {
                         console.log('Expensive package')
+                        text[i+1] = ''
                         price.isGreater = true
                         price.greater = 5000
                     }
@@ -102,23 +231,29 @@ function extractPrice(text, price) {
                             price.isLess = true
                             price.greater = parseInt(text[i+1]) - 1000
                             price.less = parseInt(text[i+1]) + 1000
+                            text[i+1] = ''
                         } else {
                             console.log(`i+3: ${text[i+3]} is number`)
                             price.isGreater = true
                             price.isLess = true
                             price.greater = parseInt(text[i+1]) 
                             price.less = parseInt(text[i+3]) 
+                            text[i+1] = ''
+                            text[i+2] = ''
+                            text[i+3] = ''
                         }
                     } else {
                         price.isGreater = true
                         price.isLess = true
                         price.greater = parseInt(text[i+1]) - 1000
                         price.less = parseInt(text[i+1]) + 1000
+                        text[i+1] = ''
                     }
                 }
             } 
         }
     }
+    console.log(price)
 }
 exports.latest = function() {
     return Package.find({}).sort('-created').limit(10).select('-__v -created').lean()
@@ -142,16 +277,12 @@ exports.search = async function(message) {
     let isQueryKeyword = false
     let isQueryTravelType = false
     let isQueryRegion = false
-    let isQueryArrival = false
-    let isQueryDeparture = false
     let isQueryCompany = false
 
     let queryProvince = []
     let queryKeyword = []
     let queryTravelType = []
     let queryRegion = []
-    let queryArrival = []
-    let queryDeparture = []
     let queryCompany = []
 
     let queryPrice = {
@@ -159,6 +290,12 @@ exports.search = async function(message) {
         isLess: false,
         greater: 0,
         less: 0
+    }
+    let queryDate = {
+        isArrival: false,
+        isDeparture: false,
+        arrival: '',
+        departure: ''
     }
 
     let raw_query = {
@@ -170,17 +307,14 @@ exports.search = async function(message) {
             filter : []
         },
     }
-    message = message.replace(/งบ/g, 'ราคา')
-                     .replace(/ต่ำกว่า/g, 'น้อยกว่า')
-                     .replace(/สูงกว่า/g, 'มากกว่า')
-                     .replace(/ประมาณ/g, '')
-                     .replace(/ๆ/g, '')
+
+    message = replaceText(message)
     let text_tokenization = wordcut.cutIntoArray(message)
     text_tokenization = text_tokenization.filter((item) => item != ' ');
     //text_tokenization = text_tokenization.replace(/\|/g, ' ')
 
     extractPrice(text_tokenization, queryPrice)
-    console.log(queryPrice)
+    extractDate(text_tokenization, queryDate)
     for(i = 0; i < text_tokenization.length; i++) { 
         if(provinces.indexOf(text_tokenization[i]) !== -1) {
             isQueryProvince = true
@@ -215,6 +349,52 @@ exports.search = async function(message) {
     }
 
     text = text.join(' ')
+    console.log(text)
+    if (queryDate.isArrival || query.isDeparture) {
+        start = new Date(queryDate.arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
+        end = new Date(queryDate.departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
+        console.log('----------START-----------------')
+        console.log(start)
+        console.log('---------------------------------')
+        console.log('----------END-----------------')
+        console.log(end)
+        console.log('---------------------------------')
+        if (queryDate.isArrival && queryDate.isDeparture) {
+            let date = {
+                range: {
+                    start_travel_date: {
+                        gte: start
+                    }            
+                },
+                range: {
+                    end_travel_date: {
+                        lte: end
+                    }            
+                }
+            }
+            elastic_query['bool']['filter'].push(date)
+        }
+        else if (queryDate.isArrival) {
+            let date = {
+                range: {
+                    start_travel_date: {
+                        gte: start
+                    }
+                }
+            }
+            elastic_query['bool']['filter'].push(date)
+        }
+        else if (queryDate.isDeparture) {
+            let date = {
+                range: {
+                    end_travel_date: {
+                        lte: end
+                    }
+                }
+            }
+            elastic_query['bool']['filter'].push(date) 
+        }
+    }
     if(queryPrice.isLess || queryPrice.isGreater) {
         if(queryPrice.isLess && queryPrice.isGreater) {
             let price = {
