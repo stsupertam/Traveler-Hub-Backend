@@ -478,19 +478,18 @@ exports.search = async function(message) {
         }
         elastic_query['bool']['must'].push(travelType)
     }
-    // if(text !== '') { 
-    //    let text = {
-        //    match: {
-            //    text: {
-                //    query: text,
-                //    operator: 'and',
-                //    minimum_should_match: '75%',
-                //    fuzziness: 'AUTO',
-            //    }
-        //    }
-    //    }
-    //    elastic_query['bool']['must'].push(text)
-    // }
+    if(text !== '') { 
+       let queryText = {
+           match: {
+               text: {
+                   query: text,
+                   operator: 'and',
+                   minimum_should_match: '75%',
+               }
+           }
+       }
+       elastic_query['bool']['must'].push(queryText)
+    }
     raw_query['query'] = elastic_query
     return Package.esSearch(raw_query)
             .then((packages) => {
