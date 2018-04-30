@@ -62,6 +62,7 @@ function replaceText(text) {
                      .replace(/ต่ำกว่า/g, 'น้อยกว่า')
                      .replace(/สูงกว่า/g, 'มากกว่า')
                      .replace(/ประมาณ/g, '')
+                     .replace(/เที่ยว/g, '')
                      .replace(/ที่/g, '')
                      .replace(/่ตั้งแต่/g, '')
                      .replace(/ช่วงวัน/g, 'วัน')
@@ -113,6 +114,7 @@ function replaceText(text) {
 function extractDate(text, date) {
     console.log('Extract Date from text')
     console.log(text)
+    console.log('bug1')
     let year = (new Date()).getFullYear()
     for(i = 0; i < text.length; i++) { 
         if(text[i] === 'ช่วง') {
@@ -129,35 +131,48 @@ function extractDate(text, date) {
                     date.arrival = `${year}/12/25`
                     date.departure = `${year + 1}/01/10`
                 }
+                text[i+1] = ''
             }
         }
         else if(text[i] === 'เดือน') {
             console.log('Month')
             if(i + 1 < text.length) {
-                if(!isNaN(text[i+1])) {
-                    console.log(`${text[i+1]} is number`)
-                    if(i + 3 < text.length) {
-                        if(!isNaN(text[i+3])) {
-                            console.log(`${text[i+3]} is number`)
-                            let day = dayInMonth[parseInt(text[i+3])-1]
-                            date.isArrival = true
-                            date.isDeparture = true
-                            date.arrival = `${year}/${text[i+1]}/01`
-                            date.departure = `${year}/${text[i+3]}/${day}`
+                if(text[i+1] !== '') {
+                    if(!isNaN(text[i+1])) {
+                        console.log(`${text[i+1]} is number`)
+                        if(i + 3 < text.length) {
+                            if(text[i+3] !== '') {
+                                if(!isNaN(text[i+3])) {
+                                    console.log(`${text[i+3]} is number`)
+                                    let day = dayInMonth[parseInt(text[i+3])-1]
+                                    date.isArrival = true
+                                    date.isDeparture = true
+                                    date.arrival = `${year}/${text[i+1]}/01`
+                                    date.departure = `${year}/${text[i+3]}/${day}`
+                                    text[i+3] = ''
+                                } else {
+                                    console.log(`${text[i+3]} isn\'t number`)
+                                    let day = dayInMonth[parseInt(text[i+1])-1]
+                                    date.isArrival = true
+                                    date.isDeparture = true
+                                    date.arrival = `${year}/${text[i+1]}/01`
+                                    date.departure = `${year}/${text[i+1]}/${day}`
+                                }
+                            } else {
+                                let day = dayInMonth[parseInt(text[i+1])-1]
+                                date.isArrival = true
+                                date.isDeparture = true
+                                date.arrival = `${year}/${text[i+1]}/01`
+                                date.departure = `${year}/${text[i+1]}/${day}`
+                            }
                         } else {
-                            console.log(`${text[i+3]} is number`)
                             let day = dayInMonth[parseInt(text[i+1])-1]
                             date.isArrival = true
                             date.isDeparture = true
                             date.arrival = `${year}/${text[i+1]}/01`
                             date.departure = `${year}/${text[i+1]}/${day}`
                         }
-                    } else {
-                        let day = dayInMonth[parseInt(text[i+1])-1]
-                        date.isArrival = true
-                        date.isDeparture = true
-                        date.arrival = `${year}/${text[i+1]}/01`
-                        date.departure = `${year}/${text[i+1]}/${day}`
+                        text[i+1] = ''
                     }
                 }
             }
@@ -169,9 +184,14 @@ function extractDate(text, date) {
                     date.isDeparture = true
                     date.arrival = `${year}/${text[i+4]}/${text[i+1]}`
                     date.departure = `${year}/${text[i+4]}/${text[i+3]}`
+                    text[i+1] = ''
+                    text[i+2] = ''
+                    text[i+3] = ''
+                    text[i+4] = ''
                 }
             }
         }
+        text[i] = ''
     }
     console.log(date)
 }
@@ -190,7 +210,6 @@ function extractPrice(text, price) {
                             if(!isNaN(text[i+2])) {
                                 price.isGreater = true
                                 price.grater = parseInt(text[i+2])
-                                text[i+1] = ''
                                 text[i+2] = ''
                             }
                         }
@@ -201,7 +220,6 @@ function extractPrice(text, price) {
                             if(!isNaN(text[i+2])) {
                                 price.isLess = true
                                 price.less = parseInt(text[i+2])
-                                text[i+1] = ''
                                 text[i+2] = ''
                             }
                         }
@@ -210,7 +228,6 @@ function extractPrice(text, price) {
                             text[i+1] === 'ประหยัด' || text[i+1] === 'ต่ำ') 
                     {
                         console.log('Cheap package')
-                        text[i+1] = ''
                         price.isLess = true
                         price.less = 5000
                     }
@@ -218,7 +235,6 @@ function extractPrice(text, price) {
                             text[i+1] === 'มาก')
                     {
                         console.log('Expensive package')
-                        text[i+1] = ''
                         price.isGreater = true
                         price.greater = 5000
                     }
@@ -231,14 +247,12 @@ function extractPrice(text, price) {
                             price.isLess = true
                             price.greater = parseInt(text[i+1]) - 1000
                             price.less = parseInt(text[i+1]) + 1000
-                            text[i+1] = ''
                         } else {
                             console.log(`i+3: ${text[i+3]} is number`)
                             price.isGreater = true
                             price.isLess = true
                             price.greater = parseInt(text[i+1]) 
                             price.less = parseInt(text[i+3]) 
-                            text[i+1] = ''
                             text[i+2] = ''
                             text[i+3] = ''
                         }
@@ -247,9 +261,9 @@ function extractPrice(text, price) {
                         price.isLess = true
                         price.greater = parseInt(text[i+1]) - 1000
                         price.less = parseInt(text[i+1]) + 1000
-                        text[i+1] = ''
                     }
                 }
+                text[i+1] = ''
             } 
         }
     }
@@ -311,7 +325,6 @@ exports.search = async function(message) {
     message = replaceText(message)
     let text_tokenization = wordcut.cutIntoArray(message)
     text_tokenization = text_tokenization.filter((item) => item != ' ');
-    //text_tokenization = text_tokenization.replace(/\|/g, ' ')
 
     extractPrice(text_tokenization, queryPrice)
     extractDate(text_tokenization, queryDate)
@@ -351,48 +364,18 @@ exports.search = async function(message) {
     text = text.join(' ')
     console.log(text)
     if (queryDate.isArrival || query.isDeparture) {
-        start = new Date(queryDate.arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
-        end = new Date(queryDate.departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
-        console.log('----------START-----------------')
-        console.log(start)
-        console.log('---------------------------------')
-        console.log('----------END-----------------')
-        console.log(end)
-        console.log('---------------------------------')
         if (queryDate.isArrival && queryDate.isDeparture) {
+            start = new Date(queryDate.arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
+            end = new Date(queryDate.departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
             let date = {
                 range: {
                     start_travel_date: {
-                        gte: start
-                    }            
-                },
-                range: {
-                    end_travel_date: {
+                        gte: start,
                         lte: end
                     }            
                 }
             }
             elastic_query['bool']['filter'].push(date)
-        }
-        else if (queryDate.isArrival) {
-            let date = {
-                range: {
-                    start_travel_date: {
-                        gte: start
-                    }
-                }
-            }
-            elastic_query['bool']['filter'].push(date)
-        }
-        else if (queryDate.isDeparture) {
-            let date = {
-                range: {
-                    end_travel_date: {
-                        lte: end
-                    }
-                }
-            }
-            elastic_query['bool']['filter'].push(date) 
         }
     }
     if(queryPrice.isLess || queryPrice.isGreater) {

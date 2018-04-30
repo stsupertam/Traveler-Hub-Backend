@@ -210,41 +210,21 @@ exports.search = function(req, res, next) {
     if (query.Arrival || query.Departure) {
         start = new Date(query.Arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         end = new Date(query.Departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
-        if (query.Arrival && query.Departure) {
-            let date = {
-                range: {
-                    start_travel_date: {
-                        gte: start
-                    }            
-                },
-                range: {
-                    end_travel_date: {
-                        lte: end
-                    }            
-                }
-            }
-            elastic_query['bool']['filter'].push(date)
+        if(!query.Arrival) {
+
+        } 
+        if(!query.Departure) {
+
         }
-        else if (query.Arrival) {
-            let date = {
-                range: {
-                    start_travel_date: {
-                        gte: start
-                    }
-                }
+        let date = {
+            range: {
+                start_travel_date: {
+                    gte: start,
+                    lte: end
+                }            
             }
-            elastic_query['bool']['filter'].push(date)
         }
-        else if (query.Departure) {
-            let date = {
-                range: {
-                    end_travel_date: {
-                        lte: end
-                    }
-                }
-            }
-            elastic_query['bool']['filter'].push(date) 
-        }
+        elastic_query['bool']['filter'].push(date)
     }
     if (query.company) {
         let company = {
