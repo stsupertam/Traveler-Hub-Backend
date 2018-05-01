@@ -58,7 +58,7 @@ exports.update = function(req, res, next) {
         })
 }
 
-exports.read = function(req, res) {
+exports.read = function(req, res, next) {
     User.findOne({ email: req.user.email }).select('-_id -__v -created')
         .populate('profileImage', 'filename path -_id')
         .lean()
@@ -69,6 +69,11 @@ exports.read = function(req, res) {
                 } else {
                     user.profileImage = '/images/' + user.profileImage.filename
                 }
+            }
+            if(user.birthdate) {
+                user.birthdate = user.birthdate.getFullYear() + '-' + 
+                                 (parseInt(user.birthdate.getMonth()) + 1) + '-' +
+                                 user.birthdate.getDate()
             }
             return res.json(user)
         })
