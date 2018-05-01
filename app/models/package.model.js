@@ -66,8 +66,8 @@ let PackageSchema = new Schema({
         es_indexed: true
     },
     travel_duration: {
-        type: Number,
-        default: 1
+        type: String,
+        default: '1'
     },
     start_travel_date: {
         type: Date,

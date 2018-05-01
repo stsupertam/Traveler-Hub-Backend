@@ -71,9 +71,9 @@ exports.read = function(req, res, next) {
                 }
             }
             if(user.birthdate) {
-                user.birthdate = user.birthdate.getFullYear() + '-' + 
-                                 (parseInt(user.birthdate.getMonth()) + 1) + '-' +
-                                 user.birthdate.getDate()
+                user.birthdate = user.birthdate.getFullYear() + '-' +
+                                 ('0' + (user.birthdate.getMonth()+1)).slice(-2) + '-' +
+                                 ('0' + user.birthdate.getDate()).slice(-2)
             }
             return res.json(user)
         })

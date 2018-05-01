@@ -66,8 +66,10 @@ async function aggregateFavorite(company, date, type) {
                     'updated': 1,
                 }
             },
+            { $unwind : '$package' }, 
+            { $unwind : '$package.' + type }, 
             {
-               '$group': {
+                '$group': {
                     '_id': '$package.' + type,
                     'like': {
                         '$sum': { '$cond': ['$like', 1, 0] }
@@ -171,6 +173,7 @@ async function aggregateHistory(company, items, date, type) {
 }
 
 async function aggregateTotal(company, date) {
+    let result = []
     let match = {
         '$match': { 
             'package.company': company,
@@ -201,21 +204,12 @@ async function aggregateTotal(company, date) {
         },
     ])
     .allowDiskUse(true)
-    let result = {
-        name: "ผู้ใช้งาน",
-        male: 0,
-        female: 0
-    }
     for(item of history) {
         let temp = {}
         temp.name = item._id[0]
         temp.value = item.count
         if(temp.name !== undefined) {
-            if(temp.name === 'male') {
-                result.male = temp.value
-            } else {
-                result.female = temp.value
-            }
+            result.push(temp)
         }
     }
     return result

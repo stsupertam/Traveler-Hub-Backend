@@ -26,7 +26,8 @@ exports.upload = function(req, res, next) {
         Image.insertMany(req.files)
             .then((image) => {
                 return res.json({
-                    message: 'Image uploaded successfully'
+                    message: 'Image uploaded successfully',
+                    image: image
                 })
             })
             .catch((err) => {

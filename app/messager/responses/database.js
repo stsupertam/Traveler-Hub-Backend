@@ -35,23 +35,23 @@ function getItem(packages) {
             }
         }
     }
-    let button = [{
-        'type': 'web_url',
-        'url': '',
-        'title': 'More Detail'
-    }]
+    let button = 
+
     _.map(packages, (package) => {
         let copyPackage = JSON.parse(JSON.stringify(package))
         let images = copyPackage.images
         item = {}
         let randomIndex = Math.floor(Math.random()*images.length)
-        button[0]['url'] = rootUrl + package['_id']
         item['title'] = package['package_name']
         item['subtitle'] = package['human_price'] + '\n' + 
                            package['travel_date'] + '\n' + 'company: ' + 
                            package['company']
         item['image_url'] = imageUrl + images[randomIndex]
-        item['buttons'] = button
+        item['buttons'] = [{
+            'type': 'web_url',
+            'url': rootUrl + package['_id'],
+            'title': 'More Detail'
+        }]
         data.attachment.payload.elements.push(item)
     })
     return data
