@@ -479,16 +479,22 @@ exports.search = async function(message) {
         elastic_query['bool']['must'].push(travelType)
     }
     if(text !== '') { 
-       let queryText = {
-           match: {
-               text: {
-                   query: text,
-                   operator: 'and',
-                   minimum_should_match: '75%',
-               }
-           }
-       }
-       elastic_query['bool']['must'].push(queryText)
+        let queryText = {
+            match: {
+                _all: text
+            },
+        }
+        let fuzzyText = {
+            match: {
+                _all: {
+                    query: text,
+                    fuzziness: 1,
+                    prefix_length: 2
+                }
+            }
+        }
+        elastic_query['bool']['must'].push(queryText)
+        elastic_query['bool']['must'].push(fuzzyText)
     }
     raw_query['query'] = elastic_query
     return Package.esSearch(raw_query)

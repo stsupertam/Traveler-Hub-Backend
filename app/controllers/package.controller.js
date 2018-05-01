@@ -164,17 +164,22 @@ exports.search = function(req, res, next) {
     if (query.name) { 
         let text_tokenization = wordcut.cut(query.name)
         text_tokenization = text_tokenization.replace(/\|/g, ' ')
-        let text = {
+        let exactMatch = {
+            match: {
+                text: text_tokenization,
+            }
+        }
+        let fuzzyMatch = {
             match: {
                 text: {
                     query: text_tokenization,
-                    operator: 'and',
-                    minimum_should_match: '75%',
-                    fuzziness: 'AUTO',
+                    fuzziness: 1,
+                    prefix_length: 2
                 }
             }
         }
-        elastic_query['bool']['must'].push(text)
+        elastic_query['bool']['must'].push(exactMatch)
+        elastic_query['bool']['must'].push(fuzzyMatch)
     }
     if (query.minPrice || query.maxPrice) {
         if (query.minPrice && query.maxPrice) {
@@ -210,12 +215,6 @@ exports.search = function(req, res, next) {
     if (query.Arrival || query.Departure) {
         start = new Date(query.Arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         end = new Date(query.Departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
-        if(!query.Arrival) {
-
-        } 
-        if(!query.Departure) {
-
-        }
         let date = {
             range: {
                 start_travel_date: {
