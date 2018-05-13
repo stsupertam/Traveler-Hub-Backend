@@ -379,7 +379,7 @@ exports.search = async function(message) {
     console.log('------------------Final text----------------')
     console.log(text)
     console.log('--------------------------------------------')
-    if (queryDate.isArrival && query.isDeparture) {
+    if (queryDate.isArrival && queryDate.isDeparture) {
         start = new Date(queryDate.arrival + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         end = new Date(queryDate.departure + 'T00:00:00'.replace(/-/g, '\/').replace(/T.+/, ''))
         let date = {
